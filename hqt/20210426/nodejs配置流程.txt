@@ -1,0 +1,9 @@
+1.下载安装node.js
+2. 在node目录中新建node-cache、node-global文件夹
+3.打开cmd命令窗口输入
+   npm config set prefix "D:\Develop\nodejs\node_global"
+   npm config set cache "D:\Develop\nodejs\node_cache"
+4.设置环境变量
+在【系统变量】下新建【NODE_PATH】，输入【D:\Develop\nodejs\node_global\node_modules】
+将【用户变量】下的【Path】修改为【D:\Develop\nodejs\node_global】
+5.npm i gulp -g 下载gulp
