@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>注册页面</title>
+	<link rel="stylesheet" href="css/login.css" />
+</head>
+
+<body>
+	<!--整体-->
+	<div class="login">
+		<!--注册框-->
+		<div class="lg-frame">
+			<div class="lg-icon">
+				<img src="img/login.png" alt="#" />
+			</div>
+			<div class="lg-user">
+				<img src="img/en_user.png" alt="#" />
+				<input type="text" placeholder="用户名" id="user" name="user" autocomplete="off" />
+			</div>
+			<div class="lg-user">
+				<img src="img/password.png" alt="#" />
+				<input type="password" placeholder="密码" id="pwd" name="pwd" />
+			</div>
+			<div class="lg-btn">
+				<button>注册</button>
+				<!-- <a href="javascript:history.back(-1)">返回</a> -->
+				<a href="entry.html">返回</a>
+			</div>
+		</div>
+	</div>
+
+	<script src="layer/jquery-3.6.0.js"></script>
+	<script src="layer/layer.js"></script>
+	<script>
+		var uname = document.querySelector("#user");
+		var upwd = document.querySelector("#pwd");
+		var btn = document.querySelector("button");
+		//用户注册
+		btn.addEventListener('click', function () {
+			if (uname.value.trim() == "" || uname.value.trim() == null) {
+				layer.msg("请输入用户名", { icon: 3 });
+				return;
+			} else if (upwd.value.trim() == "" || upwd.value.trim() == null) {
+				layer.msg("请输入密码", { icon: 3 });
+				return;
+			}
+			else {
+				var xhr = new XMLHttpRequest();
+				xhr.open("post", "http://localhost:8088/login");
+				xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');  //设置url传参
+				xhr.send("name=" + uname.value + "&pwd=" + upwd.value + "");
+				xhr.onload = function () {
+					location.href = "entry.html";
+				}
+			}
+		})
+		//判断用户名是否存在
+		uname.addEventListener("blur", function () {
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "http://localhost:8088/checkname");
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');  //设置url传参
+			xhr.send("name=" + uname.value);
+			xhr.onload = function () {
+				var msg = xhr.responseText;
+				if (msg == "此用户名可用") {
+					layer.msg(msg, { icon: 1 });
+					btn.disabled = false;
+				} else {
+					layer.msg(msg, { icon: 2 });
+					btn.disabled = true;
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

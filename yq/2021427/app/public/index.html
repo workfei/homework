@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="" method="GET">
+        用户名: <input type="text" id="uname"><br>
+        密码: <input type="text" id="upwd"><br>
+        <input type="button" value="登录" id="btn">
+    </form>
+    <script>
+        var uname = document.querySelector("#uname")
+        var upwd = document.querySelector("#upwd")
+        var btn = document.querySelector("#btn")
+        btn.addEventListener("click", function() {
+            // 1.创建ajax对象
+            var xhr = new XMLHttpRequest()
+            let name = uname.value;
+            let pwd = upwd.value;
+            // 2.ajax请求方式及地址
+            xhr.open("get", "http://localhost:3000/login?random="+Math.random()+"&name="+name+"&pwd="+pwd+"")
+            // 3.向服务器发送请求
+            xhr.send()
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+            }
+        })
+    </script>
+</body>
+</html>

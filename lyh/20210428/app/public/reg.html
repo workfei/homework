@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>用户名: <input type="text" id="uname"><span id="msg"></span></td>
+            <td>密码: <input type="password" id="upwd"></td>
+            <td><button>注册</button></td>
+        </tr>
+    </table>
+
+    <script>
+        var btn = document.querySelector('button');
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var msg = document.querySelector('#msg');
+        btn.addEventListener('click', function() {
+            //创建对象
+            var xhr = new XMLHttpRequest();
+            //请求方式
+            xhr.open('get','http://localhost:3002/reg2?random=' + Math.random() + '&name=' + uname.value + '&pwd=' + upwd.value);
+            //发送请求
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText;
+                if (result == 'regok') {
+                    alert('注册成功')
+                    location.href = 'index.html';
+                } else {
+                    alert('注册失败')
+                }
+            }
+        })
+        uname.addEventListener('blur', function() {
+            //创建对象
+            var xhr = new XMLHttpRequest();
+            //请求方式
+            xhr.open('get','http://localhost:3002/checkName?random=' + Math.random() + '&name=' + uname.value);
+            //发送请求
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText;
+                console.log(xhr.responseText);
+                if (result == 'ok') {
+                    msg.innerHTML = '<font color="green">此用户名可用</font>';
+                } else {
+                    msg.innerHTML = '<font color="red">此用户名不可用</font>';
+                }
+            }
+        })
+    </script>
+</body>
+</html>

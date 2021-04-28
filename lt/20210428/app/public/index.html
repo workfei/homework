@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <style>
+        .loginout {
+            width: 50px;
+            height: 25px;
+            position: fixed;
+            right: 50px;
+            top: 50px;
+        }
+    </style>
+</head>
+<body>
+    我是首页
+    <h1></h1>
+    <div class="loginout"><a href="JavaScript:;" id="loginout" onclick = "loginout()">退出登录</a></div>
+    <script>
+        // 用户登录信息保存在userinfo
+        // 保存方式：localStorage
+        var h1 = document.querySelector('h1')
+        if(document.cookie) {
+            // var userinfo = JSON.parse(localStorage.getItem('userinfo'));
+            // h1.innerHTML = '欢迎光临' + userinfo.name
+            console.log(document.cookie);
+        } else {
+            location.href = 'login.html';
+            
+        }
+        // console.log();
+
+        function loginout () {
+            // 退出登录
+            localStorage.removeItem('userinfo');
+            location.reload();//刷新页面
+        }
+    </script>
+</body>
+</html>

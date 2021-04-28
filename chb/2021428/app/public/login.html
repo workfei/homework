@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center">
+        <tr>
+            <td>用户名</td>
+            <td><input type="text" id="uname"><span class="msg"></span></td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td><input type="text" id="upwd"></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <button>注册</button>
+            </td>
+        </tr>
+    </table>
+    <script>
+        var btn = document.querySelector('button');
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg = document.querySelector('#msg')
+        localStorage.setItem('uname','老毕')
+        btn.addEventListener('click',function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('get','http://localhost:3000/login2?random='+Math.random()+'&name='+uname.value+'&pwd='+upwd.value)
+            xhr.send()
+            xhr.onload = function() {
+                var result = JSON.parse(xhr.responseText);
+                if(result.code == 200) {
+                    console.log(result.data);
+                    localStorage.setItem('userinfo',JSON.stringify(result.data))
+                    
+                    location.href = 'index.html'
+                }else {
+                    alert(result.msg)
+                }
+            }
+        })
+       
+    </script>
+</body>
+</html>

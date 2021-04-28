@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>登录页面</title>
+	<link rel="stylesheet" href="css/entry.css" />
+</head>
+
+<body>
+	<!--整体-->
+	<div class="entry">
+		<!--登录框-->
+		<div class="en-frame">
+			<div class="en-icon">
+				<img src="img/ent_fly.png" alt="#" />
+			</div>
+			<div class="en-user">
+				<img src="img/en_user.png" alt="#" />
+				<input type="text" placeholder="用户名" id="user" name="user" autocomplete="off" />
+			</div>
+			<div class="en-user">
+				<img src="img/password.png" alt="#" />
+				<input type="password" placeholder="密码" id="pwd" name="pwd" />
+			</div>
+			<div class="en-btn">
+				<button>登录</button>
+				<p>还没有账号？
+					<a href="login.html">注册</a>
+				</p>
+			</div>
+
+			<!--返回按键-->
+			<div class="dt-back">
+				<a href="javascript:history.back(-1)">
+					<img src="img/back.png" id="back" alt="#" />
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<script src="layer/jquery-3.6.0.js"></script>
+	<script src="layer/layer.js"></script>
+	<script>
+		var uname = document.querySelector("#user");
+		var upwd = document.querySelector("#pwd");
+		var btn = document.querySelector("button");
+
+		//用户登录
+		btn.addEventListener("click", function () {
+			var xhr = new XMLHttpRequest();
+			xhr.open("post", "http://localhost:8088/entry");
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');  //设置url传参
+			xhr.send("name=" + uname.value + "&pwd=" + upwd.value + "");
+			xhr.onload = function () {
+				var result = JSON.parse(xhr.responseText);
+				if (result.code == 200) {
+					location.href = "index.html";
+					document.cookie = "name=" + result.data.name + "&pwd=" + result.data.pwd + "";
+				} else {
+					layer.msg(result.msg, { icon: 5 });
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

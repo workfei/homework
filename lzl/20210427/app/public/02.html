@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="" method="GET">
+        <input type="text" placeholder="请输入用户名"><br>
+        <input type="password" placeholder="请输入密码"><br>
+        <input type="button" value="登录" id="q1">
+    </form>
+    <script>
+        var txt = document.querySelectorAll('input')
+        var btn  = document.querySelector('#q1')
+        btn.addEventListener('click',function() {
+            var xhr = new XMLHttpRequest()
+            xhr.open('get','http://localhost:5000/login?random='+ Math.random() +'&name='+ txt[0].value +'&pwd='+ txt[1].value +'')
+            xhr.send()
+            xhr.onload = function() {
+                console.log(xhr.responseText);
+            }
+        })
+    </script>
+</body>
+</html>

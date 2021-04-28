@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+</head>
+<body>
+    <table>
+        <tr><td>用户名</td><td><input type="text" id="uname"></td><td><span></span></td></tr>
+        <tr><td>密码</td><td><input type="password" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button>登录</button></td></tr>
+    </table>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script>
+        var btn = document.querySelector('button');
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var span = document.querySelector('span');
+        btn.addEventListener('click',function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','http://localhost:3001/login');
+            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xhr.send('name='+uname.value+'&pwd='+upwd.value);
+            xhr.onload = function() {
+                var result = JSON.parse(xhr.responseText);
+                if (result.code == 200) {
+                    localStorage.setItem('userinfo',JSON.stringify(result.data));
+                    // setCookie('username',JSON.stringify(result.data));
+                    // 登录后进入首页
+                    location.href = 'index.html';
+                } else {
+                    layer.msg(result.msg);
+                }
+            }    
+        })
+        function setCookie(name,value){
+            var Days = 30;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days*24*60*60*1000);
+            document.cookie = name + "="+ escape(value)+";expires=" + exp.toGMTString();
+        }
+    </script>
+</body>
+</html>

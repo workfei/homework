@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', 'http://localhost:3033/postjson')
+        //给post请求设置请求头
+        xhr.setRequestHeader("Content-type", "application/json");//设置url传参
+        //json: 对象格式
+        var params = {
+            name: '永恒',
+            pwd: 123
+        }
+        //发送
+        xhr.send(JSON.stringify(params))//把json格式转换成字符串再传递
+        xhr.onload = function () {
+            console.log(xhr.responseText);
+        }
+    </script>
+</body>
+
+</html>

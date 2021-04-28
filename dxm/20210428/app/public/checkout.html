@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自建服务器的用户名验证</title>
+</head>
+
+<body>
+    <form action="" method="GET">
+        用户名：<input type="text"><span></span>
+    </form>
+
+    <script>
+        var uname = document.querySelector("input[type=text]");
+        var span = document.querySelector("span");
+        document.addEventListener("keydown", function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                uname.blur();
+            }
+        })
+        uname.onblur = function () {
+            if (uname.value.trim() == "") {
+                span.innerText = "用户名不能为空！";
+                span.style.color = "red";
+            } else {
+                //1.创建ajax对象
+                var xhr = new XMLHttpRequest();
+                //2.使用get的请求方式,同时再拼接用户名作为地址
+                xhr.open("get", "http://localhost:8088/checkname?name=" + uname.value + "");
+                //3.向服务器发送请求
+                xhr.send();
+                // 当Ajax状态码发生变化时 xhr.readyState获取Ajax状态码
+                xhr.onreadystatechange = function () {
+                    // 判断当Ajax状态码为4时
+                    if (xhr.readyState == 4) {
+                        var code = JSON.parse(xhr.responseText).code; //将json字符串转换为json对象，同时获取到其中的属性值
+                        var msg = JSON.parse(xhr.responseText).mgs;
+                        if (code == 666) {  //判断获取到code是否为666，给span框相应的提示
+                            span.innerText = msg;
+                            span.style.color = "red";
+                        } else {
+                            span.innerText = msg;
+                            span.style.color = "green";
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

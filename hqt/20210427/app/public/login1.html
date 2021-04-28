@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="" id="login">
+        用户名：<input type="text" name="uname" id="uname"><span></span>
+    </form>
+    <button>登录</button>
+    <script>
+        var btn = document.querySelector('button');
+        var uname = document.querySelector('#uname');
+        var span = document.querySelector('span')
+        uname.addEventListener('change',function() {
+            // 创建Ajax对象
+            var xhr = new XMLHttpRequest();
+            // Ajax请求方式及地址
+            xhr.open('get',`http://localhost:3001/login1?rendom=${Math.random()}&name=${uname.value}`);
+            // 发送请求
+            xhr.send();
+            xhr.onload = function() {
+                // 响应的数据
+                var obj = JSON.parse(xhr.responseText);
+                span.innerText = obj.text;
+            }
+        })
+    </script>
+</body>
+</html>

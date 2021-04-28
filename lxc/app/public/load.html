@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="">
+        <input type="text" placeholder="用户名" id="uname">
+        <span></span>
+    </form>
+    <script>
+        var names = document.querySelector('#uname');
+        var span = document.querySelector('span');
+        names.addEventListener('blur', function() {
+            var xhr = new XMLHttpRequest();
+            var uname = names.value;
+            xhr.open('get', 'http://localhost:3000/login?random=' + Math.random() + '&name=' + uname + '&pwd=123456');
+            xhr.send();
+            xhr.onload = function() {
+                var str = JSON.parse(xhr.responseText);
+                console.log(xhr.responseText);
+                if (str.code == 250) {
+                    console.log(str.code);
+                    span.innerText = '此用户名可用';
+                    span.style.color = 'green';
+                } else {
+                    span.innerText = '此用户名已被使用';
+                    span.style.color = 'red';
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

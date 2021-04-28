@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input {
+            
+        }
+    </style>
+</head>
+<body>
+    <form action="" method="GET" onsubmit="return false">
+        用户名:<input type="text" name="username" id="name1"><span style="display: none;">用户名可用</span>
+        <br><br>
+        密码:<input type="password" name="" id="pwd1">
+        <button>登录</button>
+    </form>
+    <script>
+        var btn = document.querySelector('button');
+        var name1 = document.querySelector('#name1');
+        var pwd1 = document.querySelector('#pwd1');
+        var span = document.querySelector('span');
+        var data = [{
+            name:'刘涛',
+        },{
+            name:'杨前',
+        },{
+            name:'憨憨',
+        },{
+            name:'智障',
+        },];
+        name1.oninput = function () {
+            console.log(1);
+            // data.find(val => {
+                
+            // })
+            var xhr = new XMLHttpRequest();
+            xhr.open('get','http://localhost:3000/login?random = '+Math.random()+'&name=' + name1.value);
+            xhr.send();
+            xhr.onload = function () {
+                console.log();//返回文本
+                console.log(xhr);
+                var num = JSON.parse(xhr.responseText);
+                console.log(JSON.parse(xhr.responseText).code);
+                if (num.code != 250) {
+                    span.innerText = '用户名不可用'
+                    span.style.color = 'red';
+                    span.style.display = 'block';
+                } else {
+                    span.innerText = '用户名可用'
+                    span.style.display = 'block';
+                    span.style.color ='black';
+                }
+                
+            }
+            
+        }
+        btn.addEventListener('click' ,function () {
+            // 写一个ajax请求
+            // 1.创建ajax对象
+            console.log(name1.value);
+            console.log(pwd1.value);
+            
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <tr><td>用户名</td><td><input type="text" name="" id="uname"><span class="msg"></span></td></tr>
+        <tr><td>密码</td><td><input type="text" name="" id="upwd"></td></tr>
+        <tr><td align="center" colspan="2"><button>注册</button></td></tr>
+    </table>
+    <script>
+        var btn = document.querySelector('button')
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg = document.querySelector('.msg')
+        btn.addEventListener('click',function() {
+            //创建对象
+            var xhr = new XMLHttpRequest()
+            xhr.open('get','http://localhost:4000/reg?random='+ Math.random() +'&name=' + uname.value + '&pwd=' + upwd.value)
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText
+                if (result == 'ok') {
+                    alert('注册成功')
+                } else {
+                    alert('注册失败')
+                }
+            }
+        })
+        uname.addEventListener('blur',function() {
+            //创建对象
+            var xhr = new XMLHttpRequest()
+            xhr.open('get','http://localhost:4001/checkName?random='+ Math.random() +'&name=' + uname.value)
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText
+                if (result == 'ok') {
+                    msg.innerHTML = '<font color="green">此用户名可用</font>'
+                    btn.disabled = false
+                } else {
+                    msg.innerHTML = '<font color="red">此用户名不可用</font>'
+                    btn.disabled = true
+                }
+            }
+        })
+    </script>
+</body>
+</html>

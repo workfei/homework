@@ -1,0 +1,9 @@
+先安装node搞清楚位置,然后找文件夹,创建两个文件夹,node_cache,node_global;
+2.创建完两个空文件夹之后，打开cmd命令窗口，输入npm config set prefix "D:\Develop\nodejs\node_global;"
+npm config set cache "D:\Develop\nodejs\node_cache";
+3.我的电脑-右键-属性-高级系统设置--高级-环境变量
+4.进入环境变量对话框，在【系统变量】下新建【NODE_PATH】，
+输入【D:\Develop\nodejs\node_global\node_modules】，
+将【用户变量】下的【Path】修改为【D:\Develop\nodejs\node_global;
+位置为自己安装的路径
+5.npm i gulp -g 下载gulp

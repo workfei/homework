@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+    <link rel="stylesheet" href="layercss/layer.css">
+</head>
+<body>
+    <table align="center" width="400">
+        <tr><td>用户名</td><td><input type="text" id="uname"><span id="msg"></span></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button>注册</button></td></tr>
+    </table>
+    <script>
+        var btn = document.querySelector('button'); //注册
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg = document.querySelector('#msg'); //显示提示信息
+        btn.addEventListener('click',function() {
+            //创建对象
+            var xhr = new XMLHttpRequest();
+            //请求方式
+            xhr.open('get','http://localhost:3033/reg2?random=' + Math.random() + '&name=' + uname.value + '&pwd=' + upwd.value);
+            //发送请求
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText;
+                if(result == 'regok') {
+                    layer.msg('注册成功');
+                    location.href='login.html'
+                } else {
+                    layer.msg('注册失败');
+                }
+            }
+        })
+
+        uname.addEventListener('blur',function() {
+            //创建对象
+            var xhr = new XMLHttpRequest();
+            //请求方式
+            xhr.open('get','http://localhost:3033/checkName?random=' + Math.random() + '&name=' + uname.value);
+            //发送请求
+            xhr.send()
+            xhr.onload = function() {
+                var result = xhr.responseText;
+                if(result == 'ok') {
+                    msg.innerHTML = '<font color="green">此用户名可用</font>'
+                } else {
+                    msg.innerHTML = '<font color="red">此用户名不可用</font>'
+                }
+            }
+        })
+    </script>
+</body>
+</html>

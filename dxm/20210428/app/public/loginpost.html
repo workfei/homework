@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模拟发送post请求</title>
+</head>
+
+<body>
+    <input type="submit" name="" id="" value="模拟发送post请求">
+    <script>
+        var btn = document.querySelector("input");
+        btn.addEventListener('click', function () {
+            //1.创建ajax对象
+            var xhr = new XMLHttpRequest();
+            //2.使用POST的请求方式
+            xhr.open('post', 'post_ajax.php');
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //3.向服务器发送请求
+            xhr.send(null);  //发送请求
+            //4.获取服务器请求后的响应
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+            }
+        })
+    </script>
+</body>
+
+</html>

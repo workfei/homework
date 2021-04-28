@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自建服务器的模拟登陆</title>
+    <style>
+        input[type="button"] {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="" method="GET">
+        用户名：<input type="text"><br>
+        密码：<input type="password"><br>
+        <input type="button" value="登录">
+    </form>
+
+    <script>
+        var btn = document.querySelector("input[type=button]");
+        btn.addEventListener('click', function () {
+            //1.创建ajax对象
+            var xhr = new XMLHttpRequest();
+            //2.使用get的请求方式，拼接地址，参数上加上随机数，使每次请求的是最新，不使用缓存
+            xhr.open('get', 'http://localhost:8088/login?random=' + Math.random() +
+                '&name=' + document.querySelector("input[type=text]").value + '&pwd=' +
+                document.querySelector("input[type=password]").value + '');
+            //3.向服务器发送请求
+            xhr.send();
+            //4.获取服务器请求后的响应
+            xhr.onload = function () {
+                console.log(xhr.responseText);
+            }
+        })
+    </script>
+</body>
+
+</html>
