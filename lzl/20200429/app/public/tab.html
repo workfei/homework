@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=3, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            float: left;
+            list-style: none;
+            margin-right: 50px;
+            clear: both;
+            
+        }
+        .box div {
+            float: left;
+            display: none;
+        }
+        .active {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <script id="tab" type="text/html">
+        <li>{{pppp}}</li>
+    </script>
+    <script id="con" type="text/html">
+
+                {{each}}
+                    <p>{{$value}}</p>
+                {{/each}}
+
+    </script>
+    <script>
+        var lis = document.querySelectorAll('ul li')
+        var divs = document.querySelectorAll('.box div')
+
+        ajax({
+            type: 'get',
+            url: 'http://localhost:8088/tab',
+            success: function (data, xhr) {
+                console.log(data);
+                data.forEach((val, index) => {
+                    let html = template('tab', {
+                        pppp: val.type
+                    })
+                    lis[index].innerHTML = html;
+                    console.log(1);
+                    let html2 = template('con', val.news);
+
+
+                    divs[index].innerHTML = html2;
+                })
+
+
+
+
+            }
+        })
+        for(let i = 0; i < lis.length; i++) {
+            lis[i].addEventListener('click',function() {
+                for(var j = 0; j < lis.length; j++) {
+                    lis[j].className = ''
+                    divs[j].style.display = 'none';
+
+                }
+                divs[i].style.display = 'block';
+                lis[i].className = 'active'
+
+            })
+        }
+    </script>
+</body>
+
+</html>

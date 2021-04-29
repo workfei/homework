@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+</head>
+<body>
+    <table align="center" width="400">
+        <tr><td>用户名</td><td><input type="text" id="uname"><span class="msg"></span></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr colspan="2"><td></td><td><input type="button" id="btn" value="注册"></td></tr>
+    </table>
+    <!-- 引入jQuery -->
+    <script src="layer/jquery-1.11.1.js"></script>
+    <!-- 引入layer提示js -->
+    <script src="layer/layer.js"></script>
+    <script src="js/ajax.js"></script>
+    <script>
+        var uname = document.querySelector("#uname")
+        var upwd = document.querySelector("#upwd")
+        var btn = document.querySelector("#btn")
+        var msg = document.querySelector(".msg")
+
+        uname.addEventListener("blur", function() {
+
+            ajax({
+                typr:'get',
+                url: 'http://localhost:8088/checkName',
+                data: {
+                    name: uname.value
+                },
+                success: function(data,xhr) {
+                    console.log(data);
+                    console.log(xhr);
+                }
+            })
+
+        })
+        btn.addEventListener("click", function() {
+            var xhr = new XMLHttpRequest()
+            xhr.open("post", "http://localhost:3001/register")
+            // post请求设置请求头
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")//设置url传参
+            var params = "random="+Math.random()+"&name="+uname.value+"&pwd="+upwd.value+"";
+            xhr.send(params)
+            xhr.onload = function() {
+                var result = xhr.responseText//请求后的回应
+                if (result == "success") {
+                    layer.msg("注册成功")
+                    location.href = "login.html"
+                } else {
+                    //回应为不通过时
+                    layer.msg("注册失败")
+                }
+            }
+        })
+    </script>
+</body>
+</html>

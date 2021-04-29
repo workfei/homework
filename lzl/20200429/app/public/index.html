@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <style>
+        .loginout {
+            position: fixed;
+            top: 50px;
+            right: 40%;
+        }
+    </style>
+</head>
+<body>
+    <h1>HERE IS INDEX</h1>
+    <h2></h2>
+    <div class="loginout"><a href="javascript:;" id="loginout" onclick="loginout()">退出</a></div>
+    <script>
+        var user = document.querySelector("h2")
+
+        //读取cookies
+        function getCookie(name) {
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+            if (arr = document.cookie.match(reg))
+                return unescape(arr[2]);
+            else
+                return null;
+        }
+
+        //删除cookies
+        function delCookie(name) {
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = getCookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
+
+        if (getCookie("userinfo")) {
+            var userinfo = JSON.parse(getCookie("userinfo"))
+            user.innerHTML = "Welcom:" + userinfo.name;
+        } else {
+            location.href = "login2.html"
+        }
+
+        function loginout() {
+            delCookie("userinfo")//删除cookie
+            location.reload()//刷新页面
+        }
+    </script>
+</body>
+</html>

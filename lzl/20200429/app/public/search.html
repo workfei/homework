@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模拟搜索引擎</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+    <style>
+        .box {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            padding-left: 10px;
+        }
+
+        .list {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <input type="text" id="search">
+        <ul class="list"></ul>
+    </div>
+    <script id="con" type="test/html">
+        {{each}}
+            <li>{{$value}}</li>
+        {{/each}}
+    </script>
+    <script>
+        var list = document.querySelector('.list')
+        var timer = null;
+        var sea = document.querySelector('#search')
+        sea.oninput = function () {
+            clearTimeout(timer)
+            setTimeout(function () {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:8088/search',
+                    data: {
+                        key: sea.value
+                    },
+                    success: function (data, xhr) {
+                        var html = template('con', data)
+                        list.style.display = 'block'
+                        list.innerHTML = html
+                    }
+                })
+            },800)
+        }
+    </script>
+</body>
+
+</html>
