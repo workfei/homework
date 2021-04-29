@@ -12,31 +12,34 @@
         <tr><td>密码</td><td><input type="password" id="upwd"></td></tr>
         <tr><td colspan="2" align="center"><button>登录</button></td></tr>
     </table>
-    <script src="jquery-3.6.0.min.js"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/cookie.js"></script>
     <script src="layer/layer.js"></script>
-    <script src="cookie.js"></script>
+    <script src="js/ajax.js"></script>
     <script>
         var btn = document.querySelector('button');
         var uname = document.querySelector('#uname');
         var upwd = document.querySelector('#upwd');
         var span = document.querySelector('span');
         btn.addEventListener('click',function() {
-            var xhr = new XMLHttpRequest();
-            xhr.open('post','http://localhost:3001/login');
-            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            xhr.send('name='+uname.value+'&pwd='+upwd.value);
-            xhr.onload = function() {
-                var result = JSON.parse(xhr.responseText);
-                if (result.code == 200) {
-                    setCookie('userinfo',JSON.stringify(result.data));
-                    // 登录后进入首页
-                    location.href = 'index.html';
-                } else {
-                    layer.msg(result.msg);
+            ajax({
+                type:'post',
+                url:'http://localhost:3001/login',
+                data:{
+                    name:uname.value,
+                    pwd:upwd.value
+                },
+                success:function(result,xhr) {
+                    if (result.code == 200) {
+                        setCookie('userinfo',JSON.stringify(result.data));
+                        // 登录后进入首页
+                        location.href = 'index.html';
+                    } else {
+                        layer.msg(result.msg);
+                    }
                 }
-            }    
+            })
         })
-        
     </script>
 </body>
 </html>

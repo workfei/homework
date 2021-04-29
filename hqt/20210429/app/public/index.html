@@ -21,15 +21,17 @@
     我是首页
     <h1></h1>
     <div><a href="javascript:;" onclick="loginout()">退出登录</a></div>
-    <script src="cookie.js"></script>
+    <script src="js/cookie.js"></script>
     <script>
         var h1 = document.querySelector('h1');
         if(getCookie('userinfo')) {
             var userinfo = JSON.parse(getCookie('userinfo'));
             h1.innerHTML = '欢迎光临'+userinfo.name;
         } else {
+            // 跳转到登录页面
             location.href = 'login.html';
         }
+        // 退出登录
         function loginout() {
             delCookie('userinfo');
             location.reload();
