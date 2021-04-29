@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>用户名: <input type="text" id="uname"><span id="msg"></span></td>
+            <td>密码: <input type="password" id="upwd"></td>
+            <td><button>注册</button></td>
+        </tr>
+    </table>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="layer/layer.js"></script>
+    <script src="js/ajax.js"></script>
+    <script>
+        var btn = document.querySelector('button');
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var msg = document.querySelector('#msg');
+        btn.addEventListener('click', function() {
+            ajax({
+                type: 'post',
+                url: 'http://localhost:3002/reg2',
+                data: {
+                    name: uname.value,
+                    pwd: upwd.value,
+                },
+                success: function(result, xhr) {
+                    if (result == 'regok') {
+                        location.href = 'index.html';
+                    } else {
+                        layer.msg('注册失败',{icon:2})
+                    }
+                }
+            })
+
+        })
+        uname.addEventListener('blur', function() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3002/checkName',
+                data: {
+                    name: uname.value,
+                },
+                success: function(result, xhr) {
+                    console.log(result);
+                    if (result == 'ok') {
+                        layer.msg('此用户名可用',{icon: 1})
+                    } else {
+                        layer.msg('此用户名不可用',{icon: 2})
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>

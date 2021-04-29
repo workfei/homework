@@ -22,12 +22,13 @@
     <script src="js/jquery-3.6.0.js"></script>
     <script src="layer/layer.js"></script>
     <script src="js/cookie.js"></script>
+
     <script>
         var h1 = document.querySelector('h1');
         if (getCookie('userinfo')) {
             var obj = JSON.parse(getCookie('userinfo'));
             console.log(obj);
-            h1.innerHTML = '欢迎光临'+ obj.name;
+            h1.innerHTML = '欢迎光临'+ obj.data.name;
         } else {
             location.href = 'login.html';
         }

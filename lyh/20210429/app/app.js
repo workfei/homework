@@ -17,23 +17,6 @@ app.use(
 //设置服务器静态资源访问目录
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-
-
-var data = [{
-    name: '星明',
-    pwd: '123456'
-},{
-    name: '刘志林',
-    pwd: '123456'
-},{
-    name: '李永恒',
-    pwd: '123456'
-}]
-
-
-
 app.get('/login', (req,res) => {
     //req.query 是前端请求的参数
     // res.send(req.query);
@@ -82,7 +65,6 @@ app.get('/reg', (req,res) => {
     var obj = req.query;
     var userinfo = ''
     userinfo = getFile()
-    console.log(userinfo);
     if(userinfo) {
         //当文档中存在数据
          var flag = setFile(userinfo + obj.name + '&' + obj.pwd + '|');
@@ -129,7 +111,7 @@ app.post('/reg2', (req,res) => {
 
 
 app.get('/checkName', (req,res) => {
-    var obj = req.body;
+    var obj = req.query;
     fs.readFile('./data.txt', 'utf-8', (err,doc) => {
         if (err == null) {
             if (doc) {
@@ -156,7 +138,6 @@ app.get('/checkName', (req,res) => {
 //用户登录, 在记事本在查找数据
 app.post('/login2', (req,res) => {
     //获取请求的内容
-    console.log(1);
     var obj = req.body;
    fs.readFile('./data.txt','utf-8',(err,doc) => {
         if(err == null) { //没错
@@ -211,6 +192,63 @@ app.post('/login2', (req,res) => {
    
 })
 
+//新闻tab切换数据渲染
+const data = [{
+    id: 1,
+    type: '娱乐',
+    news: [
+        '上综艺都要用替身？大明星这么忙？',
+        '赚了钱还来恶心人，不取关留着过年吗？',
+        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光',
+        '上综艺都要用替身？大明星这么忙？',
+        '赚了钱还来恶心人，不取关留着过年吗？',
+        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光'
+    ]
+}, {
+    id: 2,
+    type: '体育',
+    news: [
+        '记者：罗霍将3年合约签约博卡青年队',
+        '李娜退出中国国籍？还有领事证明？驻釜山总领事馆发表声明',
+        '单场62分破纪录 是库里对“体系球员”最好的回答',
+        '老里：哈里斯当选对大家都是好消息 我非常喜欢“三球”',
+        '0-1！大冷门！利物浦轰然倒下，3轮丢7分，曼联秒变赢家',
+        '全联盟第一！周琦顶替阿联成新一哥 1数据已冠绝全CBA？'
+    ]
+}, {
+    id: 3,
+    type: '财经',
+    news: [
+        '樊纲：我们要争取最好的结果，避免最坏的结果',
+        '玩命工作像重回高三，受够大厂法则，这些年轻人选择逃离',
+        '你的房租降了吗？全国40个重点城市中32个去年租金下降',
+        '凌晨两三点接到领导电话是常事，PUA式加班逼着95后裸辞',
+        '中银基金：2021年股市结构性机会可期 债券性价比或更高',
+        '中信证券：白酒板块仍有上行空间，建议继续紧抱龙头股'
+    ]
+}]
+
+//切换数据渲染
+app.get('/tab', (req,res) => {
+    res.send(data);
+})
+
+const list = [
+    '哔哩哔哩官网',
+    '哔哩哔哩下载',
+    '哔哩哔哩漫画 app',
+    '哔哩哔哩视频怎么下载到本地',
+    '哈哈漫画免费阅读在线看',
+    '哈哈教育',
+    '哈哈大笑图片',
+    '哈哈漫画首页漫画免费'
+];
+
+app.get('/search', (req,res) => {
+    var txt = req.query.key; //传递过来的参数名为key
+    var arr = list.filter(val => val.indexOf(txt) != -1);
+    res.send(arr);
+})
 
 app.listen(3002);
 console.log('监听成功');

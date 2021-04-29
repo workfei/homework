@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            padding: 50px 100px;
+        }
+        .tab {
+            width: 500px;
+            list-style: none;
+            display: flex;
+            justify-content: space-evenly;
+            border: 1px solid #000;
+        }
+        .tab>li {
+            text-align: center;
+            line-height: 50px;
+            list-style: none;
+            background: #ccc;
+            width: 33.3%;
+            height: 50px;
+        }
+        .tab>li:nth-of-type(2) {
+            border: 1px solid #000;
+            border-top: transparent;
+            border-bottom: transparent;
+        }
+        .box {
+            width: 500px;
+            height: 200px;
+            border: 1px solid #000;
+            border-top: 1px solid transparent;
+        }
+        .box div {
+            display: none;
+            width: 500px;
+            height: 200px;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .box div:nth-of-type(1) {
+            display: block;
+        }
+        .tab .time {
+            background-color: skyblue;
+            color: #fff;
+        }
+        .box li {
+            list-style: none;
+            line-height: 25px;
+        }
+        .box li:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="js/template-web.js"></script>
+</head>
+<body>
+    <ul class="tab">
+        <li class="time"></li>
+        <li></li>
+        <li></li>
+    </ul>
+    <div class="box">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <script id="tab" type="text/html">
+        <li>{{str}}</li>
+    </script>
+    <script id="box" type="text/html">
+        {{each}}
+        <li>{{$value}} </li>
+        {{/each}}
+    </script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/ajax.js"></script>
+    <script>
+        //tab切换
+        $(function() {
+            $('.tab>li').click(function() {
+                $(this).addClass('time').siblings('li').removeClass('time');
+                var index = $(this).index();
+                $('.box>div').eq(index).show().siblings('div').hide();
+            })
+        })
+
+        var divs = document.querySelectorAll('.box div');
+        var lis = document.querySelectorAll('.tab li');
+        //模板
+        ajax({
+            type: 'get',
+            url: 'http://localhost:3002/tab',
+            success: function(data) {
+                data.forEach((val, index) => {
+                    let html = template('tab', {
+                        str:val.type
+                    });
+                    lis[index].innerHTML = html;
+                    let html1 = template('box', val.news);
+                    divs[index].innerHTML = html1;
+                })
+            }
+        })
+    </script>
+</body>
+</html>

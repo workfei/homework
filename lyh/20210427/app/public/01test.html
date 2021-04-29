@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button>第一次ajax请求</button>
+    <script>
+        var btn = document.querySelector('button')
+        btn.addEventListener('click', function() {
+            //写一个ajax请求
+            //1.创建ajax对象
+            var xhr = new XMLHttpRequest();
+            //2.ajax请求方式及地址，get|post
+            //参数加上随机数：每次请求最新，不是使用缓存
+            xhr.open('get','http://localhost:3000/login?random='+Math.random()+'&name=李永恒&pwd=123546')
+            //3.向服务器发送请求
+            xhr.send()
+            //获取服务器请求后的响应
+            //请求完成后服务器响应的数据
+            xhr.onload = function() {
+                console.log(xhr.responseText);//返回文本
+            }
+        })
+    </script>
+</body>
+</html>

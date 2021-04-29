@@ -15,25 +15,27 @@
         </tr>
     </table>
 
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="layer/layer.js"></script>
     <script>
         var btn = document.querySelector('button');
         var uname = document.querySelector('#uname');
         var upwd = document.querySelector('#upwd');
         var msg = document.querySelector('#msg');
         btn.addEventListener('click', function() {
-            //创建对象
-            var xhr = new XMLHttpRequest();
-            //请求方式
-            xhr.open('get','http://localhost:3002/reg2?random=' + Math.random() + '&name=' + uname.value + '&pwd=' + upwd.value);
-            //发送请求
-            xhr.send()
+            var xhr = new XMLHttpRequest()
+            xhr.open('post', 'http://localhost:3002/reg2')
+            xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded'); //设置url传
+            var params = 'name=' + uname.value + '&pwd=' + upwd.value;
+            //发送
+            xhr.send(params)
+
             xhr.onload = function() {
                 var result = xhr.responseText;
                 if (result == 'regok') {
-                    alert('注册成功')
                     location.href = 'index.html';
                 } else {
-                    alert('注册失败')
+                    layer.msg('注册失败',{icon:2})
                 }
             }
         })
@@ -41,16 +43,19 @@
             //创建对象
             var xhr = new XMLHttpRequest();
             //请求方式
-            xhr.open('get','http://localhost:3002/checkName?random=' + Math.random() + '&name=' + uname.value);
+            xhr.open('get', 'http://localhost:3002/checkName?random='+Math.random()+'&name='+uname.value);
+
             //发送请求
-            xhr.send()
+            xhr.send();
+
             xhr.onload = function() {
                 var result = xhr.responseText;
                 console.log(xhr.responseText);
                 if (result == 'ok') {
-                    msg.innerHTML = '<font color="green">此用户名可用</font>';
+                    layer.msg('此用户名可用',{icon: 1})
                 } else {
-                    msg.innerHTML = '<font color="red">此用户名不可用</font>';
+                    layer.msg('此用户名不可用',{icon: 2})
+
                 }
             }
         })
