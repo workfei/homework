@@ -16,6 +16,8 @@
     <script src="layer/jquery-1.11.1.js"></script>
     <!-- 引入layer提示js -->
     <script src="layer/layer.js"></script>
+    <!-- 引入ajax -->
+    <script src="js/ajax.js"></script>
     <script>
         var uname = document.querySelector("#uname")
         var upwd = document.querySelector("#upwd")
@@ -23,33 +25,30 @@
         var msg = document.querySelector(".msg")
 
         uname.addEventListener("blur", function() {
-            var xhr = new XMLHttpRequest()
-            xhr.open("post", "http://localhost:3001/checkname")
-            // post请求设置请求头
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")//设置url传参
-            var params = "name="+uname.value+"&pwd="+upwd.value+"";
-            xhr.send(params)
-            xhr.onload = function() {
-                var result = xhr.responseText//请求后的回应
-                if (result == "success") {
-                    //回应为通过时
-                    msg.innerHTML = '<font color="green">用户名设置成功</font>'
-                } else {
-                    //回应为不通过时
-                    msg.innerHTML = '<font color="red">用户名已存在</font>'
+            ajax({
+                type: "post",
+                url: "http://localhost:3001/checkname",
+                data: {
+                    name: uname.value,
+                    pwd: upwd.value
+                },
+                success: function(data) {
+                    if (data == "success") {
+                        //回应为通过时
+                        msg.innerHTML = '<font color="green">用户名设置成功</font>'
+                    } else {
+                        //回应为不通过时
+                        msg.innerHTML = '<font color="red">用户名已存在</font>'
+                    }
                 }
-            }
+            })
         })
         btn.addEventListener("click", function() {
             var xhr = new XMLHttpRequest()
             xhr.open("post", "http://localhost:3001/register")
             // post请求设置请求头
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")//设置url传参
-<<<<<<< HEAD
-            var params = "random="+Math.random()+"&name="+uname.value+"&pwd="+upwd.value+"";
-=======
             var params = "name="+uname.value+"&pwd="+upwd.value+"";
->>>>>>> 142844a (杨前2021429作业)
             xhr.send(params)
             xhr.onload = function() {
                 var result = xhr.responseText//请求后的回应

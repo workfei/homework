@@ -16,11 +16,8 @@
     <script src="layer/jquery-1.11.1.js"></script>
     <!-- 引入layer提示js -->
     <script src="layer/layer.js"></script>
-<<<<<<< HEAD
-=======
     <!-- 引入ajax -->
     <script src="js/ajax.js"></script>
->>>>>>> 142844a (杨前2021429作业)
 
     <script>
         var uname = document.querySelector("#uname")
@@ -40,38 +37,31 @@
         })
         btn.addEventListener("click", function() {
             if (uname.value.trim() != '' && upwd.value.trim() != '') {
-                var xhr = new XMLHttpRequest()
-                xhr.open("post", "http://localhost:3001/login")
-                // post请求设置请求头
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded")//设置url传参
-<<<<<<< HEAD
-                var params = "random="+Math.random()+"&name="+uname.value+"&pwd="+upwd.value+"";
-=======
-                var params = "name="+uname.value+"&pwd="+upwd.value+"";
->>>>>>> 142844a (杨前2021429作业)
-                xhr.send(params)
-                xhr.onload = function() {
-                    var result = JSON.parse(xhr.responseText);
-                    if (result.code == 200) {
-                        setCookie("userinfo", JSON.stringify(result.data))
-                        location.href = "index.html"//成功后进入首页
-                    } else if(result.code == 201) {
-                        layer.msg("用户名或密码错误")
-                    } else {
-                        layer.msg("用户名未找到,请注册")
+                ajax({
+                    type: "post",
+                    url: "http://localhost:3001/login",
+                    data: {
+                        name: uname.value,
+                        pwd: upwd.value
+                    },
+                    success: function(data) {
+                        if (data.code == 200) {
+                            setCookie("userinfo", JSON.stringify(data.data))
+                            location.href = "index.html"//成功后进入首页
+                        }  else if(result.code == 201) {
+                            layer.msg("用户名或密码错误")
+                        } else {
+                            layer.msg("用户名未找到,请注册")
+                        }
                     }
-                }
+                })
             } else {
                 layer.msg("用户名或密码不能为空")
             }
         })
         // 写cookies
         function setCookie(name, value) {
-<<<<<<< HEAD
-            var time = 10;
-=======
             var time = 5;
->>>>>>> 142844a (杨前2021429作业)
             var exp = new Date();
             exp.setTime(exp.getTime() + time * 1000);
             document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();

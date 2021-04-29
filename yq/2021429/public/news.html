@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点击查看新闻</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background-color: #eee;
+        }
+
+        .box {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            border: 1px solid red;
+            overflow-y: auto;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .news {
+            display: flex;
+            justify-content: center;
+        }
+
+        .news li {
+            flex: 1;
+            padding: 20px 0;
+            border: 1px solid gold;
+            background-color: skyblue;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+        .cont {
+            padding-left: 10px;
+            font-size: 18px;
+            color: #000;
+        }
+        .cont ul {
+            display: none;
+        }
+        .cont li {
+            padding: 10px 0;
+            border-bottom: 1px solid red;
+            font-style: italic;
+        }
+
+        .news .active {
+            background-color: purple;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <ul class="news"></ul>
+        <div class="cont"></div>
+    </div>
+    <script id="context" type="text/html">
+        {{each}}
+        <li>{{$value}}</li>
+        {{/each}}
+    </script>
+    <script id="context2" type="text/html">
+        <ul>
+        {{each}}
+            <li>{{$value}}</li>     
+        {{/each}}
+        </ul>
+    </script>
+    <script>
+        // 页面加载后新闻标签出现
+        window.onload = function () {
+            var news = document.querySelector(".news")
+            var cont = document.querySelector(".cont")
+
+            ajax({
+                tyep: "get",
+                url: "http://localhost:3001/newstitle",
+                success: function (data) {
+                    var arrtitle = []
+                    var arrcont = []
+                    data.forEach(val => {
+                        // 新闻标题
+                        arrtitle.push(val.type)
+                        
+                        // 新闻内容
+                        arrcont.push(val.news)
+                    })
+                    // 添加新闻标题
+                    var html = template("context", arrtitle)
+                    news.innerHTML = html
+                    // 新闻内容循环后赋予cont
+                    arrcont.forEach(val => {  
+                        var html2 = template("context2", val)
+                        cont.innerHTML += html2
+                    })
+                    
+                    // 循环给新闻标题绑定点击事件,显示对应新闻
+                    for (var i = 0; i < data.length; i++) {
+                        news.children[i].index = i;
+                        news.children[i].addEventListener("click", function() {
+                            for (var j = 0; j < data.length; j++) {
+                                cont.children[j].style.display = 'none'
+                                news.children[j].classList.remove("active")
+                            }
+                            cont.children[this.index].style.display = 'block'
+                            this.classList.add("active")
+                        })
+                    }
+                }
+            })            
+        }
+    </script>
+</body>
+
+</html>
