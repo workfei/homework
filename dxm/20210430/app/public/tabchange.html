@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ajax-tab选项卡</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            outline: none;
+            list-style: none;
+        }
+
+        .box {
+            width: 700px;
+            margin: 50px auto;
+        }
+
+        .newstype {
+            width: 100%;
+            height: 50px;
+            background-color: green;
+        }
+
+        li {
+            float: left;
+            width: 100px;
+            height: 50px;
+            color: #fff;
+            text-align: center;
+            line-height: 50px;
+            font-size: 20px;
+            margin-right: 20px;
+            background-color: red;
+            cursor: pointer;
+        }
+
+        .newscontent {
+            width: 100%;
+            background-color: orange;
+        }
+
+        .current {
+            color: black;
+            background-color: lightblue;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <ul class="newstype">
+            <li>娱乐</li>
+            <li>体育</li>
+            <li>财经</li>
+        </ul>
+        <div class="newscontent"></div>
+    </div>
+
+    <script id="con" type="text/html">
+        {{each}}
+        <p>{{$index + 1}}、{{$value}}</p>
+        {{/each}}
+    </script>
+    <script>
+        var newstype = document.querySelector(".newstype");
+        var lis = document.querySelectorAll("li");
+        var newscontent = document.querySelector(".newscontent");
+        var title = "";
+        //页面加载后渲染全部数据
+        window.onload = function () {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:8088/change',
+                data: {
+                    news: [lis[0].innerText, lis[1].innerText, lis[2].innerText]
+                },
+                success: function (data) {
+                    var html = template("con", data);
+                    newscontent.innerHTML = html;
+                }
+            })
+        }
+
+        lis.forEach((val, index) => {
+            lis[index].addEventListener("click", function () {
+                lis[0].classList.remove("current");
+                lis[1].classList.remove("current");
+                lis[2].classList.remove("current");
+                title = val.innerText;
+                lis[index].classList.add("current");
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:8088/change',
+                    data: {
+                        news: [title, title, title]
+                    },
+                    success: function (data) {
+                        for (var i = 0; i < data[0].length; i++) {
+                            var html = template("con", data[0]);
+                            newscontent.innerHTML = html;
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>

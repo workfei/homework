@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <style>
+        .loginout {
+            position: fixed;
+            top: 30px;
+            right: 20px;
+            width: 100px;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1></h1>
+    <div class="loginout"><a href="javascript:;">退出</a></div>
+
+    <script src="js/cookie.js"></script>
+    <script>
+        var h1 = document.querySelector("h1");
+        var a = document.querySelector("a");
+        //用户信息保存方式使用cookie,需要读取cookie中存储的内容
+        var userinfo = getCookie("userinfo");
+        if (userinfo) {
+            h1.innerText = '欢迎光临:' + userinfo + "顾客";
+        } else {
+            location.href = 'entry.html';
+        }
+        //删除cookie中存储的内容
+        a.onclick = function () {
+            delCookie("userinfo");
+            location.reload();
+        }
+    </script>
+</body>
+
+</html>
