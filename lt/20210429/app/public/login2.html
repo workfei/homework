@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center" width="400">
+        <tr><td>用户名</td><td><input type="text" id="uname"></td><td class="msg"></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button class="zc">注册</button><button class="login">登录</button></td></tr>
+    </table>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="layer-v3.4.0/layer/layer.js"></script>
+    <script src="ajax.js"></script>
+    <!-- <script src=""></script> -->
+    <script src="js/cookie.js"></script>
+    <script>
+        var btn = document.querySelector('.login');
+        var btn1 = document.querySelector('.zc');
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var msg = document.querySelector('.msg');
+        btn.addEventListener('click',function () {            
+            ajax({
+                type:'post',
+                url:'http://localhost:3008/login',
+                data: {
+                    name:uname.value,
+                    pwd:upwd.value
+                },
+                success: function (data,xhr) {
+                    // data是返回的结果,xhr是ajax对象
+                    if (data.code == 200) {
+                        setCookie('userinfo',JSON.stringify(data.data));
+                        // 登录后进入首页
+                        location.href = 'index.html';
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function (text,xhr) {
+                    console.log(text);
+                    console.log(xhr);
+                }
+            })
+        });
+
+    </script>
+</body>
+</html>
