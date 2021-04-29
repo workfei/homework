@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 500px;
+            margin: 0 auto;
+        }
+        
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .list {
+            display: none;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <input type="text" name="" id="search">
+        <ul class="list">
+            <li>星明</li>
+            <li>老毕</li>
+            <li>永恒</li>
+        </ul>
+    </div>
+    <script id="con" type="text/html">
+        {{each}}
+        <li>{{$value}}</li>
+        {{/each}}
+    </script>
+    <script>
+        var sea = document.querySelector('#search');
+        var list = document.querySelector('.list');
+        var timer = null;
+        sea.oninput = function() {
+            clearTimeout(timer);
+
+            timer = setTimeout(function() {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:3000/search',
+                    data: {
+                        key: sea.value
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        var html = template('con', data);
+                        list.style.display = 'block';
+                        list.innerHTML = html;
+                    }
+                })
+            }, 800)
+        }
+    </script>
+</body>
+
+</html>
