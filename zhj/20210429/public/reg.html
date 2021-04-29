@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+</head>
+<body>
+    <table align="center" width="400">
+        <tr><td>用户名</td><td><input type="text" id="uname"><span id="msg"></span></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button>注册</button></td></tr>
+    </table>
+    <script src="js/ajax.js"></script>
+    <script>
+        var btn = document.querySelector('button'); //注册
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg = document.querySelector('#msg'); //显示提示信息
+        //用户名判断
+        //名字文本框一个失焦事件
+        uname.addEventListener('blur', function() {
+
+            ajax({
+                type:'get',
+                url: 'http://localhost:3033/checkName',
+                data: {
+                    name: uname.value
+                },
+                success: function(result,xhr) {
+                    console.log(result);
+                }
+            })
+        })
+
+        //注册事件
+        btn.addEventListener('click', function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','http://localhost:3000/reg2');
+            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded"); //设置url传参
+            var params = 'name=' + uname.value + '&pwd='+ upwd.value;
+            xhr.send(params); //发送请求
+            xhr.onload=function(){
+                console.log(xhr.responseText);
+                var result = xhr.responseText; //响应结果
+                if(result == 'regok') {
+                    location.href = 'login.html'
+                } else {
+                    alert('注册失败')
+                }
+            }
+        })
+    </script>
+</body>
+</html>

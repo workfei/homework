@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页面</title>
+</head>
+<body>
+    <table align="center" width="400">
+        <tr><td>用户名</td><td><input type="text" id="uname"><span id="msg"></span></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button>登录</button></td></tr>
+    </table>
+    <script src="js/cookie.js"></script>
+    <script>
+        var btn = document.querySelector('button'); //注册
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg = document.querySelector('#msg'); //显示提示信息
+        btn.addEventListener('click', function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','http://localhost:3033/login2')
+            //请求头
+            xhr.setRequestHeader('Content-type','application/json'); //json格式
+            var params = {
+                name: uname.value,
+                pwd: upwd.value
+            }
+            xhr.send(JSON.stringify(params)); //把json格式转换成字符串
+            xhr.onload = function() {
+                var result = JSON.parse(xhr.responseText); //服务器返回的是json格式字符串，
+                if(result.code == 200) {
+                    //登录成功
+                    //保存登录信息   使用cookie保存
+                    setCookie('userinfo', JSON.stringify(result.data),1) //三个参数：1：存储名称  2:存储的值  3:时间（天）
+                    alert('登录成功')
+                    location.href = 'index.html'
+                } else {
+                    alert(result.msg)
+                }
+            }
+        })
+    </script>
+</body>
+</html>

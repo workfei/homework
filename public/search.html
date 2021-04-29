@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模拟搜索引擎</title>
+    <style>
+        .box {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            padding-left: 10px;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <input type="text" id="search">
+        <ul>
+            <li>星明</li>
+            <li>老毕</li>
+            <li>永恒</li>
+        </ul>
+    </div>
+    <script id="con" type="text/html">
+        {{each}}
+        <li>{{value}}</li>
+        {{/each}}
+    </script>
+    <script>
+        var sea = document.querySelector('#search');//搜索框
+        var timer = null;
+        sea.oninput = function () {
+            // console.log(1);
+            //阻止输入汉字时重复提交,使用定时器来解决
+            clearTimeout(timer)
+            timer = setTimeout(function () {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:3033/search',
+                    data:{
+                        key:sea.value
+                    },
+                    success:function(data){
+                        console.log(data);
+                    }
+                })
+            })
+        }
+    </script>
+</body>
+
+</html>
