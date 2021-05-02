@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            padding: 50px 100px;
+        }
+        .tab {
+            width: 500px;
+            list-style: none;
+            display: flex;
+            justify-content: space-evenly;
+            border: 1px solid #000;
+        }
+        .tab>li {
+            text-align: center;
+            line-height: 50px;
+            list-style: none;
+            background: #ccc;
+            width: 33.3%;
+            height: 50px;
+        }
+        .tab>li:nth-of-type(2) {
+            border: 1px solid #000;
+            border-top: transparent;
+            border-bottom: transparent;
+        }
+        .box {
+            width: 500px;
+            height: 200px;
+            border: 1px solid #000;
+            border-top: 1px solid transparent;
+        }
+        .box>div {
+            display: none;
+            width: 500px;
+            height: 200px;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .tab .time {
+            background-color: skyblue;
+            color: #fff;
+        }
+        .box p {
+            line-height: 25px;
+        }
+        .box p:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="js/template-web.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/ajax.js"></script>
+</head>
+<body>
+    <ul class="tab">
+ 
+    </ul>
+    <div class="box">
+
+    </div>
+    <script id="tab" type="text/html">
+        {{each}}
+        <li>{{$value.type}}</li>
+        {{/each}}
+    </script>
+    <script id="box2" type="text/html">
+        {{each}}
+        <p>{{$value}} </p>
+        {{/each}}
+    </script>
+    
+    <script>
+        // 写一个tab选项卡    (使用jquery ajax)
+        $(function() {
+            var box = document.querySelector('.box');
+            var tab = document.querySelector('.tab');
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/tab',
+                success: function(data) {
+                    let html = template('tab', data)
+                    tab.innerHTML = html;
+                }
+            })
+            
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/tab',
+                success: function(data) {
+                    data.forEach((val, index) => {
+                        var div = document.createElement('div');
+                        box.appendChild(div);
+                        let html = template('box2',val.news);
+                        box.children[index].innerHTML = html;
+                    })
+                    $('.tab li').eq(0).addClass('time');
+                    $('.box div').eq(0).show();
+                    $('.tab>li').click(function() {
+                        $(this).addClass('time').siblings('li').removeClass('time');
+                        var index = $(this).index();
+                        $('.box>div').eq(index).show().siblings('div').hide();
+                    })
+                }
+            })
+        })
+    </script>
+</body>
+</html>

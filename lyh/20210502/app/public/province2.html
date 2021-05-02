@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级联动</title>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <!-- 3.把省市区三级联动使用jquery ajax写出相应效果 -->
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+
+    <script id="op" type="text/html">
+        {{each}}
+            <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        // 4.使用promise把三级联动写好（尝试去解决问题）
+        
+        // //1.创建一个新的promise对象
+        // const p = new Promise((resolve, reject) => { //执行器函数是同步回调!
+        //     console.log('执行 executor') //立刻执行
+        //     //2.执行异步操作
+        //     setTimeout(() => {
+        //         const time = Date.now()
+        //         //3.1 成功,调用resolve(value)
+        //         if (time % 2 === 0) {
+        //             resolve('成功的数据,time=' + time)
+        //         } else {
+        //             //3.2 失败,调用reject(reason)
+        //             reject('失败的数据,time=' + time)
+        //         }
+        //     }, 1000)
+        // })
+        new Promise(function (resolve, reject) {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/pro',
+                async: true,
+                success: function (data) {
+                    var html = template('op', data);
+                    $('#pro').html(html);
+                    getCity();
+                }
+            })
+        })
+        pro.onchange = function () {
+            getCity();
+        }
+
+        city.onchange = function () {
+            getArea();
+        }
+        //获取市
+        function getCity() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/city',
+                data: {
+                    pid: pro.value
+                },
+                success: function (data) {
+                    var html = template('op', data);
+                    $('#city').html(html);
+                    getArea();
+                }
+            })
+        }
+        //获取区
+        function getArea() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/area',
+                data: {
+                    pid: city.value
+                },
+                success: function (data) {
+                    var html = template('op', data);
+                    $('#area').html(html);
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
