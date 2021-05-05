@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center">
+        <tr>
+            <td>用户名</td>
+            <td><input type="text" id="uname"><span class="msg"></span></td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td><input type="text" id="upwd"></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <button>注册</button>
+            </td>
+        </tr>
+    </table>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script src="ajax.js"></script>
+    <script>
+        var btn = document.querySelector('button')
+        var uname = document.querySelector('#uname')
+        var upwd = document.querySelector('#upwd')
+        var msg1 = document.querySelector('.msg');
+        btn.onclick = function() {
+            ajax({
+                type:'post',
+                url: 'http://localhost:3001/reg',
+                data: {
+                    name: uname.value,
+                    pwd: upwd.value
+                },
+                success: function(data) {
+                    if(data == 'regok') {
+                        layer.msg('注册成功')
+                    } else {
+                        layer.msg('注册失败');
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+</html>

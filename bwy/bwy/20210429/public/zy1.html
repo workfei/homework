@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .box {
+            width: 600px;
+            height: 400px;
+            margin: auto;
+            border: 1px solid #000;
+            overflow: hidden;
+        }
+        ul {
+            display: flex;
+            width: 600px;
+            line-height: 50px;
+            text-align: center;
+        }
+
+        li {
+            flex: 1;
+            list-style: none;
+            border: 1px solid #000;
+        }
+
+       .active {
+            background-color: orange;
+        }
+        .box .active1 {
+            display: block;
+        }
+        .box div {
+            display: none;
+            width: 600px;
+            height: 100%;
+            border: 1px solid #000;
+        }
+    </style>
+    <script src="template-web.js"></script>
+    <script src="ajax.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <ul></ul>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <script id="lis" type='text/html'>
+        <li>{{li}}</li>
+    </script>
+    <script id="tab" type='text/html'>
+        {{each}}
+        <p>{{$value}}</p>
+        {{/each}}
+    </script>
+    <script>
+        window.onload = function() {
+            var ul = document.querySelector('ul');
+            var divs = document.querySelectorAll('.box div');
+            ajax({
+                type: 'get',
+<<<<<<< HEAD
+                url: 'http://localhost:3001/tab',
+=======
+<<<<<<< HEAD
+                url: 'http://localhost:3001/tab',
+=======
+                url: 'http://localhost:3002/tab',
+>>>>>>> 25deb86 (作业)
+>>>>>>> 3390436 (上次)
+                success: function(data) {
+                    var html2 = '';
+                    data.forEach((val,index) => {
+                        var html = template('tab',val.news);
+                        divs[index].innerHTML = html;
+                        html2 += template('lis',{
+                            li: val.type
+                        });
+                    ul.innerHTML = html2;
+                    })
+                },
+            })
+        }
+        setTimeout(function() {  //设置一个排队
+            var lis = document.querySelectorAll('li');
+            var divs = document.querySelectorAll('.box div');
+            lis[0].classList.add('active');
+            divs[0].classList.add('active1');
+            lis.forEach((val,index) => {
+                val.onclick = function() {
+                    document.querySelector('.active').classList.remove('active');
+                    val.classList.add('active');
+                    document.querySelector('.active1').classList.remove('active1');
+                    divs[index].classList.add('active1');
+                }
+            })
+        },100)
+    </script>
+</body>
+
+</html>

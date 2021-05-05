@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table align="center">
+        <tr><td>用户名</td><td><input type="text" id="uname"></td><td class="msg"></td></tr>
+        <tr><td>密码</td><td><input type="text" id="upwd"></td></tr>
+        <tr><td colspan="2" align="center"><button class="zc">注册</button><button class="login">登录</button></td></tr>
+    </table>
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="layer-v3.4.0/layer/layer.js"></script>
+    <script>
+        var btn = document.querySelector('.login');
+        var btn1 = document.querySelector('.zc');
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var msg = document.querySelector('.msg')
+        btn.addEventListener('click',function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','http://localhost:3000/login2');
+            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xhr.send('name=' + uname.value + '&pwd=' + upwd.value)
+            xhr.onload = function () {
+                var result = JSON.parse(xhr.responseText);
+                if (result.code != 200) {
+                    layer.msg('账号或密码错误')
+                } else {
+                    
+                    location.href = 'index.html';
+                }
+            }
+        });
+        btn1.onclick = function () {
+            location.href = 'reg.html';
+        }
+    </script>
+</body>
+</html>

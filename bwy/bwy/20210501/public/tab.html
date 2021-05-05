@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            width: 300px;
+            line-height: 50px;
+            display: flex;
+            text-align: center;
+        }
+        li {
+            flex: 1;
+            float: left;
+            list-style: none;
+            background-color: gray;
+        }
+        div {
+            /* width: 500px; */
+            height: auto;
+        }
+        .active {
+            background-color: palegreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <ul>
+            <li tid='1' class="active">体育新闻</li>
+            <li tid='2'>娱乐新闻</li>
+            <li tid='3'>军事新闻</li>
+        </ul>
+        <div></div>
+    </div>
+    <script src="template-web.js"></script>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="ajax.js"></script>
+    <script id="lis" type="text/html">
+        {{each}}
+        <p>{{$value}}</p>
+        {{/each}}
+    </script>
+    <script>
+        var lis = document.querySelectorAll('li');
+        var divs = document.querySelector('.box div');
+        var flag = 0;
+        lis.forEach((val,index) => {
+            val.onclick = function() {
+                if(index == flag) {
+                    
+                } else {
+                    flag = index;
+                    $(this).addClass('active').siblings().removeClass('active');
+                    ajax({
+                        type: 'get',
+                        url: 'http://localhost:3001/tab1',
+                        success: function(data1) {
+                            var tid = val.getAttribute('tid');
+                            data1.forEach(val => {
+                                if(tid == val.tid) {
+                                    html = template('lis', val.news)
+                                    divs.innerHTML = html;
+                                }
+                            })
+                        }
+                    })
+                }
+               
+            }
+        })
+        lis[0].onclick();
+    </script>
+</body>
+</html>

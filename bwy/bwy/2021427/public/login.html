@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="" method="get">
+        用户名:<input type="text" name="name" id="uname"><span  class="yes" style="color: green; display: none;">用户名可用</span><span style="color: red; display: none; " class="no">用户名已有</span> <br>
+        密码:<input type="text" name="pwd" id="upwd"><span style="color: green; display: none;" class="yess">密码正确</span><span style="display: none; color: red;" class="noo">密码错误</span><br>
+        <input type="button" value="提交" name="btn" id="btn"  >
+    </form>
+    <script>
+        var uname = document.querySelector('#uname');
+        var upwd = document.querySelector('#upwd');
+        var btn = document.querySelector('#btn');
+        var yes = document.querySelector('.yes');
+        var no = document.querySelector('.no');
+        var yess = document.querySelector('.yess');
+        var noo = document.querySelector('.noo');
+        var xhr = new XMLHttpRequest();
+        
+        uname.onblur = function() {
+            var name = uname.value;
+            xhr.open('get','http://localhost:3001/login?name='+ name )
+            xhr.send()
+            xhr.onload = function() {
+                // console.log(xhr.responseText);
+                var flag = JSON.parse(xhr.responseText);
+                console.log(flag);
+                console.log(flag.msg);
+                if(flag.msg == 'yes') {
+                    yes.style.display = 'block'
+                    no.style.display = 'none'
+                } else {
+                    no.style.display = 'block'
+                    yes.style.display = 'none'
+                    uname.focus();
+                }
+            }
+        }   
+        btn.onclick = function() {
+            var name = uname.value;
+            var pwd = upwd.value;
+            console.log(name,pwd);
+            xhr.open('get','http://localhost:3001/login?name=' + name + '&pwd=' + pwd);
+            console.log('http://localhost:3001/login?name=' + name + '&pwd=' + pwd);
+            xhr.send()
+            xhr.onload = function() {
+                var flag2 = JSON.parse(xhr.responseText);
+                console.log(flag2);
+                if(flag2.msg == 'yess') {
+                    yess.style.display = 'block'
+                } else {
+                    noo.style.display = 'block'
+                }
+            }
+        }
+    </script>
+</body>
+</html>

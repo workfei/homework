@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省<select name="" id="pro"></select>
+    市<select name="" id="city"></select>
+    区<select name="" id="area"></select>
+    <script src="ajax.js"></script>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="template-web.js"></script>
+    <script id="sele" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        var pro = document.querySelector("#pro");
+        var city = document.querySelector("#city");
+        var area = document.querySelector("#area");
+        var pronum = '';
+        var citynum = '';
+        function getpro() {
+            ajax({
+                type:'get',
+                url:'http://localhost:3001/pro',
+                async: true,
+                success: function(data) {
+                    var html = template('sele',data);
+                    pro.innerHTML = html;
+                    pronum = pro.value;
+                }
+            })
+        }
+        function getcity() {
+            ajax({
+                type:'get',
+                url:'http://localhost:3001/city',
+                async: true,
+                success: function(data) {
+                    for(var k in data) {
+                        if(k == pronum) {
+                            var html1 = template('sele', data[k]);
+                            city.innerHTML = html1;
+                        }
+                    }
+                    citynum = city.value;
+                }
+            })
+        }
+        function getarea() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/area',
+                async: true,
+                success: function(data) {
+                    for(var k in data) {
+                        if(k === citynum) {
+                            var html2 = template('sele', data[k]);
+                            area.innerHTML = html2;
+                            break;
+                        } else {
+                            area.innerHTML = '';
+                        }
+                    }
+                }
+            })
+        }
+        getpro();
+        getcity();
+        getarea();
+        pro.onchange = function() {
+            pronum = pro.value;
+            getcity();
+            citynum = city.value;
+            getarea();
+        }
+        city.onchange = function() {
+            citynum = city.value;
+            getarea();
+        }
+    </script>
+</body>
+</html>

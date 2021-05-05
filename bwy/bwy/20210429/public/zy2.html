@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text">
+    <div></div>
+    
+    <script id='seach' type="text/html">
+        {{each}}
+        <p>{{$value}}</p>
+        {{/each}}
+    </script>
+    <script src="template-web.js"></script>
+    <script src="ajax.js"></script>
+    <script>
+        var input = document.querySelector('input');
+        input.onfocus = function() {
+            document.querySelector('div').style.display = 'block';
+        }
+        input.oninput = function() {
+<<<<<<< HEAD
+            clearTimeout(set);
+=======
+<<<<<<< HEAD
+            clearTimeout(set);
+=======
+            clearTimeout(set); 
+>>>>>>> 25deb86 (作业)
+>>>>>>> 3390436 (上次)
+            var set = setTimeout(function() {
+                ajax({
+                type: 'get',
+                url: 'http://localhost:3001/search',
+                data: {
+                    key: input.value
+                },
+                success: function(data) {
+                    var html = template('seach',data);
+                    document.querySelector('div').innerHTML = html;
+                },
+                })
+            },1000)
+        }
+        input.onblur = function() {
+            document.querySelector('div').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
