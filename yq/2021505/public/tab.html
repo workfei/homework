@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            background-color: #eee;
+        }
+
+        .box {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            border: 1px solid red;
+            overflow-y: auto;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .news {
+            display: flex;
+            justify-content: center;
+        }
+
+        .news li {
+            flex: 1;
+            padding: 20px 0;
+            border: 1px solid gold;
+            background-color: skyblue;
+            color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .cont {
+            padding-left: 10px;
+            font-size: 18px;
+            color: #000;
+        }
+
+        .cont li {
+            padding: 10px 0;
+            border-bottom: 1px solid red;
+            font-style: italic;
+        }
+
+        .news .active {
+            background-color: purple;
+        }
+    </style>
+    <script src="js/jquery-1.11.1.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <ul class="news"></ul>
+        <div class="cont"></div>
+    </div>
+    <script id="title" type="text/html">
+        {{each}}
+        <li>{{$value}}</li>
+        {{/each}}
+    </script>
+    <script id="context" type="text/html">
+        <ul>
+            {{each}}
+            <li>{{$value}}</li>
+            {{/each}}
+        </ul>
+    </script>
+    <script>
+        $(function () {
+            ajax({
+                type: "get",
+                url: "http://localhost:3001/title",
+                success: function (data) {
+                    var title = [] //接收标题
+                    $.each(data, function (index, ele) {
+                        title.push(ele.tname)
+                    })
+                    var html = template("title", title)
+                    $(".news").html(html) //标题写入
+
+                    // 点击事件,获取当前索引
+                    $(".news").children().click(function () {
+                        $(this).addClass("active").siblings().removeClass("active")
+                        ajax({
+                            type: "get",
+                            url: "http://localhost:3001/tab",
+                            data: {
+                                num: $(this).index()
+                            },
+                            success: function (data) {
+                                let html = template("context", data)
+                                $(".cont").html(html)//内容写入
+                            }
+                        })
+                    })
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

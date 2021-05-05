@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-1.11.1.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        //获取省
+        function getPro() {
+            let promise = new Promise((resolve, reject) => {
+                if (true) {
+                    ajax({
+                        type: "get",
+                        url: "http://localhost:3001/pro",
+                        success: function (data) {
+                            var html = template("op", data)
+                            $("#pro").html(html)
+                            getCity() //调用市
+                        }
+                    })
+                } else {
+                    reject("失败")
+                }
+            })
+        }
+        getPro()
+        // 省改变事件
+        pro.onchange = function () {
+            getCity()
+            getArea()
+        }
+
+        function getCity() {
+            let promise = new Promise((resolve, reject) => {
+                if (true) {
+                    ajax({
+                        type: "get",
+                        url: "http://localhost:3001/city",
+                        data: {
+                            pid: pro.value
+                        },
+                        success: function (data) {
+                            var html = template("op", data)
+                            $("#city").html(html)
+                            getArea()
+                        }
+                    })
+                } else {
+                    reject("失败")
+                }
+            })
+        }
+        // 市改变事件
+        city.onchange = function () {
+            getArea()
+        }
+
+        function getArea() {
+            let promise = new Promise((resolve, reject) => {
+                if (true) {
+                    ajax({
+                        type: "get",
+                        url: "http://localhost:3001/area",
+                        data: {
+                            cid: city.value
+                        },
+                        success: function (data) {
+                            var html = template("op", data)
+                            $("#area").html(html)
+                        }
+                    })
+                } else {
+                    reject("失败")
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</body>
+
+</html>
