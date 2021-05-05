@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        li {
+            list-style: none;
+        }
+        .mastul > li {
+            float: left;
+            width: 100px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style: none;
+            width: 150px;
+            line-height: 40px;
+            text-align: center;
+            float: left;
+            font-weight: bold;
+        }
+        ul {
+            width:800px;
+            height: 40px;
+            background-color: #f9f9f9;
+            margin: 0 auto;
+            border-bottom: 2px solid red;
+        }
+        .current {
+            background: red;
+            color: #ffffff;
+        }
+        .main {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .item {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <ul class="tab">
+        <li>
+
+        </li>
+    </ul>
+    <div class="main">
+        <div class="">
+        </div>
+        <div class="item">
+        </div>
+        <div class="item">
+        </div>
+    </div>
+    <script src="js/template-web.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/ajax.js"></script>
+    <script id="tab" type="text/html">
+        {{each}}
+        <li>{{$value.tname}}</li>
+        {{/each}}
+    </script>
+    <script id="news1" type ="text/html">
+        {{each}}
+        <p>{{$value}}</p>
+        {{/each}}
+    </script>
+    <script>
+        $(function () {
+            var box = document.querySelector('.main');
+            var box1 = document.querySelectorAll('.main div');
+            var tab = document.querySelector('.tab');
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3001/tab',
+                success: function(data) {
+                    let html = template('tab', data)
+                    tab.innerHTML = html;
+                    $('.tab>li').click(function () {
+                        console.log($(this).index());
+                        var num = $(this).index()
+                        ajax({
+                                type:'get',
+                                url:'http://localhost:3001/tab2',
+                                data: {
+                                    key:$(this).index(),
+                                },
+                                success:function (data) {
+                                    var html = template('news1',data);
+                                    console.log(data);
+                                    console.log(html);
+                                    box1[num].innerHTML = html;
+                                }
+                            })
+                        
+                        $(this).addClass('current').siblings('li').removeClass('current');
+                        var index = $(this).index();
+                        $('.main>div').eq(index).show().siblings('div').hide();
+                        
+                    })
+                    $('.tab>li').eq(0).click();
+                    $('.tab li').eq(0).addClass('current');
+                    $('.main div').eq(0).show();
+                }
+                
+            })
+        })
+    </script>
+</body>
+</html>
