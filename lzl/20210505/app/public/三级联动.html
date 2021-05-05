@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+            <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        var pro = document.querySelector('#pro')
+        var city = document.querySelector('#city')
+        var area = document.querySelector('#area')
+        function getPro() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:8088/pro',
+                async: true,
+                success: function(data) {
+                    var html = template('op',data)
+                    pro.innerHTML = html
+                    getCity()
+                }
+            })
+        }
+        getPro()
+        pro.onchange = function() {
+            getCity()
+            getArea()
+
+        }
+        city.onchange = function() {
+            getArea()
+        }
+        function getCity() {
+            ajax({
+                type: 'get',
+                data: {
+                    pid: pro.value
+                },
+                url: 'http://localhost:8088/city',
+                success: function(data) {
+                        var html = template('op',data)
+                        city.innerHTML = html
+                        
+                    getArea()
+                }
+            })
+        }
+
+        function getArea() {
+            ajax({
+                type: 'get',
+                data: {
+                    pid: city.value
+                },
+                url: 'http://localhost:8088/areas',
+                success: function(data) {
+                        var html = template('op',data)
+                        area.innerHTML = html
+                }
+            })
+        }
+        
+    </script>
+</body>
+</html>

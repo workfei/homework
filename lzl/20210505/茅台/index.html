@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <title>茅台</title>
+    <script src="http://common.yscase.com/js/LandscapeTip-1.0.0.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <style>
+        @media screen and (orientation: portrait) {
+            html {
+                width: 100vmin;
+                height: 100vmax;
+            }
+
+            body {
+                width: 100vmin;
+                height: 100vmax;
+            }
+
+            #gyroContain {
+                width: 100vmax;
+                height: 100vmin;
+                transform-origin: top left;
+                transform: rotate(90deg) translate(0, -100vmin);
+            }
+        }
+
+        @media screen and (orientation: landscape) {
+            html {
+                width: 100vmax;
+                height: 100vmin;
+            }
+
+            body {
+                width: 100vmax;
+                height: 100vmin;
+            }
+
+            #gyroContain {
+                width: 100vmax;
+                height: 100vmin;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .login {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .q1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 56px;
+            height: 67px;
+            transform: translateX(-50%);
+            margin-top: -65px;
+        }
+
+        .out {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .w1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 56px;
+            height: 67px;
+            transform: translateX(-50%);
+            margin-top: -65px;
+        }
+
+        .w2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 102px;
+            height: 142px;
+            transform: translateX(-50%);
+        }
+
+        .w3 {
+            position: absolute;
+            top: 280px;
+            left: 50%;
+            width: 38px;
+            height: 38px;
+            transform: translateX(-50%);
+        }
+
+        .w4 {
+            position: absolute;
+            top: 340px;
+            left: 50%;
+            width: 125px;
+            height: 61px;
+            transform: translateX(-50%);
+        }
+        .dn {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gyroContain">
+        <div class="login">
+            <img src="img/lad_bg.jpg" alt="">
+            <div class="tl">
+                <img src="img/lad_1.png" alt="" class="q1">
+            </div>
+        </div>
+        <div class="out dn">
+            <img src="img/p1_bg.jpg" alt="" >
+            <div class="q1">
+                <img src="img/p1_2.png" alt="" class="w1">
+                <img src="img/p1_3.png" alt="" class="w2">
+                <img src="img/p1_4_1.png" alt="" class="w3">
+                <img src="img/p1_4.png" alt="" class="w4">
+            </div>
+        </div>
+    </div>
+    <script>
+        var login = document.querySelector('.login')
+        var out = document.querySelector('.out')
+        setTimeout(function() {
+            login.style.display = 'none'
+            out.className = ''
+        },3000)
+        let tip = new LandscapeTip();//插件的使用
+
+        //原生js方式
+        function rote() {
+            if (window.orientation == 180 || window.orientation == 0) {
+                console.log('竖屏');
+            }
+            if (window.orientation == 90 || window.orientation == -90) {
+                console.log('横屏');
+            }
+        }
+        window.addEventListener('load', rote)
+        window.addEventListener('orientationchange', function () {
+            rote();
+        })
+        // document.addEventListener("touchmove", function (e) {
+        //     e.preventDefault();
+        // }, {
+        //     passive: false
+        // });
+    </script>
+</body>
+
+</html>
