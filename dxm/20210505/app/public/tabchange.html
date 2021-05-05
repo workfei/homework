@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab选项卡</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            outline: none;
+            list-style: none;
+            user-select: none;
+        }
+
+        .box {
+            width: 700px;
+            margin: 50px auto;
+        }
+
+        .newstype {
+            width: 100%;
+            height: 50px;
+            background-color: green;
+        }
+
+        li {
+            float: left;
+            width: 100px;
+            height: 50px;
+            color: #fff;
+            text-align: center;
+            line-height: 50px;
+            font-size: 20px;
+            margin-right: 20px;
+            background-color: red;
+            cursor: pointer;
+        }
+
+        .newscontent {
+            width: 100%;
+            background-color: orange;
+        }
+
+        .current {
+            color: black;
+            background-color: lightblue;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <ul class="newstype">
+            <li class="current" index=1>体育新闻</li>
+            <li index=2>娱乐新闻</li>
+            <li index=3>军事新闻</li>
+        </ul>
+        <div class="newscontent"></div>
+    </div>
+
+    <script id="con" type="text/html">
+        {{each}}
+        <p>{{$index + 1}}、{{$value}}</p>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            var flag = -1;
+            $(".newstype").children().each((index, arr) => {
+                $(arr).click(function () {
+                    if ($(this).attr("index") != flag) {
+                        ajax({
+                            type: 'get',
+                            url: 'http://localhost:8088/tabchange',
+                            data: {
+                                id: $(this).attr("index")
+                            },
+                            success: function (data) {
+                                for (var i = 0; i < data.length; i++) {
+                                    var html = template('con', data);
+                                    $(".newscontent").html(html);
+                                }
+                            }
+                        })
+                    }
+                    flag = $(this).attr("index");
+                    $(this).addClass("current").siblings().removeClass("current");
+                })
+            })
+            $(".newstype").children().first().click()
+        })
+    </script>
+</body>
+
+</html>

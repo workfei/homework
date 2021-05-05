@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jquery ajax三级联动</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省: <select name="" id="pro"></select>
+    市：<select name="" id="city"></select>
+    区：<select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            $("#pro").change(function () {
+                getCity();
+            })
+
+            $("#city").change(function () {
+                getArea();
+            })
+
+            //获取省
+            getPro();
+            function getPro() {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:8088/pro',
+                    async: true,
+                    success: function (data) {
+                        var html = template('op', data);
+                        $("#pro").html(html);
+                        getCity();
+                    }
+                })
+            }
+
+            //获取市
+            function getCity() {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:8088/city',
+                    data: {
+                        pid: pro.value
+                    },
+                    success: function (data) {
+                        var html = template('op', data);
+                        $("#city").html(html);
+                        getArea();
+                    }
+                })
+            }
+
+            //获取区
+            function getArea() {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:8088/area',
+                    data: {
+                        aid: city.value
+                    },
+                    success: function (data) {
+                        var html = template('op', data);
+                        $("#area").html(html);
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>
