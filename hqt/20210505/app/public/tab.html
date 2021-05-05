@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style: none;
+        }
+        .title {
+            display: flex;
+            width: 300px;
+            height: 50px;
+            margin: 0 auto;
+            text-align: center;
+            line-height: 50px;
+        }
+        .title li {
+            flex: 1;
+            background-color: greenyellow;
+            border: 1px solid red;
+        }
+        .title  .current {
+            color: white;
+            background-color: red;
+        }
+        .box {
+            width: 500px;
+            height: 300px;
+            margin: 0 auto;
+            border: 1px solid red;
+        }
+        
+        .box div {
+            display: none;
+        }
+        .box div:nth-of-type(1) {
+            display: block;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <ul class="title"></ul>
+    <div class="box"></div>
+    <script id="tab-title" type="text/html">
+        {{each}}
+        <li>{{$value.type}}</li>
+        {{/each}}
+    </script>
+    <script id="tab-con" type="text/html">
+        {{each}}
+        <li>{{$value}}</li>
+        {{/each}}
+    </script>
+    <script>
+        $(function(){
+            var title = document.querySelector('.title');
+            var box = document.querySelector('.box');
+            ajax({
+                type:'get',
+                url:'http://localhost:3001/tab',
+                success:function(result,xhr) {
+                    let html = template('tab-title',result);
+                    title.innerHTML = html;
+                    result.forEach((val,index) => {
+                        var div = document.createElement('div');
+                        var ul = document.createElement('ul');
+                        div.appendChild(ul);
+                        box.appendChild(div);
+                        let html = template('tab-con',val.news);
+                        box.children[index].children[0].innerHTML = html;
+                    })
+                    tab();
+                }
+            })
+            function tab() {
+                $(title.children[0]).addClass('current');
+                $(title.children).click(function() {
+                    $(this).addClass('current').siblings().removeClass('current');
+                    $(box.children).eq($(this).index()).fadeIn(0).siblings().fadeOut(0);
+                })
+            }
+        })
+    </script>
+</body>
+</html>
