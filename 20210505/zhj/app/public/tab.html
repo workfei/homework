@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tab</title>
+    <style>
+        .box {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+        }
+
+        .list {
+            /* display: none; */
+            width: 500px;
+            height: 50px;
+        }
+
+        .list li {
+            float: left;
+            width: 100px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .active {
+            background-color: red;
+            color: white;
+        }
+    </style>
+    <script src="js/jquery-1.11.1.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <ul class="list">
+        <li class="active" index=1>娱乐</li>
+        <li index=2>体育</li>
+        <li index=3>财经</li>
+    </ul>
+    <div class="con">
+
+    </div>
+    <script id="con" type="text/html">
+    <div>
+        <ul>
+            {{each}}
+            <li>{{$value}}</li>
+            {{/each}}
+        </ul>
+    </div>    
+    </script>
+
+    <script>
+        $(function () {
+            $('.list>li').click(function () {
+                $(this).addClass('active').siblings('li').removeClass('active');
+                var index = $(this).index();
+                $('.con>div').eq(index).show().siblings('div').hide();
+            })
+        })
+        var lis = document.querySelector('.list').children; //所有的标题
+        var con = document.querySelector('.con')
+        console.log(lis);
+        lis = [...lis] //把伪数组转真数组
+        var num = 0; //用来判断是否在本选项卡
+        lis.forEach(val => {
+            val.onclick = function () {
+                console.log(this);
+                var id = this.getAttribute('index');
+                console.log(id);
+                if (id != num) {
+                    ajax({
+                        type: 'get',
+                        url: 'http://localhost:3033/tab',
+                        data: {
+                            id: id
+                        },
+                        success: function (data) {
+                            var html = template('con', data);
+                            con.innerHTML = html;
+                        }
+                    })
+                }
+                num = id
+            }
+        });
+        lis[0].click()
+    </script>
+</body>
+
+</html>

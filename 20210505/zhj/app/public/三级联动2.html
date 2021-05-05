@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省：<select name="" id="pro"></select>
+    市：<select name="" id="city"></select>
+    区：<select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        var pro = document.querySelector('#pro')
+        var city = document.querySelector('#city')
+        var area = document.querySelector('#area')
+        //获取省
+        function getPro() {
+            new Promise(function (resolve, reject) {
+                ajax({
+                    type: 'get',
+                    url: 'http://localhost:3033/pro',
+                    async: true, //为同步
+                    success: function (data) {
+                        var html = template('op', data);
+                        pro.innerHTML = html;
+                        getCity();
+                    }
+                })
+            })
+            pro.onchange = function () {
+                getCity();
+            }
+            city.onchange = function () {
+                getAreas();
+            }
+        }
+        getPro()
+        function getCity() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3033/city',
+                data: {
+                    pid: pro.value
+                },
+                success: function (data) {
+                    var html2 = template('op', data);
+                    city.innerHTML = html2;
+                    getAreas();
+                }
+            })
+        }
+
+        function getAreas() {
+            ajax({
+                type: 'get',
+                url: 'http://localhost:3033/areas',
+                data: {
+                    cid: city.value
+                },
+                success: function (data) {
+                    var html3 = template('op', data);
+                    area.innerHTML = html3;
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
