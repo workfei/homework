@@ -4,8 +4,19 @@ const express = require('express');
 const path = require("path")
 const bodyParser =require('body-parser')   //是一个解析器
 
+const formidable = require('formidable'); //form
+
 //创建服务器
 const app = express();
+// 设置跨域访问
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+    res.header("X-Powered-By", ' 3.2.1');
+    res.header("Content-Type", "application/json;charset=utf-8");
+    next();
+});
 app.use(bodyParser.json()) //解析json
 // post请求解析
 app.use(  
@@ -70,26 +81,7 @@ app.get('/reg',(req,res) => {
         }
     }
 })
-app.post('/reg',(req,res) => {
-    var obj = req.body;
-    var userinfo = getFile();
-    // console.log(userinfo);
-    if(userinfo) {
-        var flag = setFile(userinfo + obj.name + '&' + obj.pwd + '|');
-        if(flag) {
-            res.send('regok')  
-        } else {
-            res.send('regno')    
-        }
-    } else {
-        var flag = setFile(obj.name + '&' + obj.pwd + '|')
-        if(flag) {
-            res.send('regok')   
-        } else {
-            res.send('regno')   
-        }
-    }
-})
+
 
 app.get('/reg2',(req,res) => {
      // 获取请求内容
@@ -141,7 +133,6 @@ app.get('/checkName',(req,res) => {
 })
 
 
-
 //用户登录在记事本中查找数据
 // app.get('/login2',(req,res) => {
 app.post('/login2',(req,res) => {
@@ -180,11 +171,13 @@ app.post('/login2',(req,res) => {
                 // 有用户flag = true 没有用户:flag = false
                 //没有用户就返回请求
                 if(!flag) {
+                    // console.log(obj);
                     res.send({
                         code:203,
                         msg: '没有此用户'
                     })
                 }
+                
             } else {
                 // 没有任何记录  记事本为空
                 // 登录是查找文档没有内容,  则登录失败
@@ -209,55 +202,15 @@ const list = [
             '哈哈大笑图片',
             '哈哈漫画首页漫画免费'
         ];
-
 app.get('/search',(req,res) => {
     var txt = req.query.key; //传递过来的参数名为key
     var arr = list.filter(val => val.indexOf(txt) != -1);
     res.send(arr);
 })
 
-
-const data = [{
-    id: 1,
-    type: '娱乐',
-    news: [
-        '上综艺都要用替身？大明星这么忙？',
-        '赚了钱还来恶心人，不取关留着过年吗？',
-        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光',
-        '上综艺都要用替身？大明星这么忙？',
-        '赚了钱还来恶心人，不取关留着过年吗？',
-        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光'
-    ]
-}, {
-    id: 2,
-    type: '体育',
-    news: [
-        '记者：罗霍将3年合约签约博卡青年队',
-        '李娜退出中国国籍？还有领事证明？驻釜山总领事馆发表声明',
-        '单场62分破纪录 是库里对“体系球员”最好的回答',
-        '老里：哈里斯当选对大家都是好消息 我非常喜欢“三球”',
-        '0-1！大冷门！利物浦轰然倒下，3轮丢7分，曼联秒变赢家',
-        '全联盟第一！周琦顶替阿联成新一哥 1数据已冠绝全CBA？'
-    ]
-}, {
-    id: 3,
-    type: '财经',
-    news: [
-        '樊纲：我们要争取最好的结果，避免最坏的结果',
-        '玩命工作像重回高三，受够大厂法则，这些年轻人选择逃离',
-        '你的房租降了吗？全国40个重点城市中32个去年租金下降',
-        '凌晨两三点接到领导电话是常事，PUA式加班逼着95后裸辞',
-        '中银基金：2021年股市结构性机会可期 债券性价比或更高',
-        '中信证券：白酒板块仍有上行空间，建议继续紧抱龙头股'
-    ]
-}]
-app.get('/tab',(req,res) => {
-    res.send(data);
-})
-
 // 测试post请求
 app.post('/post',(req,res) => {
-    console.log(req.body);  ///body 获得传输内容
+    console.log(req.body);
 })
 // 测试postjson请求
 app.post('/postjson',(req,res) => {
@@ -267,14 +220,82 @@ app.post('/postjson',(req,res) => {
 app.get('/readystate',(req,res) => {
     res.send('ready')
 })
+// 表单传参
+app.post('/formData', (req, res) => {
+        // 创建formidable表单解析对象
+        const form = new formidable.IncomingForm();
+        // 解析客户端传递过来的FormData对象
+        form.parse(req, (err, fields, files) => {
+            res.send(fields);
+        });
+    });
+
+//     // 实现文件上传的路由
+app.post('/upload', (req, res) => {
+        // 创建formidable表单解析对象
+        const form = new formidable.IncomingForm();
+        // 设置客户端上传文件的存储路径
+        form.uploadDir = path.join(__dirname, 'public', 'uploads'); //图片上传后保存到哪里
+        // 保留上传文件的后缀名字
+        form.keepExtensions = true;
+        // 解析客户端传递过来的FormData对象
+        form.parse(req, (err, fields, files) => {
+            // 将客户端传递过来的文件地址响应到客户端
+    //         console.log(files);
+            if(files.attrName.type == 'image/jpeg' || files.attrName.type == 'image/png' || files.attrName.type == 'image/jpg' || files.attrName.type == 'image/gif' || files.attrName.type == 'image/bmp') {
+                res.send({
+                    path: files.attrName.path.split('public')[1]  //返回图片路径
+                });
+            } else {
+                res.send({
+                    code: 320,
+                    msg: '此文件类型不合法'
+                })
+            }
+            
+        });
+    });
+
+    // xml
+    // app.get('/xhm',(req,res) => {
+    //     // var xhm = path.join(_dirname,'public','xml');
+    //     res.send(xhm);
+    // })
+
+
+// json传参
+app.get('/json',(req,res) => {
+    // res.send({
+    //     msg: 'ok'
+    // })
+    // res.send({msg: "成功了"});
+
+    console.log(req.query['callback']);
+    var callback = req.query['callback'];
+    
+    // res.send('<h1>成功了</h1>');
+    res.send(callback + '({code:200,msg:"成功"})');  //JSON.stringify
+})
+
+app.post('/json1',(req,res) => {
+    // res.send({
+    //     msg: 'ok'
+    // })
+    // res.send({msg: "成功了"});
+
+    console.log(req.body['callback']);
+    var callback = req.body['callback'];
+    
+    // res.send('<h1>成功了</h1>');
+    res.send(callback + '({code:200,msg:"成功"})');  //JSON.stringify
+})
+
+// 跨域请求返回
+app.post('/kua',(req,res) => {
+    res.send('成功跨域');
+})
+
+
 //设置监听端口
-<<<<<<< HEAD
-app.listen(3001)
-=======
-<<<<<<< HEAD
-app.listen(3001)
-=======
 app.listen(3002)
->>>>>>> 25deb86 (作业)
->>>>>>> 3390436 (上次)
 console.log('监听成功');

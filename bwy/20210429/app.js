@@ -268,5 +268,13 @@ app.get('/readystate',(req,res) => {
     res.send('ready')
 })
 //设置监听端口
+<<<<<<< HEAD
 app.listen(3001)
+=======
+<<<<<<< HEAD
+app.listen(3001)
+=======
+app.listen(3002)
+>>>>>>> 25deb86 (作业)
+>>>>>>> 3390436 (上次)
 console.log('监听成功');

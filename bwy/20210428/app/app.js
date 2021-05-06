@@ -1,7 +1,19 @@
 // 引入express模块
+<<<<<<< HEAD
 const bodyParser = require('body-parser');//解析器
 const express = require('express');
 const path = require('path');
+=======
+<<<<<<< HEAD
+const bodyParser = require('body-parser');//解析器
+const express = require('express');
+const path = require('path');
+=======
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');//解析器
+>>>>>>> 25deb86 (作业)
+>>>>>>> 3390436 (上次)
 
 // 创建服务器
 const app = express();

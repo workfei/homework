@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            background-color: aquamarine;
+            height: 20px;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" name="file" id="file">
+    <div class="box"></div>
+    <img src="" alt="">
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        var file = document.querySelector('#file');
+        var box = document.querySelector('.box');
+        var img = document.querySelector('img');
+        file.onchange = function() {
+            var formdata = new FormData();
+            formdata.append('attrName', this.files[0]);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:3002/upload',
+                data: formdata,
+                // dataType: false,
+                contentType:false,
+                processData: false,
+                xhr: function() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function(ev) {
+                        var result = (ev.loaded / ev.total) * 100 + '%';
+                        box.style.width = result;
+                        box.innerHTML = result;
+                    }
+                    return xhr;
+                },
+                success: function(data) {
+                    console.log(data);
+                    img.src = data.path;
+                }
+            })
+        }
+    </script>
+</body>
+</html>

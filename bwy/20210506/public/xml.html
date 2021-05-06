@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <th>TITLE</th>
+            <th>ARTIST</th>
+            <th>COUNTRY</th>
+            <th>COMPANY</th>
+            <th>PRICE</th>
+            <th>YEAR</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+        $.ajax({
+            type: "get",
+            url: "data.xml",
+            success: function(data) {
+          
+        $(data).find('CD').each((i,ele) => {
+            var title = $(ele).children('TITLE').text();
+            var artist = $(ele).children('ARTIST').text();
+            var country = $(ele).children('COUNTRY').text();
+            var company = $(ele).children('COMPANY').text();
+            var price = $(ele).children('PRICE').text();
+            var year = $(ele).children('YEAR').text();
+            $('tbody').append('<tr><td>'+ title +'</td><td>'+ artist +'</td><td>'+ country +'</td><td>'+ company +'</td><td>'+ price +'</td><td>'+ year +'</td></tr>');
+        })
+    }
+    })
+        })
+    </script>
+</body>
+</html>

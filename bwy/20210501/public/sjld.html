@@ -10,7 +10,7 @@
     省<select name="" id="pro"></select>
     市<select name="" id="city"></select>
     区<select name="" id="area"></select>
-    <script src="ajax.js"></script>
+    <!-- <script src="ajax.js"></script> -->
     <script src="jquery-3.6.0.min.js"></script>
     <script src="template-web.js"></script>
     <script id="sele" type="text/html">
@@ -18,7 +18,7 @@
         <option value="{{$value.id}}">{{$value.name}}</option>
         {{/each}}
     </script>
-    <script>
+    <!-- <script>
         var pro = document.querySelector("#pro");
         var city = document.querySelector("#city");
         var area = document.querySelector("#area");
@@ -83,6 +83,67 @@
             citynum = city.value;
             getarea();
         }
+    </script> -->
+    <script>
+        function getPro() {
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:3001/pro',
+                data:{},
+                async: false, // true异步提交  false同步提交   jquery 默认异步
+                success: function(data,state,xhr) {
+                    // console.log(data);
+                    // console.log(state);
+                    // console.log(xhr);
+                    var  html = template('sele',data);
+                    $('#pro').html(html);
+                },
+                error: function(xhr) {
+
+                }
+            })
+        }
+        getPro();
+        function getCity(pid) {
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:3001/city',
+                data: {
+                    pid: pid
+                },
+                async: false,
+                success: function(data) {
+                    // console.log(data);
+                    var  html = template('sele',data);
+                    $('#city').html(html);
+                }
+            })
+        }
+        getCity($('#pro').val());
+        function getArea(cid) {
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:3001/area',
+                data: {
+                    cid: cid
+                },
+                async: false,
+                success: function(data) {
+                    console.log(data);
+                    var  html = template('sele',data);
+                    $('#area').html(html);
+                }
+            })
+        }
+        getArea($('#city').val());
+
+        $("#pro").on('change',function() {
+            getCity($('#pro').val());
+            getArea($('#city').val());
+        })
+        $("#city").on('change',function() {
+            getArea($('#city').val());
+        })
     </script>
 </body>
 </html>

@@ -426,10 +426,15 @@ app.get("/pro",(req,res) => {
     res.send(pro);
 })
 app.get("/city",(req,res) => {
-    res.send(city);
+    // res.send(city);
+    var pid = req.query.pid;
+    res.send(city[pid]);
 })
 app.get("/area", (req,res) => {
-    res.send(area);
+    // res.send(area);
+    var cid = req.query.cid;
+    console.log(cid);
+    res.send(area[cid]);
 })
 // 测试post请求
 app.post('/post',(req,res) => {
