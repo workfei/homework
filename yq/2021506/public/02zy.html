@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .tab {
+            border: 1px solid skyblue;
+            background-color: #eee;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <table class="tab" border="1" width="80%" align="center" cellspacing="0">
+        <thead>
+            <tr><th>TITLE</th><th>ARTIST</th><th>COUNTRY</th><th>COMPANY</th><th>PRICE</th><th>YEAR</th></tr>
+        </thead>
+        <tbody class="tbody"></tbody>
+    </table>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function() {
+            $.ajax({
+                type: "get",
+                url: "data.xml",
+                success: function(data) {
+                    $(data).find("CD").each(function(i,ele) {
+                        var title = $(this).children("TITLE").text();//标题
+                        var artist = $(this).children("ARTIST").text();//艺术家
+                        var country = $(this).children("COUNTRY").text();//国家
+                        var company = $(this).children("COMPANY").text();//公司
+                        var price = $(this).children("PRICE").text();//价格
+                        var year = $(this).children("YEAR").text();//年份
+
+                        // 数据内容
+                        var text = $("<tr><td>"+title+"</td><td>"+artist+"</td><td>"+country+"</td><td>"+company+"</td><td>"+price+"</td><td>"+year+"</td></tr>")
+                        $(".tbody").append(text)
+                    })
+                }
+            })
+        })
+    </script>
+</body>
+</html>

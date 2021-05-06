@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        tr {
+            height: 55px;
+        }
+
+        .box {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn {
+            display: none;
+            width: 70px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: gold;
+        }
+
+        .back {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <table width="100%" border="1" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+            </tr>
+        </thead>
+        <tbody class="tbody"></tbody>
+    </table>
+    <div class="box">
+        <div class="back btn">上一页</div>
+        <div class="next btn">下一页</div>
+    </div>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function () {
+            var page = 1; //当前页面
+            var pageSize = 2; //页面的数据量
+            var total = 0; //总新闻数
+            function news() {
+                $.ajax({
+                    type: "post",
+                    url: "http://192.168.10.165:8088/newstype/",
+                    data: {
+                        page: page, //当前页面
+                        pagesize: pageSize //页面的数据量
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        $(".btn").fadeIn() //请求成功后翻页按钮显示
+                        // 遍历对象
+                        $.each(data, function (i, ele) {
+                            var text = $("<tr><td>" + ele.tid + "</td><td>" + ele.tname + "</td></tr>")
+                            $(".tbody").append(text) //tbody添加数据
+                        })
+                    }
+                })
+            }
+            news()//初始化调用
+            //总共数量
+            function total() {
+                $.ajax({
+                    type: "post",
+                    url: "http://192.168.10.165:8088/account/",
+                    dataType: "json",
+                    success: function (num) {
+                        return total = num;
+                    }
+                })
+            }
+            total()
+            $(".back").click(function () {
+                if (page > 1) {
+                    page--;
+                    news();
+                    alert("已经是第一页了")
+                }
+            })
+            $(".next").click(function () {
+                if (page < total / pageSize) {
+                    page++;
+                    news();
+                    alert("已经是最后一页了")
+                }
+            }) 
+        })
+    </script>
+</body>
+
+</html>
