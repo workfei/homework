@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody id="tblist"></tbody>
+    </table>
+    <script>
+        function load() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                async: true,
+                data: {
+                    page: 1,
+                    pagesize: 8,
+                },
+                dataType: 'json',
+                success: function(data) {
+                    alert(data);
+                    var str = '';
+                    for (var k in data) {
+                        str += '<tr><td>' + data[k]["tid"] + '</td>';
+                        str += '<td>' + data[k]["tname"] + '</td></tr>';
+                    }
+                    $('#tblist').html(str);
+                },
+                error: function(Request, Status, Thrown) {
+                    alert(Request.status);
+                    alert(Request.statusText);
+                }
+            })
+
+            function init() {
+                load();
+            }
+
+            $(document).ready(function() {
+                init();
+            })
+        }
+    </script>
+</body>
+
+</html>

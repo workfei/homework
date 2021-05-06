@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .bar {
+            width: 0%;
+            height: 20px;
+            border: 1px solid orange;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <input type="file" id="file">
+    <div id="bar">0%</div>
+    <script type="text/javascript">
+        $('#file').on('change', function() {
+            var formData = new FormData();
+            formData.append('attrName', this.files[0]);
+            $.ajax({
+                type: 'post',
+                url: 'htpp://localhost:3002/upload',
+                data: FormData,
+                contentType: false,
+                processData: false,
+                xhr: function() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function(ev) {
+                        var ret = (ev.loaded / ev.total) * 100 + '%';
+                        $('#bar').css('width', 'ret');
+                        $('#bar').html(ret);
+                    }
+                    return xhr;
+                },
+                success: function(data) {
+                    console.log(data);
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
