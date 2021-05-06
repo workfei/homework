@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #bar {
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            background-color: skyblue;
+            width: 0%;
+        }
+        #box,#box img {
+            width: 500px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" name="file" id="file">
+    <div id="box"></div>
+    <div id="bar"></div>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        /* 1.  使用jquery ajax上传文件，并显示上传进度（自己写，不能查看笔记） */
+        $(function() {
+            $('#file').change(function() {
+                var formData = new FormData();
+                formData.append('attrName', this.files[0]);
+                $.ajax({
+                    type: 'post',
+                    url: 'http://localhost:3001/upload',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    xhr: function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.upload.onprogress = function(ev) {
+                            var result = (ev.loaded / ev.total) * 100 + '%';
+                            $('#bar').css('width', result);
+                            $('#bar').html(result);
+                        }
+                        return xhr;
+                    },
+                    success: function(data) {
+                        var img = document.createElement('img');
+                        img.src = data.path;
+                        img.onload = function() {
+                            $('#box').append(img);
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

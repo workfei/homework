@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            width: 100%;
+            text-align: center;
+        }
+        th {
+            width: 50%;
+        }
+        tr {
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <button id="s">上一页</button>
+    <button id="x">下一页</button>
+    <script src="js/jquery-3.6.0.js"></script>
+
+    <script>
+        // 3.使用接口http://192.168.10.165:8088/newstype/获取相应的新闻数据，参数： page: number   当前页数          pagesize:number  第页显示的数量
+        var page = 1;
+        var pagesize = 8;
+        $.ajax({
+            type: 'post',
+            url: 'http://192.168.10.165:8088/newstype/',
+            data: {
+                page: page, 
+                pagesize: pagesize
+            },
+            dataType: 'json',
+            success: function(data) {
+                var str = [];
+                for(var k in data) {
+                    console.log(data[k]);
+                    str.push(`
+                        <tr>
+                            <td>${data[k].tid}</td>
+                            <td>${data[k].tname}</td>
+                        </tr>
+                    `);
+
+                }
+                var index = 0;
+                var index1 = 1;
+                getstr(index,index1);
+                $('$s').click(function() {
+                    index--;
+                    index1--;
+                    if (index < 0) {
+                        index = 0;
+                    }
+                    if (index1 < 1) {
+                        index = 1;
+                    }
+                    getstr(index,index1);
+                })
+                $('$x').click(function() {
+                    index++;
+                    index1++;
+                    if (index > 7) {
+                        index = 7;
+                    }
+                    if (index1 > 8) {
+                        index = 8;
+                    }
+                    getstr(index,index1);
+                })
+
+                function getstr(index,index1) {
+                    var num = str[index] + str[index1];
+                    $('tbody').html(num);
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>

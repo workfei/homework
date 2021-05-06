@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        th,td {
+            padding: 0 10px;
+        }
+        body {
+            height: 500px;
+        }
+        table {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 2.使用jquery ajax请求XML,把结果以表格的形式显示在页面中 -->
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        $(function () {
+            $.ajax({
+                type: 'get',
+                url: 'data.xml',
+                success: function(data) {
+                    var str = '';
+                    str += `
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>艺术家</th>
+                                    <th>国家</th>
+                                    <th>公司</th>
+                                    <th>价格</th>
+                                    <th>年</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    $(data).find("CD").each(function(i){
+                        console.log(1);
+                        var title = $(this).children("TITLE").text();
+                        var artist = $(this).children("ARTIST").text();
+                        var counyry = $(this).children("COUNTRY").text();
+                        var company = $(this).children("COMPANY").text();
+                        var price = $(this).children("PRICE").text();
+                        var year = $(this).children("YEAR").text();
+            
+                        str += `
+                            <tr>
+                                <td>${title}</td>
+                                <td>${artist}</td>
+                                <td>${counyry}</td>
+                                <td>${company}</td>
+                                <td>${price}</td>
+                                <td>${year}</td>
+                            </tr>
+                        `;
+                        
+                    });
+                    str += `</tbody>
+                    </table>`;
+                    $('body').append(str);
+                }
+            })
+        })
+        
+    </script>
+</body>
+
+</html>
