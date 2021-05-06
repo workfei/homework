@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jquery ajax请求XML</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div></div>
+    <script>
+        $(function () {
+            $.ajax({
+                type: 'get',
+                url: 'test.xml',
+                data: {},
+                success: function (data) {
+                    var x = data.getElementsByTagName("CD");
+                    document.write("<table border='1'><tr><td>作品标题</td><td>艺术家</td></tr>");
+                    for (var i = 0; i < x.length; i++) {
+                        document.write("<tr><td>");
+                        document.write(x[i].getElementsByTagName("TITLE")[0].childNodes[0].nodeValue);
+                        document.write("</td><td>");
+                        document.write(x[i].getElementsByTagName("ARTIST")[0].childNodes[0].nodeValue);
+                        document.write("</td></tr>");
+                    }
+                    document.write("</table>");
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

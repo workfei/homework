@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jquery ajax上传文件</title>
+    <style>
+        .container {
+            margin: 100px auto 0;
+            width: 1000px;
+        }
+
+        .progress {
+            margin-top: 20px;
+            width: 1000px;
+            border: 1px solid black;
+        }
+
+        .progress-bar {
+            transition: all 1s;
+            background-color: red;
+        }
+    </style>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-group">
+            <label>请选择文件</label>
+            <input type="file" name="" id="file">
+            <div class="padding" id="box"></div>
+            <div class="progress">
+                <div class="progress-bar" style="width: 0%;" id="bar">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            //选择文件时触发
+            $('#file').on('change', function () {
+                //创建空的formData对象
+                var formData = new FormData();
+                //将用户选择的文件追加到formData表单对象中去
+                formData.append('attrName', this.files[0]);
+                $.ajax({
+                    type: "post",
+                    url: "http://localhost:8088/upload",
+                    data: formData,
+                    contentType: false,  //禁止获取类型
+                    processData: false,  //禁止解析
+                    xhr: function () {
+                        var xhr = new XMLHttpRequest();
+                        //文件上传中持续触发
+                        xhr.upload.onprogress = function (ev) {
+                            //ev.loaded 文件已经上传的大小
+                            //ev.total 文件的总大小
+                            var result = (ev.loaded / ev.total) * 100 + "%";
+                            $('.progress-bar').css('width', result);
+                            $('.progress-bar').html(result);
+                        }
+                        return xhr;
+                    },
+                    success: function (data) {
+                        var result = data.path;
+                        var img = document.createElement("img");
+                        img.src = result;
+                        $("#box")[0].appendChild(img);
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻分页</title>
+</head>
+
+<body>
+    <div class="box"></div>
+    <button class="prev">上一页</button>
+    <button class="next">下一页</button>
+
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+
+    <script id="con" type="text/html">
+        {{each}}
+            <p>{{$index + 1}}、{{$value}}</p>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            var page = 1;  //当前页数
+            var pagesize = 3;  //第page页显示的数量
+            var count = 0;  //新闻的总数量
+            btn();  //页面初始化调用
+            //获取相应的新闻数据
+            function btn() {
+                $.ajax({
+                    type: 'post',
+                    url: 'http://192.168.10.165:8088/newstype/',
+                    data: {
+                        page: page,
+                        pagesize: pagesize
+                    },
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            var html = template('con', data.tname);
+                            $(".box").html(html);
+                        }
+                    }
+                })
+            }
+            //获取新闻总数量
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/account/',
+                data: {},
+                dataType: "text",
+                success: function (data) {
+                    count = parseInt(data);
+                }
+            })
+            $(".prev").on("click", function () {
+                if (page > 1) {
+                    page--;
+                    btn();
+                }
+            })
+            $(".next").on("click", function () {
+                if (page < Math.ceil(count / pagesize)) {
+                    page++;
+                    btn();
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
