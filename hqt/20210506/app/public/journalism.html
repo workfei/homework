@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        .box div {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border: 1px solid skyblue;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <ul></ul>
+    <div class="box">
+        <div class="jian">-</div>
+        <div class="num">1</div>
+        <div class="jia">+</div>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script>
+        $(function(){
+            var ul = document.querySelector('ul');
+            var page = 1;
+            var pagesize = 3;
+            var total = null;
+            getAjax(page,pagesize);
+            // 获取新闻总数量
+            $.ajax({
+                url: "http://192.168.10.165:8088/account/",
+                type: "get",
+                data: {
+                    page: page,
+                    pagesize:pagesize
+                },
+                jsonp:'callback',
+                success: function(num) {
+                    total = num;
+                },
+            });
+            // 减
+            $('.jian').click(function(){
+                if($('.num').text() > 1) {
+                    page--;
+                    $('.num').text(page);
+                    getAjax(page,pagesize);
+                }
+            })
+            // 加
+            $('.jia').click(function(){
+                if($('.num').text() < total / pagesize) {
+                    page++;
+                    console.log(page);
+                    $('.num').text(page);
+                    getAjax(page,pagesize);
+                }
+            })
+            // 请求数组
+            function getAjax(page,pagesize) {
+                $.ajax({
+                    type: 'post',
+                    url: 'http://192.168.10.165:8088/newstype/',
+                    data: {
+                        page: page, 
+                        pagesize: pagesize
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<li>${data[k].tid}${data[k].tname}</li>`);
+                        }
+                        ul.innerHTML = arr.join('');
+                    }
+                })
+            } 
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table border="1" align="center">
+        <thead>
+            <tr><th>TITLE</th><th>ARTIST</th><th>COUNTRY</th><th>COMPANY</th><th>PRICE</th><th>YEAR</th></tr>
+        </thead>
+        <tbody>
+            <tr><td></td></tr>
+        </tbody>
+    </table>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            $.ajax({
+                url: "test.xml",
+                type: "get",
+                success: function(val) {
+                    var data = val.querySelectorAll('CD');
+                    var arr = [];
+                    // 遍历数组
+                    data.forEach((value,index) => {
+                        // 渲染数组
+                        arr.push(`<tr><td>${value.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue}</td><td>${value.getElementsByTagName("ARTIST")[0].childNodes[0].nodeValue}</td><td>${value.getElementsByTagName("COUNTRY")[0].childNodes[0].nodeValue}</td><td>${value.getElementsByTagName("COMPANY")[0].childNodes[0].nodeValue}</td><td>${value.getElementsByTagName("PRICE")[0].childNodes[0].nodeValue}</td><td>${value.getElementsByTagName("YEAR")[0].childNodes[0].nodeValue}</td></tr>`);
+                    })
+                    $('tbody').html(arr.join(''));
+                },
+            });
+        })
+    </script>
+</body>
+</html>

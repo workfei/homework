@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .progress {
+            width: 0%;
+            height: 20px;
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <form id="form">
+        <input type="file" name="file" id="file">
+    </form>
+    <img src="" class="box">
+    <div class="progress">0%</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        var file = document.querySelector('#file');
+        var progress = document.querySelector('.progress');
+        var box = document.querySelector('.box');
+        file.onchange = function () {
+            // 创建空的formData表单对象
+            var formData = new FormData();
+            formData.append('attrName',this.files[0]);
+            $.ajax({
+                url: "http://localhost:3000/upload",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr:function() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function (ev) {
+                        var result = (ev.loaded / ev.total) * 100 + '%';
+                        // 设置进度条的宽度
+                        progress.style.width = result;
+                        // 显示百分比
+                        progress.innerHTML = result;
+                    }
+                    return xhr;
+                },
+                success: function(data) {
+                    // 显示图片
+                    box.src = data.path;
+                },
+            });
+        }
+    </script>
+</body>
+</html>
