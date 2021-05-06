@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传图片进度</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+<style>
+    .progress {
+        width: 0%;
+        height: 20px;
+        border: 1px solid skyblue;
+        
+    }
+
+</style>
+
+<body>
+    <input type="file" id="file">
+    <div class="progress">0%</div>
+    <script>
+        var myfile = document.querySelector('#file')
+        var progress = document.querySelector('.progress')
+        myfile.onchange = function() {
+            var formData = new FormData()
+            formData.append('attrName',this.files[0])
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:5000/upload',
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhr: function() {
+                    var xhr = new XMLHttpRequest()
+                    xhr.upload.onprogress = function(ev) {
+                        var res = (ev.loaded / ev.total) * 100 + '%';
+                        progress.style.Width = res;
+                        progress.innerHTML = res;
+                    } 
+                    return xhr
+                },
+                success: function(data) {
+                    console.log(data);
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
