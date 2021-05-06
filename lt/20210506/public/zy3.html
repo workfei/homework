@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
+        }
+        *, ::after, ::before {
+            box-sizing: border-box;
+        }
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #dee2e6;
+        }
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody id="tblist">
+            <!-- <tr><td>1</td><td>体育新闻</td></tr> -->
+        </tbody>
+    </table>
+    <div></div>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        var page = 5;
+        $.ajax({
+            type: 'post',
+            url: 'http://192.168.10.165:8088/newstype/',
+            data: {
+                page: 1, 
+                pagesize: 5
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                var str = '';
+                for (k in data) {
+                    str += "<tr><td>"+ data[k]["tid"] +"</td><td>"+ data[k]["tname"] +"</td></tr>"
+                }
+                
+                $('#tblist').html = str;
+            },
+            
+        })
+    </script>
+</body>
+</html>
