@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        $(function () {
+            var tbody = document.querySelector('tbody');
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: 1,
+                    pagesize: 3
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var str = [];
+                    for (var k in data) {
+                        str.push(`<tr><td>${data[k].tid}${data[k].tname}</td></tr>`);
+                    }
+                    tbody.innerHTML = str.join(''); 
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <table border="1" align="center">
+        <thead>
+            <th>TITLE</th>
+            <th>ARTIST</th>
+            <th>COUNTRY</th>
+            <th>COMPANY</th>
+            <th>PRICE</th>
+            <th>YEAR</th>
+        </thead>
+        <tbody align="center">
+        </tbody>
+    </table>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        $(function () {
+            $.ajax({
+                url: "data.xml",
+                type: "get",
+                success: function (val) {
+                    var data = val.querySelectorAll('CD');
+                    var tbodyArr = [];
+                    data.forEach((value, index) => {
+                        tbodyArr.push(`<tr>
+                            <td>${value.getElementsByTagName("TITLE")[0].childNodes[0].nodeValue}</td>
+                            <td>${value.getElementsByTagName("ARTIST")[0].childNodes[0].nodeValue}</td>
+                            <td>${value.getElementsByTagName("COUNTRY")[0].childNodes[0].nodeValue}</td>
+                            <td>${value.getElementsByTagName("COMPANY")[0].childNodes[0].nodeValue}</td>
+                            <td>${value.getElementsByTagName("PRICE")[0].childNodes[0].nodeValue}</td>
+                            <td>${value.getElementsByTagName("YEAR")[0].childNodes[0].nodeValue}</td>
+                            </tr>`);
+                    })
+                    $('tbody').html(tbodyArr.join(''));
+                },
+            });
+        })
+    </script>
+</body>
+
+</html>
