@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 300px;
+            margin: 0 auto;
+        }
+        
+        input {
+            margin-top: 10px;
+            border-radius: 0;
+        }
+        
+        #uname {
+            height: 22px;
+            border: 1px solid skyblue;
+        }
+        
+        #btn {
+            width: 40px;
+            height: 25px;
+            background-color: skyblue;
+            color: #fff;
+            border: none;
+        }
+        
+        #list li {
+            float: left;
+            list-style: none;
+            border-right: 1px solid #999;
+            margin-right: 20px;
+        }
+        
+        #list li h3 {
+            color: orange;
+        }
+        
+        #list li p {
+            color: orange;
+        }
+        
+        #list li span {
+            color: #999;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <img src="img/tzd.png" alt=""><br>
+        <input type="text" value="邵阳" id="uname">
+        <input type="button" value="搜索" id="btn">
+    </div>
+    <ul id="list"></ul>
+    <script id="op" type="text/html">
+        {{each}}
+        <li>
+            <h3>{{$value.type}}</h3>
+            <p>{{$value.high}}~{{$value.low}}</p>
+            <span>{{$value.date}}</span>
+        </li>
+        {{/each}}
+    </script>
+    <script>
+        $(function() {
+            function getData(str) {
+                $('#btn').on('click', function() {
+                    str = 'http://wthrcdn.etouch.cn/weather_mini?city=' + $('#uname').val();
+                })
+                $.ajax({
+                    type: 'get',
+                    url: 'http://wthrcdn.etouch.cn/weather_mini?city=' + str,
+                    dataType: "json",
+                    success: function(data) {
+                        console.log(data.data.forecast);
+                        var html = template('op', data.data.forecast);
+                        $('#list').html(html);
+                    }
+                })
+            }
+            getData('邵阳');
+        })
+    </script>
+</body>
+
+</html>

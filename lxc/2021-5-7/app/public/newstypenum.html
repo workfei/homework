@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #list {
+            width: 500px;
+            text-align: center;
+            margin: 0 auto;
+            list-style: none;
+        }
+        
+        #list li {
+            float: left;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border: 1px solid gray;
+            text-align: center;
+            margin-right: 5px;
+        }
+        
+        .active {
+            background-color: skyblue;
+            color: #fff;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+</head>
+
+<body>
+    <table width="500" align="center" border="1" cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <ul id="list"></ul>
+    <script>
+        var page = 1;
+        var pagesize = 2;
+        var pages = 1;
+
+        function getPages() {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                success: function(data) {
+                    pages = Math.ceil(data / pagesize);
+                }
+            })
+        }
+        getPages();
+        console.log(pages);
+
+        function showData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize
+                },
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    var arrhtml = [];
+                    for (var k in data) {
+                        arrhtml.push('<tr><td>' + data[k].tid + '</td><td>' + data[k].tname + '</td></tr>');
+                    }
+                    $('tbody').html(arrhtml.join(''));
+                }
+            })
+        }
+        showData();
+
+        function pagelist() {
+            var str = '<li id="index">首</li>';
+            for (var i = page - 2; i <= page + 2; i++) {
+                if (i > 0 && i <= pages) {
+                    if (i == page) {
+                        str += '<li class="active">' + i + '</li>';
+                    } else {
+                        str += '<li class="num">' + i + '</li>';
+                    }
+                }
+            }
+            str += '<li id="end">尾</li>';
+            $('#list').html(str);
+
+            $('.num').click(function() {
+                console.log($(this).text());
+                page = parseInt($(this).text());
+                showData();
+                pagelist();
+            })
+
+            $('#index').on('click', function() {
+                page = 1;
+                showData();
+                pagelist();
+            })
+            $('#end').on('click', function() {
+                page = pages;
+                showData();
+                pagelist();
+            })
+        }
+        pagelist();
+    </script>
+</body>
+
+</html>
