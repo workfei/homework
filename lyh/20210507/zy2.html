@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+
+    <script id="op" type="text/html">
+        {{each}}
+            <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+        /* 2.写出省市区三级联动：
+        省接口： http://192.168.10.165:8088/pro/             get请求     无需参数
+        市接口： http://192.168.10.165:8088/city/          get请示     参数名parent_id      值为上一级的pid
+        区接口： http://192.168.10.165:8088/area/       get请求      参数名parent_id      值为上一级的pid */
+
+        $(function() {
+            //省
+            function getPro() {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://192.168.10.165:8088/pro/',
+                    async: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#pro').html(html);
+                        getCity();
+                    }
+                })
+            }
+            getPro();//初始化调用
+            //选择省
+            $('#pro').change(function() {
+                getCity($(this).val());
+            })
+            //选择市
+            $('#city').change(function() {
+                getArea($(this).val());
+            })
+            //市
+            function getCity() {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://192.168.10.165:8088/city/',
+                    data: {
+                        parent_id: $('#pro').val()
+                    },
+                    async: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#city').html(html);
+                        getArea();
+                    }
+                })
+            }
+            //区
+            function getArea() {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://192.168.10.165:8088/area/',
+                    data: {
+                        parent_id: $('#city').val()
+                    },
+                    async: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#area').html(html);
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        th {
+            width: 50%;
+        }
+        tr {
+            line-height: 40px;
+        }
+        body {
+            text-align: center;
+        }
+        .skyblue {
+            background-color: skyblue;
+            color: #fff;
+        }
+        ul {
+            text-align: center;
+            height: 30px;
+            list-style: none;
+            margin: 0 auto;
+        }
+        ul li {
+            float: left;
+            list-style: none;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            margin: 2px 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <ul class="list"></ul>
+
+    <script src="js/jquery-3.6.0.js"></script>
+
+    <script>
+        /* 1.使用接口http://192.168.10.165:8088/newstype/获取相应的新闻数据，参数： page: number   当前页数          pagesize:number  第页显示的数量
+        http://192.168.10.165:8088/account/  获取新闻总数量，返回的是一个数字(通过新闻的总数量与每页显示的条数计算出总页数)
+        显示出数字分页器，显示当前页的前后两个数字 */
+
+        var page = 1;
+        var pagesize = 4;
+        var pages = 0;
+
+        function getPages() {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                data: {
+                    page: page,//第几页
+                    pagesize: pagesize//一页显示多少行数据
+                },
+                async: false,//同步
+                success: function(data) {
+                    // console.log(data);//获取有多少条数据
+                    pages = Math.ceil(data / pagesize);//得到总页数
+                } 
+            })
+        }
+        getPages();
+        // console.log(pages);
+
+        function getData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,//第几页
+                    pagesize: pagesize//一页显示多少行数据
+                },
+                dataType: 'json',//转换数据类型
+                success: function(data) {
+                    // console.log(data);//获取数据
+                    var str = '';
+                    for(var k in data) {
+                        str += '<tr><td>' + data[k].tid + '</td><td>' + data[k].tname + '</td></tr>';
+                    }
+                    $('tbody').html(str);
+                }
+            })
+        }
+        getData();
+
+        function getlist() {
+            var str = '<li class="index">首</li>';//首
+            for(var i = parseInt(page) - 2; i <= parseInt(page) + 2; i++) {
+                if (i > 0 && i <= pages) {
+                    if (i == page) {
+                        str += '<li class="skyblue">' + i + '</li>';//现在显示的本页添加样式
+                    } else {
+                        str += '<li class="num">' + i + '</li>';//其余的准备添加事件
+                    }
+                }
+            }
+            str += '<li class="end">末</li>';//末
+            $('.list').html(str);
+
+            $('.num').click(function() {
+                $(this).addClass('skyblue').siblings().removeClass('skyblue');
+                page = parseInt($(this).text());
+                getData();
+                getlist();
+            })
+
+            //首
+            $('.index').click(function() {
+                page = 1;
+                getData()
+                getlist();
+
+            })
+
+            //末
+            $('.end').click(function() {
+                page = pages;
+                getData()
+                getlist();
+
+            })
+        }
+        getlist();
+    </script>
+</body>
+</html>

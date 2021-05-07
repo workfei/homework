@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        img {
+            margin: 30px 0;
+        }
+
+        div {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+
+            border: 1px solid #4e6ef2;
+
+        }
+
+        #uname {
+            text-indent: 10px;
+            color: #333;
+            border: 0;
+            width: 100%;
+            height: 40px;
+        }
+
+        #btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 0;
+            width: 100px;
+            height: 100%;
+            background-color: #4e6ef2;
+            color: #fff;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        .box {
+            margin-top: 100px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .box li {
+            text-align: center;
+            border-right: 1px solid #ccc;
+            color: orange;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .box li:last-child {
+            border: 0;
+        }
+
+        .box li span {
+            color: #666;
+        }
+        .box li p {
+            margin: 10px 0;
+        }
+        .btns {
+            position: absolute;
+            top: 40px;
+            left: 0px;
+            height: 20px;
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .btns li {
+            float: left;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="img/0.png" alt="">
+    <div>
+        <input type="text" value="邵阳" id="uname">
+        <input type="button" id="btn" value="搜索">
+        <ul class="btns">
+            <li>北京</li>
+            <li>上海</li>
+            <li>广州</li>
+            <li>深圳</li>
+        </ul>
+    </div>
+    <ul class="box"></ul>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+
+    <script id="op" type="text/html">
+        {{each}}
+            <li>
+                <h2>{{$value.type}}</h2>
+                <p>{{$value.high}}-{{$value.low}}</p>
+                <span>{{$value.date}}</span>
+            </li>
+        {{/each}}
+    </script>
+
+    <script>
+        /* 3.使用网络天所接口：[http://wthrcdn.etouch.cn/weather_mini?city=邵阳     显示出相应的天气*/
+
+        $(function () {
+            $('#btn').click(function () {
+                console.log($('#uname').val());
+                var str = 'http://wthrcdn.etouch.cn/weather_mini?city=' + $('#uname').val();
+                getData(str)
+            })
+            function getData(str) {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://wthrcdn.etouch.cn/weather_mini?city=' + str,
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data.data.forecast);
+                        var html = template('op', data.data.forecast);
+                        $('.box').html(html);
+                    }
+                })
+            }
+            getData('邵阳');
+
+            $('.btns li').click(function() {
+                getData($(this).text());
+            }) 
+        })
+    </script>
+</body>
+
+</html>
