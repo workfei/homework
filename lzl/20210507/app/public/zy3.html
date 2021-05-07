@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            margin: auto;
+        }
+        li {
+            list-style: none;
+            float: left;
+            text-align: center;
+            margin-right: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <img src="img/tq.png" alt="">
+        <div class="search">
+            <input type="text" value="邵阳"><button>搜索</button>
+        </div>
+        <ul></ul>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script type="text/html" id="q1">
+        {{each}}
+            <li>
+                <h2>{{$value.type}}</h2>
+                <h2>{{$value.date}}</h2>
+                <p>{{$value.high}}</p>
+                <p>{{$value.low}}</p>
+                <span>{{$value.fengli}}</span>
+            </li>
+        {{/each}}
+    </script>
+    <script>
+        
+        $('button').click(function () {
+            var txt = $('input').val()
+            getQu(txt)
+        })
+        function getQu(txt) {
+            $.ajax({
+                type: 'get',
+                url: 'http://wthrcdn.etouch.cn/weather_mini?city=' + txt,
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data);
+                    console.log(data.data.forecast);
+                    var html = template('q1', data.data.forecast)
+                    $('ul').html(html)
+                }
+            })
+        }
+        $('button').click()
+    </script>
+</body>
+
+</html>

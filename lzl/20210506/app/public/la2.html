@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body,
+        header,
+        p,
+        main,
+        p,
+        span,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        #refreshContainer li {
+            background-color: #eee;
+            margin-bottom: 1px;
+            padding: 20px 10px;
+        }
+
+        .refreshText {
+            position: absolute;
+            width: 100%;
+            line-height: 50px;
+            text-align: center;
+            left: 0;
+            top: 0;
+            transform: translateY(-50px);
+        }
+    </style>
+</head>
+
+<body>
+    <main class="parent">
+        <p class="refreshText"></p>
+        <ul id="refreshContainer"></ul>
+    </main>
+
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+
+        var page = 1
+        var pagesize = 15
+        function getData(callback) {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var str = ''
+                    for (var k in data) {
+                        str += '<li>' + data[k].tname + '</li>'
+                    }
+                    console.log( $('#refreshContainer'));
+                    // $('#refreshContainer').html(str)
+                    $('#refreshContainer').prepend(str)
+                    callback && callback()
+                }
+            })
+        }
+        getData()
+
+        window.onload = function () {
+            var parent = document.querySelector('.parent')
+            var refreshText = document.querySelector('.refreshText')
+            var container = document.querySelector('#refreshContainer')
+            let starY = 0;
+            let endY = 0;
+            parent.addEventListener('touchstart', function (e) {
+                starY = e.touches[0].pageY
+            })
+            parent.addEventListener('touchmove', function (e) {
+                if (isTop() && (e.touches[0].pageY - starY) > 0) {
+                    refreshText.style.height = '50px'
+                    parent.style.transform = 'translateY(50px)'
+                    refreshText.innerHTML = '释放立即刷新...'
+                    parent.style.transform = 'all 0.5s'
+                }
+            })
+            parent.addEventListener('touchend', function (e) {
+                if (isTop()) {
+                    refreshText.innerHTML = '正在刷新...'
+                    page++
+                    getData(function () {
+                        parent.style.transform = 'translateY(0)'
+                    })
+                }
+                return
+            })
+            function isTop() {
+                var t = document.documentElement.scrollTop || document.body.scrollTop
+                return t === 0 ? true : false
+            }
+        }
+    </script>
+</body>
+
+</html>

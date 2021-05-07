@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button id="prev">上一页</button>
+    <input type="text" value="1">
+    <button id="next">下一页</button>
+
+    <script>
+        var page = 1;
+        var pagesize = 2;
+        var pages = 1;
+        function getDate() {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                success: function(data) {
+                    pages = Math.ceil(data / pagesize)
+                }
+            })
+        }
+        getDate()
+        console.log(pages);
+
+        function showData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize
+                },
+                dataType: 'json',
+                success: function(data) {
+                    var str = ''
+                    for(var k in data) {
+                        str += '<tr><td>'+ data[k].tid +'</td><td>'+ data[k].tname +'</td></tr>'
+                    }
+                    $('tbody').html(str)
+                }
+            })
+        }
+        showData()
+
+        $('#next').on('click', function () {
+            if (page < pages) {
+                page++
+                showData()
+                $('input').val(page)
+            }
+        })
+        $('#prev').on('click', function () {
+            if (page > 1) {
+                page--
+                showData()
+                $('input').val(page)
+            }
+        })
+    </script>
+</body>
+</html>

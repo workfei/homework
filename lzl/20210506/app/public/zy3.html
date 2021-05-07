@@ -8,6 +8,12 @@
     <title>Document</title>
     <script src="js/jquery-3.6.0.min.js"></script>
 </head>
+<style>
+    .active {
+        background-color: skyblue;
+        font-weight: 700;
+    }
+</style>
 
 <body>
     <table border="1">
@@ -19,27 +25,139 @@
         </thead>
         <tbody></tbody>
     </table>
+    <!-- <button class="prev">上一页</button>
+    <input type="text" value="1">
+    <button class="next">下一页</button>
+    <button class="q1 w active">1</button>
+    <button class="q2 w">2</button>
+    <button class="q3 w">3</button>
+    <button class="q4 w">4</button>
+    <button class="q5 w">5</button> -->
+    <ul></ul>
     <script>
-        $.ajax({
-            type: 'post',
-            url: 'http://192.168.10.165:8088/newstype/',
-            data: {
-                page: 1,
-                pagesize: 8
-            },
-            dataType: 'json',
-            success: function (data) {
-                var str = "";
-                for (var k in data) {
-                    str += "<tr><td>" + data[k]["tid"] + "</td>";
-                    str += "<td>" + data[k]["tname"] + "</td></tr>";
+        var page = 1;
+        var pagesize = 2;
+        var pages = 1;
+        function getPages() {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                success: function (data) {
+                    pages = Math.ceil(data / pagesize)
                 }
+            })
+        }
+        getPages()
+        console.log(pages);
 
-                $("tbody").html(str);
 
+        function showData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var str = "";
+                    for (var k in data) {
+                        str += "<tr><td>" + data[k]["tid"] + "</td>";
+                        str += "<td>" + data[k]["tname"] + "</td></tr>";
+                    }
+
+                    $("tbody").html(str);
+
+                }
+            })
+        }
+        showData()
+
+        $('.next').on('click', function () {
+            if (page < pages) {
+                page++
+                showData()
+                // var txt =  $(this).text()
+                $('input').val(page)
             }
         })
+        $('.prev').on('click', function () {
+            if (page > 1) {
+                page--
+                showData()
+                // var txt =  $(this).text()
+                $('input').val(page)
+            }
+        })
+        // $('.w').eq(0).click(function() {
+        //     page = 1;
+        //     showData()
+        //     $('input').val(page)
+        //     $(this).addClass('active').siblings().removeClass('active')
+        //     console.log(page);
+        //     $(this).siblings('.q2,.q3').fadeIn().siblings('.q4,.q5').fadeOut()
+        // })
+        // $('.w').eq(0).click()
 
+        // $('.w').eq(1).click(function() {
+        //     page = 2;
+        //     showData()
+        //     $('input').val(page)
+        //     $(this).addClass('active').siblings().removeClass('active')
+        //     console.log(page);
+        //     $(this).siblings('.q2,.q3').fadeIn().siblings('.q4,.q5').fadeOut()
+        //     $(this).siblings('.q1,.q3').fadeIn().siblings('.q4,.q5').fadeOut()
+
+        // })
+        // $('.w').eq(2).click(function() {
+        //     page = 3;
+        //     showData()
+        //     $('input').val(page)
+        //     $(this).addClass('active').siblings().removeClass('active')
+        //     $(this).siblings('.q2,.q4').fadeIn().siblings('.q1,.q5').fadeOut()
+        // })
+        // $('.w').eq(3).click(function() {
+        //     page = 4;
+        //     showData()
+        //     $('input').val(page)
+        //     $(this).addClass('active').siblings().removeClass('active')
+        //     $(this).siblings('.q3,.q5').fadeIn().siblings('.q1,q2').fadeOut()
+        // })
+        // $('.w').eq(4).click(function() {
+        //     page = 5;
+        //     showData()
+        //     $('input').val(page)
+        //     $(this).addClass('active').siblings().removeClass('active')
+        //     $(this).siblings('.q3,.q4').fadeIn().siblings('.q1,q2').fadeOut()
+
+        // })
+
+
+        function pagelist() {
+            var str = '<li>首</li>'
+            for (var i = page - 2; i <= page + 2; i++) {
+                if (i > 0 && i <= pages) {
+                    if (i == page) {
+                        str += '<li class="active">' + i + '</li>'
+                    } else {
+                        str += '<li class="num">' + i + '</li>'
+                    }
+
+                }
+            }
+            str += '<li>尾</li>'
+            $('ul').html(str)
+
+            $('.num').click(function () {
+                page = parseInt($(this).text())
+                showData()
+                pagelist()
+            })
+        }
+        pagelist()
     </script>
 </body>
 
