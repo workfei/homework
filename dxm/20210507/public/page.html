@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻分页</title>
+    <style>
+        input {
+            width: 50px;
+            outline: none;
+        }
+
+        .current {
+            color: white;
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box"></div>
+    <button class="first">首页</button>
+    <button class="prev">上一页</button>
+    <input type="number" value="1" class="page">
+    <button class="next">下一页</button>
+    <button class="last">末页</button>
+    </br>
+    <div class="pages"></div>
+
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+
+    <script id="con" type="text/html">
+        {{each}}
+            <p>{{$index + 1}}、{{$value}}</p>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            var page = 1;  //当前页数
+            var pagesize = 3;  //第page页显示的数量
+            var count = 0;  //新闻的总数量
+            btn();  //页面初始化调用
+            //获取相应的新闻数据
+            function btn() {
+                $.ajax({
+                    type: 'post',
+                    url: 'http://192.168.10.165:8088/newstype/',
+                    data: {
+                        page: page,
+                        pagesize: pagesize
+                    },
+                    success: function (data) {
+                        var result = JSON.parse(data);
+                        var str = [];
+                        for (var k in result) {
+                            str.push(result[k].tname);
+                        }
+                        var html = template("con", str);
+                        $(".box").html(html);
+                    }
+                })
+            }
+            //获取新闻总数量
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                data: {},
+                dataType: "text",
+                success: function (data) {
+                    count = parseInt(data);
+                }
+            })
+            //获取页数
+            function getPage() {
+                var num = page;
+                $(".page").val(num);
+            }
+            //改变页数
+            $(".page").on("change", function () {
+                page = parseInt($(".page").val());
+                if (page <= Math.ceil(count / pagesize) && page >= 1) {
+                    btn();
+                    column();
+                } else {
+                    alert("输入的页数不存在！");
+                }
+            })
+            $(".first").on("click", function () {
+                page = 1;
+                btn();
+                getPage();
+                column();
+            })
+            $(".prev").on("click", function () {
+                if (page > 1) {
+                    page--;
+                    btn();
+                    getPage();
+                    column();
+                }
+            })
+            $(".next").on("click", function () {
+                if (page < Math.ceil(count / pagesize)) {
+                    page++;
+                    btn();
+                    getPage();
+                    column();
+                }
+            })
+            $(".last").on("click", function () {
+                page = Math.ceil(count / pagesize);
+                btn();
+                getPage();
+                column();
+            })
+
+            createbtn();
+            function createbtn() {
+                for (var i = 0; i < Math.ceil(count / pagesize); i++) {
+                    var button = document.createElement("button");
+                    document.querySelector(".pages").appendChild(button);
+                    $(".pages").children().eq(i).text(i + 1);
+                }
+                $(".pages").children().on("click", function () {
+                    page = $(this).index() + 1;
+                    btn();
+                    getPage();
+                    column();
+                })
+            }
+
+            column();
+            function column() {
+                $(".pages").children().hide();
+                $(".pages").children().removeClass("current");
+                $(".pages").children().eq(page - 1).addClass("current");
+                for (var i = page - 2; i <= page + 2; i++) {
+                    if (i >= 0) {
+                        var result = i - 1;
+                        if (result < 0) {
+                            result = page + 1;
+                        }
+                        $(".pages").children().eq(result).show();
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

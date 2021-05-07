@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天气显示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            outline: none;
+            list-style: none;
+        }
+
+        .box {
+            margin-top: 50px;
+        }
+
+        .logo {
+            width: 158px;
+            height: 47px;
+            margin: 0 auto;
+        }
+
+        .search {
+            display: flex;
+            width: 520px;
+            margin: 30px auto 10px;
+        }
+
+        .sch {
+            width: 400px;
+            height: 50px;
+            text-indent: 15px;
+            border: 2px solid lightblue;
+        }
+
+        .btn {
+            width: 100px;
+            color: #fff;
+            background-color: lightskyblue;
+            border: 0;
+            cursor: pointer;
+        }
+
+        .history {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+            width: 480px;
+            margin: 0 auto 40px;
+        }
+
+        .weather {
+            display: flex;
+            width: 1000px;
+            margin: 0 auto;
+        }
+
+        li {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            width: 25%;
+            height: 150px;
+            color: orange;
+        }
+
+        span {
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="logo">
+            <img src="img/logo.png" alt="">
+        </div>
+        <div class="search">
+            <input type="search" name="" id="" value="邵阳" placeholder="请输入需要查询的城市" class="sch" maxlength="10">
+            <input type="button" value="搜索" class="btn">
+        </div>
+        <div class="history"></div>
+        <ul class="weather"></ul>
+    </div>
+
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        $(function () {
+            var cityname = "邵阳";  //定义变量接收城市名称
+            var history = "";
+
+            searchWea();
+            function searchWea() {
+                $.ajax({
+                    type: "get",
+                    url: "http://wthrcdn.etouch.cn/weather_mini?city=" + cityname + "",
+                    data: {},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.status == 1000) {
+                            var str = "";
+                            for (var i = 0; i < data.data.forecast.length; i++) {
+                                str += "<li><h2>" + data.data.forecast[i].type + "</h2>";
+                                str += "<p>" + data.data.forecast[i].high + "~" + data.data.forecast[i].low + "</p>";
+                                str += "<span>" + data.data.forecast[i].date + "</span></li>";
+                            }
+                            $(".weather").html(str);
+                        } else {
+                            $(".weather").html("");
+                            alert("查无此城市！");
+                        }
+                    }
+                })
+            }
+
+            $(".btn").on("click", function () {
+                var reg = /^[^u4E00-u9FA5]{0,}$/g;
+                if ($(".sch").val().trim() !== "" && reg.test($(".sch").val()) == true) {
+                    cityname = $(".sch").val();
+                    searchWea();
+                    history += "<span>" + cityname + "  <span>";
+                    $(".history").html(history);
+                } else {
+                    alert("请输入正确的城市名");
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
