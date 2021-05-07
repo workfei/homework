@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            text-align: center;
+        }
+
+        img {
+            margin: 30px 0;
+        }
+
+        .box {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            border: 1px solid #4e6ef2;
+
+        }
+
+        #uname {
+            text-indent: 10px;
+            color: #333;
+            border: 0;
+            width: 100%;
+            height: 40px;
+        }
+
+        #btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 0;
+            width: 100px;
+            height: 100%;
+            list-style: none;
+            background-color: #4e6ef2;
+            color: #fff;
+        }
+
+        #btns {
+            position: absolute;
+            top: 40px;
+            left: 0px;
+            height: 20px;
+            list-style: none;
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        #btns li {
+            float: left;
+            margin-left: 5px;
+        }
+
+        #list {
+            display: flex;
+            justify-content: space-between;
+            list-style: none;
+            margin-top: 100px;
+        }
+
+        #list li {
+            text-align: center;
+            border-right: 1px solid #ccc;
+            color: orange;
+            padding: 10px;
+            flex: 1;
+        }
+
+        #list li:last-child {
+            border: 0;
+        }
+
+        #list li span {
+            color: #666;
+        }
+        #list li p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="img/logo.png" alt="">
+    <div class="box">
+        <input type="text" value="邵阳" id="uname">
+        <input type="button" value="搜索" id="btn">
+        <ul id="btns">
+            <li>北京</li>
+            <li>上海</li>
+            <li>广州</li>
+            <li>深圳</li>
+        </ul>
+    </div>
+    <ul id="list"></ul>
+    <script src="js/jquery-3.6.0.js"></script>
+</body>
+
+</html>
