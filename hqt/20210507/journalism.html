@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        ul {
+            width: 300px;
+            margin: 0 auto;
+            list-style: none;
+        }
+        .box {
+            width: 300px;
+            height: 30px;
+            line-height: 30px;
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+        }
+        .box div {
+            width: 40px;
+            border: 1px solid skyblue;
+        }
+        .box .current {
+            background-color: skyblue;
+        }
+    </style>
+</head>
+<body>
+    <ul></ul>
+    <div class="box"></div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            // 当前页数
+            var page = 1;
+            // 一页有的数量
+            var pagesize = 4;
+            // 总页数
+            var pages = 1;
+            $.ajax({
+                type:'get',
+                url:'http://192.168.10.165:8088/account/',
+                async:false,
+                dataType:'json',
+                success:function(num){
+                    // 获得总数量
+                    pages = num / pagesize;
+                }
+            })
+            function getData() {
+                $.ajax({
+                    type:'post',
+                    url:'http://192.168.10.165:8088/newstype/',
+                    data:{
+                        page:page,
+                        pagesize:pagesize
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<li>${data[k].tid}${data[k].tname}</li>`);
+                        }
+                        // 渲染数据
+                        $('ul').html(arr.join(''));
+                        getPage();
+                    }
+                })
+            }
+            // 动态创建div
+            function getPage() {
+                var arr = [];
+                arr.push('<div class="first">首页</div>');
+                for(var i = page - 2; i <= page + 2;i++) {
+                    if (i > 0 && i <= pages)
+                    if (i == page) {
+                        arr.push('<div class="current">'+ i +'</div>');
+                    } else {
+                        arr.push('<div class="num">'+ i +'</div>');
+                    }
+                }
+                // 渲染数据
+                arr.push('<div class="end">尾页</div>');
+                $('.box').html(arr.join(''));
+                $('.num').click(function(){
+                    page = parseFloat($(this).text());
+                    getData();
+                })
+                // 首页点击事件
+                $('.first').click(function(){
+                    page = 1;
+                    getData();
+                })
+                // 尾页点击事件
+                $('.end').click(function(){
+                    page = pages;
+                    getData();
+                })
+            }
+            getData();
+        })
+    </script>
+</body>
+</html>

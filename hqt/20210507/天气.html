@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        div {
+            width: 230px;
+            margin: 0 auto;
+        }
+        ul {
+            display: flex;
+            justify-content: space-between;
+            width: 1000px;
+            margin: 0 auto;
+            list-style: none;
+        }
+        ul li {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div><input type="text" id="city">
+    <button>搜索</button></div>
+    <ul></ul>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            // 获取相应城市的数据
+            function getCity() {
+                $.ajax({
+                    type:'get',
+                    url:'http://wthrcdn.etouch.cn/weather_mini',
+                    data:{
+                        city:$('#city').val()
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.data.forecast) {
+                            var arr = [];
+                            data.data.forecast.forEach(val => {
+                                arr.push(`<li><h3>${val.type}</h3><h4>${val.high}~${val.low}</h4><p>${val.date}</p></li>`);
+                            })
+                            // 渲染数据
+                            $('ul').html(arr.join(''));
+                        }   
+                    }
+                })
+            }
+            // 给按钮点击事件
+            $('button').click(function(){
+                // 请求数据
+                getCity();
+            })
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省: <select name="" id="province"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="district"></select>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            // 获取省的数据然后渲染数据
+            function getPro() {
+                $.ajax({
+                    type:'get',
+                    url:'http://192.168.10.165:8088/pro/',
+                    dataType:'json',
+                    success:function(data){
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<option value="${data[k].pid}">${data[k].name}</option>`);
+                        }
+                        $('#province').html(arr.join(''));
+                        getCity();
+                    }
+                })
+            }
+            // 获取市的数据然后渲染数据
+            function getCity() {
+                $.ajax({
+                    type:'get',
+                    url:'http://192.168.10.165:8088/city/',
+                    data:{
+                        parent_id:$('#province').val()
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        console.log(data);
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<option value="${data[k].pid}">${data[k].name}</option>`);
+                        }
+                        $('#city').html(arr.join(''));
+                        getDistrict();
+                    }
+                })
+            }
+            // 获取区的数据然后渲染数据
+            function getDistrict() {
+                $.ajax({
+                    type:'get',
+                    url:'http://192.168.10.165:8088/area/',
+                    data:{
+                        parent_id:$('#city').val()
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<option value="${data[k].pid}">${data[k].name}</option>`);
+                        }
+                        $('#district').html(arr.join(''));
+                    }
+                })
+            }
+            getPro();
+            // 省发生改变就重新渲染数据
+            $('#province').change(function(){
+                getCity();
+            })
+            // 市发生改变就重新渲染数据
+            $('#city').change(function(){
+                getDistrict();
+            })
+        })
+    </script>
+</body>
+</html>
