@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+            <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        // 省接口： http://192.168.10.165:8088/pro/             get请求     无需参数
+        // 市接口： http://192.168.10.165:8088/city/          get请示     参数名parent_id      值为上一级的pid
+        // 区接口： http://192.168.10.165:8088/area/       get请求      参数名parent_id      值为上一级的pid
+        function getPro() {
+            // $是jquery对象
+            // ajax默认为异步提交ture为异步提交
+            $.ajax({
+                type:'get',
+                url:'http://192.168.10.165:8088/pro/',
+                data:{},
+                async: false,
+                dataType: 'json',
+                success: function(data) {
+                    var html = template('op',data);
+                    $('#pro').html(html);
+                    getCity($('#pro').val());
+                },
+                error:function(xhr) {
+                    
+                }
+            })
+        };
+        getPro();
+        function getCity(pid) {
+            $.ajax({
+                type:'get',
+                url:'http://192.168.10.165:8088/city/',
+                data:{
+                    parent_id : pid
+                },
+                async: false,
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    var html = template('op',data);
+                    $('#city').html(html);  
+                    getArea($('#city').val());                  
+                },
+                error:function(xhr) {
+                }
+            })
+        }
+        function getArea(pid) {
+            $.ajax({
+                type:'get',
+                url:'http://192.168.10.165:8088/area/',
+                data:{
+                    parent_id: pid
+                },
+                async: false,
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    var html = template('op',data);
+                    $('#area').html(html);                          
+                },
+                error:function(xhr) {
+                }
+            })
+        }
+        
+        
+        $('#pro').on('change', function () {
+            getCity($(this).val());
+            getArea($('#city').val());
+        });
+        $('#city').on('change', function () {
+            getArea($(this).val()); 
+        })
+    </script>
+</body>
+</html>

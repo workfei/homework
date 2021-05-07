@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            background-color: transparent;
+        }
+        *, ::after, ::before {
+            box-sizing: border-box;
+        }
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #dee2e6;
+        }
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+        td{
+            text-align: center;
+        }
+        #list{
+            width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            list-style: none;
+        }
+        ul li {
+            width: 30px;
+            height: 30px;
+            border: 1px solid gray;
+            text-align: center;
+            line-height: 30px;
+            float: left;
+        }
+        .active {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody id="tblist">
+            <!-- <tr><td>1</td><td>体育新闻</td></tr> -->
+        </tbody>
+    </table>
+    <ul id="list">
+    </ul>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function () {
+            var page = 1;
+            var pagesize = 3;//每一页个
+            function getPages() {
+                $.ajax({
+                    type:'get',
+                    url:'http://192.168.10.165:8088/account/',
+                    async:false,
+                    success: function (data) {
+                        pages = Math.ceil(data/pagesize);
+                    }
+                })
+            }
+            getPages();
+            function showData () {
+                $.ajax({
+                    type: 'post',
+                    url: 'http://192.168.10.165:8088/newstype/',
+                    data: {
+                        page: page, 
+                        pagesize: pagesize
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        var str = [];
+                        for (k in data) {
+                            str.push('<tr><td>'+ data[k].tid +'</td><td>'+ data[k].tname +'</td></tr>')
+                        }
+                        $('tbody').html(str.join(''))
+                    },
+                })
+            }
+            showData();
+            function prolist () {
+                var str = '';
+                str += '<li class = "index">首</li>'
+                for (var i = page-2;i <= page + 2; i++) {
+                    if (i > 0 && i <= pages) {
+                        if (i == page) {
+                            str += '<li class = "active">'+ i +'</li>'
+                        } else {
+                            str += '<li class = "num">'+ i +'</li>'
+                        }
+                    }
+                }
+                str += '<li class = "end">末</li>';
+                $('#list').html(str);
+                // 使用num类名添加点击事件
+                $('.num').click (function() {
+                    page = parseInt($(this).text());
+                    showData();
+                    prolist();
+                })
+                $('.index').click (function() {
+                    page = 1;
+                    showData();
+                    prolist();
+                })
+                $('.end').click (function() {
+                    page = pages;
+                    showData();
+                    prolist();
+                })
+            }
+            prolist();
+        })
+        
+        
+    </script>
+</body>
+</html>

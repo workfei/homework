@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .inp {
+            margin: 0 auto;
+            width: 500px;
+        }
+        .tq {
+            text-align: center;
+            margin: 0 auto;
+        }
+        .tq div {
+            width: 300px;
+            float: left;
+        }
+        p,span {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <!-- 使用网络天所接口：[http://wthrcdn.etouch.cn/weather_mini?city=邵阳     显示出相应的天气    -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <div class="inp">
+        <input type="text">
+        <button>搜索</button>
+    </div>
+    
+    <div class="tq">
+        <h2 class="weather">下雨</h2>
+        <p class="temperature">天气</p>
+        <span class="day">日期</span>
+    </div>
+    <script>
+        var input = document.querySelector('input');
+        var weather = document.querySelector('.weather');
+        var temperature = document.querySelector('.temperature');
+        var day = document.querySelector('.day');
+        city = '邵阳'
+        $(function () {
+            function qi() {
+                $.ajax({
+                    type:'get',
+                    url:'http://wthrcdn.etouch.cn/weather_mini?city=' + city,
+                    async: false,
+                    dataType: 'json',
+                    success:function(data) {
+                        var str = [];
+                        console.log(data);
+                        console.log(data.data.forecast);
+                        for(k in data.data.forecast) {
+                            str.push('<div><h2 class="weather">'+data.data.forecast[k].type  +'</h2><p class="temperature">'+ data.data.forecast[k].high + '--' + data.data.forecast[k].low+'</p><span class="day">'+ data.data.forecast[k].date +'</span></div>')
+                        }
+                        $('.tq').html(str.join(''))
+                    }
+                }) 
+            }
+            qi();
+            $('button').click(function() {
+                city = input.value;
+                qi();
+            })
+        })
+    </script>
+</body>
+</html>
