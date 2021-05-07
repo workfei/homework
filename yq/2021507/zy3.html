@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .box {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .place {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .place input {
+            width: 400px;
+            height: 30px;
+            padding-left: 10px;
+            border: 1px solid skyblue;
+            box-sizing: border-box;
+            color: #777;
+            outline: none;
+        }
+
+        .place button {
+            width: 50px;
+            height: 30px;
+            line-height: 30px;
+            border: transparent;
+            background-color: skyblue;
+            color: #fff;
+        }
+        .choose {
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .choose span {
+            margin-right: 5px;
+        }
+        .weather {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+            list-style: none;
+        }
+        .weather li {
+            padding: 10px 20px;
+            text-align: center;
+            border-right: 1px solid orange;
+        }
+        .weather li:last-of-type {
+            border-right: none;
+        }
+        .weather .how {
+            margin-bottom: 8px;
+            font-size: 22px;
+            color: orangered;
+        }
+        .weather .temperature {
+            margin-bottom: 5px;
+            color: orangered;
+        }
+        .weather .data {
+            color: #777;
+        }
+        .tip {
+            margin-top: 20px;
+            font-size: 20px;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="logo"><img src="img/sky_know.png" alt=""></div>
+        <div class="place"><input type="text" value="邵阳"><button>搜索</button></div>
+        <div class="choose">
+            <span>北京</span>
+            <span>上海</span>
+            <span>广州</span>
+            <span>深圳</span>
+        </div>
+        <div class="tip"></div>
+        <ul class="weather"></ul>
+    </div>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script>
+        $(function () {       
+            // 推荐地域点击
+            var city;
+            $(".choose span").each(function(i, ele) {
+                $(ele).click(function() {
+                    city = $(this).text()
+                    getWeather()
+                })
+            })
+
+            function getWeather() {
+                $.ajax({
+                    type: "get",
+                    url: "http://wthrcdn.etouch.cn/weather_mini?city=" + city + "",
+                    dataType: "json",
+                    beforeSend: function() {
+                        $('.weather').html("")
+                    },
+                    success: function (data) {
+                        if (data.status == 1002) {
+                            layer.msg("请输入正确的地址")
+                        } else {
+                            $(".tip").html(data.data.ganmao)
+                            var text = '';//用于接收数据
+                            $.each(data.data.forecast, function(i, ele) {
+                                text += `<li>
+                                    <div class="how">${ele.type}</div>
+                                    <div class="temperature">${ele.high}-${ele.low}</div>
+                                    <div class="data">${ele.date}</div>
+                                </li>`                                                      
+                            })
+                            $(".weather").append(text)//添加数据
+                        }
+                    }
+                })
+            }
+            $(".place button").click(function () {
+                city = $(".place input").val()
+                getWeather()
+            })   
+            $(".place button").click()//默认点击显示一个地区天气
+
+        })
+    </script>
+</body>
+
+</html>

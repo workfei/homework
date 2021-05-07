@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        ul {
+            width: 200px;
+            margin: 20px auto;
+        }
+        li {
+            float: left;
+            border: 1px solid black;
+            text-align: center;
+            line-height: 25px;
+            width: 25px;
+            list-style: none;
+            margin-right: 10px;
+        }
+        .active {
+            background-color: pink;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <table width='500' align="center" border="1">
+        <thead>
+            <tr>
+                <th>tid</th>
+                <th>tname</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <ul>
+        
+    </ul>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        var page = 1;
+        var pagesize = 3;
+        var num = 0;
+        function getdata() {
+            $.ajax({
+                type:'get',
+                url: 'http://192.168.10.165:8088/account/ ',
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    num = data / pagesize;
+                }
+            })
+        }
+        getdata();
+        function getnews() {
+            $.ajax({
+                type: 'post',
+                url:'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize,
+                },
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    var arr = [];
+                    for(var k in data) {
+                        arr.push('<tr><td>' + data[k].tid + '</td><td>'  + data[k].tname +'</td></tr>')
+                    }
+                    $('tbody').html(arr.join());
+                }
+            })
+        }
+        getnews();
+        function getbtn() {
+            var str = '';
+            for(var i = page - 1; i <= page + 1; i++) {
+                console.log(2);
+               if(i > 0 && i <= num) {
+                   if(i == page) {
+                    str += '<li class="active">'+ i +'</li>';
+                   } else {
+                    str += '<li class="lis">'+ i +'</li>';
+                   }
+                    
+               }
+            }
+            $('ul').html(str);
+            $('.lis').click(function() {
+                page = parseInt($(this).text());
+                getnews();
+                getbtn();
+            })
+        }
+        getbtn();
+    </script>
+</body>
+</html>

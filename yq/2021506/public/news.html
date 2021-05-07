@@ -33,10 +33,39 @@
             line-height: 30px;
             text-align: center;
             background-color: gold;
+            cursor: pointer;
         }
 
         .back {
             margin-right: 10px;
+        }
+
+        .inform,
+        .page-box {
+            text-align: center;
+        }
+
+        .page-box {
+            display: none;
+        }
+
+        .the-page {
+            display: flex;
+            justify-content: center;
+        }
+
+        .the-page li {
+            width: 30px;
+            line-height: 30px;
+            border: 1px solid red;
+            margin-right: 10px;
+            list-style: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .the-page .active {
+            background-color: skyblue;
+            color: #fff;
         }
     </style>
 </head>
@@ -55,12 +84,20 @@
         <div class="back btn">上一页</div>
         <div class="next btn">下一页</div>
     </div>
+    <div class="inform">正在请求中...</div>
+    <div class="page-box">
+        <span class="num1">0</span>/
+        <span class="num2">0</span>
+    </div>
+    <ul class="the-page">
+    </ul>
     <script src="js/jquery-3.2.1.min.js"></script>
     <script>
         $(function () {
             var page = 1; //当前页面
-            var pageSize = 2; //页面的数据量
-            var total = 0; //总新闻数
+            var pageSize = 1; //页面的数据量
+            var total; //总新闻数
+
             function news() {
                 $.ajax({
                     type: "post",
@@ -69,44 +106,120 @@
                         page: page, //当前页面
                         pagesize: pageSize //页面的数据量
                     },
+                    beforeSend: function () {
+                        $(".tbody").html("")
+                        $(".btn").hide()
+                        $(".inform").fadeIn()
+                        $(".page-box").hide()
+                        $(".the-page").hide()
+                    },
                     dataType: "json",
                     success: function (data) {
+                        $(".inform").hide()
                         $(".btn").fadeIn() //请求成功后翻页按钮显示
+                        $(".page-box").fadeIn()
+                        $(".the-page").fadeIn()
                         // 遍历对象
                         $.each(data, function (i, ele) {
-                            var text = $("<tr><td>" + ele.tid + "</td><td>" + ele.tname + "</td></tr>")
+                            var text = $("<tr><td>" + ele.tid + "</td><td>" + ele.tname +
+                                "</td></tr>")
                             $(".tbody").append(text) //tbody添加数据
                         })
+
                     }
                 })
             }
-            news()//初始化调用
+            news() //初始化调用
             //总共数量
-            function total() {
-                $.ajax({
-                    type: "post",
-                    url: "http://192.168.10.165:8088/account/",
-                    dataType: "json",
-                    success: function (num) {
-                        return total = num;
+            $.ajax({
+                type: "get",
+                async: false,
+                url: "http://192.168.10.165:8088/account/",
+                dataType: "text",
+                success: function (num) {
+                    total = num;
+                }
+            })
+            $(".page-box .num2").text(total / pageSize)
+            $(".page-box .num1").text(page)
+
+
+            // ===========翻页 开始=========
+            // for (var i = 1; i <= total; i++) {
+            //     if (i <= 3) {
+            //         var li = $("<li>" + i + "</li>")
+            //         $(".the-page").append(li)
+            //     }
+            // }
+
+            // $(".the-page li").click(function () {
+            //     page = $(this).text()
+            //     news()
+            //     // $(this).css("background", "gray").siblings().css("background", "")
+            //     if ($(this).text() >= 3) {
+            //         $(".the-page").html("")
+            //         for (var i = 1; i <= 5; i++) {
+            //             var li = $("<li>" + i + "</li>")
+            //             $(".the-page").append(li)
+            //         }
+            //         pageNum()
+            //     }
+            // })
+
+            // function pageNum() {
+            //     $(".the-page li").click(function () {
+            //         page = $(this).text()
+            //         news()
+            //         $(".the-page").html("")
+            //         for (var i = $(this).text() - 2; i <= parseInt($(this).text()) +
+            //             2; i++) {
+            //             var li = $("<li>" + i + "</li>")
+            //             $(".the-page").append(li)
+            //         }
+            //         pageNum()
+            //     })
+            // }
+            function pagelist() {
+                var str = ""
+                for (var i = page - 2; i <= page + 2; i++) {
+                    if (i > 0 && i <= total) {
+                        if (i == page) {
+                            str += "<li class='active'>"+i+"</li>"
+                        } else {
+                            str += "<li class='num'>"+i+"</li>"
+                        }
                     }
+                }
+                $(".the-page").html(str)
+
+                // 使用num类名来绑定点击事件
+                $(".num").click(function() {
+                    page = parseInt($(this).text())
+                    news()
+                    pagelist()
                 })
             }
-            total()
+            pagelist()
+            // ===========翻页 结束=========
+
             $(".back").click(function () {
                 if (page > 1) {
                     page--;
+                    $(".page-box .num1").text(page)
                     news();
+                } else {
                     alert("已经是第一页了")
                 }
             })
             $(".next").click(function () {
                 if (page < total / pageSize) {
                     page++;
+                    $(".page-box .num1").text(page)
                     news();
+                } else {
                     alert("已经是最后一页了")
                 }
-            }) 
+            })
         })
     </script>
 </body>

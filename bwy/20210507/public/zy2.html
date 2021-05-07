@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <select name="" id="pro"></select>
+    <select name="" id="city"></select>
+    <select name="" id="area"></select>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="template-web.js"></script>
+    <script id="opt" type="text/html">
+        {{each}}
+        <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        function getpro() {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/pro/',
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    // console.log(data);
+                    var html = template('opt',data);
+                    $('#pro').html(html);
+                }
+            })
+        }
+        getpro();
+        function getcity(cityid) {
+            $.ajax({
+                type: 'get',
+                url: ' http://192.168.10.165:8088/city/',
+                data: {parent_id: cityid},
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    console.log(data);
+                    var html = template('opt', data);
+                    $('#city').html(html);
+                }
+            })
+        }
+        getcity($('#pro').val());
+        function getarea(areaid) {
+            $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/area/',
+                data: {parent_id: areaid},
+                async: false,
+                dataType: 'json',
+                success: function(data) {
+                    // console.log(data);
+                    var html = template('opt',data);
+                    $('#area').html(html);
+                }
+            })
+        }
+        getarea($('#city').val());
+        $('#pro').change(function() {
+            getcity($('#pro').val());
+            getarea($('#city').val());
+        })
+        $('#city').change(function() {
+            getarea($('#city').val());
+        })
+    </script>
+</body>
+</html>

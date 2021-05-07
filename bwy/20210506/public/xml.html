@@ -22,12 +22,13 @@
     </table>
     <script src="jquery-3.6.0.min.js"></script>
     <script>
+        // console.log(document.documentElement); //找文档根节点
         $(function() {
         $.ajax({
             type: "get",
             url: "data.xml",
             success: function(data) {
-          
+            // data.documentElement.getElementsByTagName('CD');  //
         $(data).find('CD').each((i,ele) => {
             var title = $(ele).children('TITLE').text();
             var artist = $(ele).children('ARTIST').text();

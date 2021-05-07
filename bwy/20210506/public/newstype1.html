@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻类型</title>
+    <style>
+        div {
+            width: 500px;
+            text-align: center;
+            margin: auto;
+        }
+        #yi,
+        #er {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <table width='500' align="center" border="1" cellspacing='0' cellpading='0'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        </tbody>
+    </table>
+    <div>
+        <button id="yi">0</button>
+        <button id="er">0</button>
+        <button id="san">1</button>
+        <button id="si">2</button>
+        <button id="wu">3</button>
+        <span id="present">1</span>
+        <span id="sum"></span>
+    </div>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script>
+        // 默认显示第几页的数据
+        var page = 1;
+        var pageSize = 1;   //每页显示的新闻数量
+        var pages = 1;  //新闻可以分的总页数
+        function getPages() {
+           $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                success: function(data) {
+                    pages = Math.ceil(data / pageSize);  //总页数 = 总数量/ 每页的数量
+                    $('#sum').html('总共'+ pages +'页');
+                }
+           })
+        }
+        getPages();
+        
+        // 把默认的第一页渲染出来
+        function showData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pageSize,
+                },
+                dataType: 'json',
+                // async: false,
+                success: function(data) {
+                //   console.log(data); //返回的是json格式数据
+                  var arrhtml = [];
+                  for(var k in data) {
+                    arrhtml.push('<tr><td>'+ data[k].tid +'</td><td>'+ data[k].tname +'</td></tr>')
+                  }
+                  $("tbody").html(arrhtml.join(''));
+                  $('#present').html('当前第'+ page + '页');
+                }
+           })
+        }
+        showData();
+        console.log($("#wu").html());;
+        console.log(page);
+       
+       $("#wu").on('click',function() {
+            page+=2;
+            if(page > 2) {
+                $("#yi").show();
+                $("#er").show();
+            } else if(page > 1){
+                $("#er").show();
+            }
+        $("#yi").html(page - 2);
+        $("#er").html(page - 1);
+        $("#san").html(page);
+        $("#si").html(page + 1);
+        $("#wu").html(page +2);
+        showData();
+           
+       })
+       $("#si").on('click',function() {
+           page+=1;
+           if(page > 2) {
+                $("#yi").show();
+                $("#er").show();
+            } else if(page > 1){
+                $("#er").show();
+            }
+           $("#yi").html(page - 2);
+            $("#er").html(page - 1);
+            $("#san").html(page);
+            $("#si").html(page + 1);
+            $("#wu").html(page +2);
+            showData();
+       })
+       $("#yi").on('click',function() {
+            page-=2;
+            if(page < 2) {
+                $("#yi").hide();
+                $("#er").hide();
+            } else if(page < 1){
+                $("#yi").hide();
+            }
+           $("#yi").html(page - 2);
+            $("#er").html(page - 1);
+            $("#san").html(page);
+            $("#si").html(page + 1);
+            $("#wu").html(page +2);
+            showData();
+       })
+       $("#er").on('click',function() {
+           page-=1;
+           if(page < 2) {
+                $("#yi").hide();
+                $("#er").hide();
+            } else if(page < 1){
+                $("#yi").hide();
+            }
+           $("#yi").html(page - 2);
+            $("#er").html(page - 1);
+            $("#san").html(page);
+            $("#si").html(page + 1);
+            $("#wu").html(page +2);
+            showData();
+       })
+    </script>
+</body>
+</html>

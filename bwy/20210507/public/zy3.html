@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        img {
+            position: relative;
+            left: 50%;
+            transform: translate(-50%);
+        }
+        .box {
+            width: 380px;
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
+            height: 100px;
+        }
+        input {
+            width: 300px;
+            height: 50px;
+            border: 1px solid pink;
+            outline: none;
+            box-sizing: border-box;
+            text-indent: 1em;
+        }
+        button {
+            background-color: skyblue;
+            height: 50px;
+            width: 80px;
+            color: white;
+            outline: none;
+            border: none;
+        }
+        .title {
+            margin-top: 10px;
+        }
+        .title li{
+            float: left;
+            list-style: none;
+            margin-right: 10px;
+            color: gray;
+        }
+        .tq {
+            display: flex;
+            margin-top: 50px;
+        }
+        .tq li {
+            flex: 1;
+            float: left;
+            list-style: none;
+            text-align: center;
+        }
+        .tq li h2 {
+            color: orange;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <img src="tzd.png" alt="">
+    <div class="box">
+        <input type="text" placeholder="邵阳"><button>搜索</button>
+        <ul class="title">
+            <li>北京</li>
+            <li>上海</li>
+            <li>广州</li>
+            <li>深圳</li>
+        </ul>
+    </div>
+    <h1></h1>
+    <ul class="tq">
+
+    </ul>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script src="template-web.js"></script>
+    <script id="tq" type="text/html">
+        <!-- {date: "8日星期六", high: "高温 27℃", fengli: "<![CDATA[1级]]>", low: "低温 20℃", fengxiang: "西风", …} -->
+        {{each}}
+        <li>
+        <h2>{{$value.date}}</h2>
+        <p>{{$value.high}}</p>
+        <p>~</p>
+        <p>{{$value.low}}</p>
+        <p>{{$value.fengxiang}}</p>
+        </li>
+        {{/each}}
+    </script>
+    <script>
+        var city = '邵阳';
+        function getTq() {
+            $.ajax({
+                type: 'get',
+                url: 'http://wthrcdn.etouch.cn/weather_mini?city='+ city,
+                dataType: 'json',
+                async: false,
+                success: function(data) {
+                    console.log(data);
+                    if(data.desc == 'OK') {
+                        // console.log(data.desc);
+                        var weather = data.data.forecast;
+                        var html = template('tq', weather);
+                        $('.tq').html(html);
+                        $('h1').html(data.data.city);
+                    } else {
+                        layer.msg('输入正确的城市');
+                    }
+                   
+                },
+               
+            })
+        }
+        getTq();
+        $('button').click(function() {
+            city = $('input').val();
+            getTq();
+        })
+        $('.title li').click(function() {
+            city = $(this).text();
+            $('input').val(city);
+            getTq();
+        })
+    </script>
+</body>
+</html>

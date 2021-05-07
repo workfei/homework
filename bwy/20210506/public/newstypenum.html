@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻类型</title>
+    <style>
+        #list {
+            width: 500px;
+            text-align: center;
+            margin: 20px auto 0;
+        }
+        #list li {
+            width: 30px;
+            height: 30px;
+            border: 1px solid gray;
+            text-align: center;
+            line-height: 30px;
+            float: left;
+            list-style: none;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        .active {
+            background-color: pink;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <table width='500' align="center" border="1" cellspacing='0' cellpading='0'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        </tbody>
+    </table>
+    <ul id="list">
+    </ul>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script>
+        // 默认显示第几页的数据
+        var page = 1;
+        var pageSize = 1;   //每页显示的新闻数量
+        var pages = 1;  //新闻可以分的总页数
+        function getPages() {
+           $.ajax({
+                type: 'get',
+                url: 'http://192.168.10.165:8088/account/',
+                async: false,
+                success: function(data) {
+                    pages = Math.ceil(data / pageSize);  //总页数 = 总数量/ 每页的数量
+                    $('#sum').html('总共'+ pages +'页');
+                }
+           })
+        }
+        getPages();
+        
+        // 把默认的第一页渲染出来
+        function showData() {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pageSize,
+                },
+                dataType: 'json',
+                // async: false,
+                success: function(data) {
+                //   console.log(data); //返回的是json格式数据
+                  var arrhtml = [];
+                  for(var k in data) {
+                    arrhtml.push('<tr><td>'+ data[k].tid +'</td><td>'+ data[k].tname +'</td></tr>')
+                  }
+                  $("tbody").html(arrhtml.join(''));
+                  $('#present').html('当前第'+ page + '页');
+                }
+           })
+        }
+        showData();
+
+        // 显示动态按钮
+        function pagelist() {
+            var str = '<li>首</li>';
+            //动态创建数字按钮
+            for(var i= page-2; i <= page + 2; i++ ){
+                if( i > 0 && i <= pages) {  //在页面数的范围内显示(1-pages)
+                    if(i == page) {  //如果是当前页则添加类名active
+                    str += '<li class = "active">'+ i +'</li>';  
+                    } else {
+                    str += '<li class= "num">'+ i +'</li>';  
+                    }
+                } 
+            }
+            str += '<li>尾</li>';
+            $('#list').html(str);
+
+            // 使用num类名来绑定点击事件
+            $(".num").click(function() {
+                // console.log($(this).text());
+                page = parseInt($(this).text());
+                showData();
+                pagelist();
+            })
+        }
+        pagelist();
+    </script>
+</body>
+</html>

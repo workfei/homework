@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        tr {
+            height: 55px;
+        }
+
+        .inform {
+            text-align: center;
+        }
+
+        .the-page {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .the-page li {
+            width: 50px;
+            line-height: 30px;
+            border: 1px solid red;
+            margin-right: 10px;
+            list-style: none;
+            text-align: center;
+            cursor: pointer;
+        }
+        .the-page .active {
+            background-color: skyblue;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <table width="100%" border="1" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+            </tr>
+        </thead>
+        <tbody class="tbody"></tbody>
+    </table>
+    <div class="inform">正在获取中...</div>
+    <ul class="the-page">
+    </ul>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function() {
+            var page = 1; //当前页面
+            var pageSize = 4; //页面的数据量
+            var total; //总新闻数
+            function getNews() {
+                $.ajax({
+                    type: "post",
+                    url: "http://192.168.10.165:8088/newstype/",
+                    data: {
+                        page: page, //当前页面
+                        pagesize: pageSize //页面的数据量
+                    },
+                    beforeSend: function () {
+                        // 发送请求前样式的操作
+                        $(".tbody").html("")
+                        $(".btn").hide()
+                        $(".inform").fadeIn()
+                        $(".page-box").hide()
+                        $(".the-page").hide()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        // 发送请求后样式的操作
+                        $(".inform").hide()
+                        $(".btn").fadeIn() //请求成功后翻页按钮显示
+                        $(".page-box").fadeIn()
+                        $(".the-page").fadeIn()
+                        // 遍历对象
+                        $.each(data, function (i, ele) {
+                            var text = $("<tr><td>" + ele.tid + "</td><td>" + ele.tname +
+                                "</td></tr>")
+                            $(".tbody").append(text) //tbody添加数据
+                        })
+
+                    }
+                })
+            }
+            getNews() //初始化调用
+
+            // 获取数据总量
+            $.ajax({
+                type: "get",
+                url: "http://192.168.10.165:8088/account/",
+                async: false,
+                success: function(num) {
+                    total = num
+                }
+            })
+
+            // ===分页器===
+            function pagelist() {
+                var str = ""
+                str += "<li class='home'>首页</li>"
+                for (var i = page - 2; i <= page + 2; i++) {          
+                    if (i > 0 && i <= total / pageSize) {
+                        if (i == page) {
+                            str += "<li class='active'>"+i+"</li>"
+                        } else {
+                            str += "<li class='num'>"+i+"</li>"
+                        }
+                    }                  
+                }
+                str += "<li class='last'>尾页</li>"
+                $(".the-page").html(str)
+
+                // 使用num类名来绑定点击事件
+                $(".num").click(function() {
+                    page = parseInt($(this).text())
+                    getNews()
+                    pagelist()
+                })
+
+                $(".home").click(function() {
+                    page = 1;
+                    getNews()
+                    $(".the-page li:eq(1)").addClass("active").siblings().removeClass("active")
+                })
+                $(".last").click(function() {
+                    page = total / pageSize;
+                    getNews()
+                })
+            }
+            pagelist()
+        })
+    </script>
+</body>
+</html>

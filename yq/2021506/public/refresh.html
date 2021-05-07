@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body,
+        header,
+        p,
+        main,
+        p,
+        span,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        #refreshContainer li {
+            list-style: none;
+            background-color: #eee;
+            margin-bottom: 1px;
+            padding: 20px 10px;
+        }
+
+        .refreshText {
+            position: absolute;
+            width: 100%;
+            line-height: 50px;
+            text-align: center;
+            left: 0;
+            top: 0;
+            transform: translateY(-50px);
+        }
+
+        .parent {
+            transition: all .8s;
+        }
+
+        .warning {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="warning">正在刷新...</div>
+    <main class="parent">
+        <p class="refreshText"></p>
+        <ul id="refreshContainer">
+            <li>111</li>
+            <li>222</li>
+            <li>333</li>
+            <li>444</li>
+            <li>555</li>
+            <li>111</li>
+            <li>222</li>
+            <li>333</li>
+            <li>444</li>
+            <li>555</li>
+            <li>111</li>
+            <li>222</li>
+        </ul>
+    </main>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function () {
+            // ============自===============
+            // function downrefresh() {
+            //     $(".parent").on({
+            //         "touchstart": function (e) {
+            //             if (isTop()) {
+            //                 $(".parent").css("transform", "translateY(30px)")
+            //                 $(".warning").show()
+            //             }
+            //         }
+            //     })
+            // }
+            // downrefresh()
+
+            // var page = 1; //当前页面
+            // var pageSize = 1; //页面的数据量
+            // var total = 15;
+
+            // function relax() {
+            //     $(".parent").on({
+            //         "touchend": function () {
+            //             if (isTop()) {
+            //                 $.ajax({
+            //                     type: "post",
+            //                     url: "http://192.168.10.165:8088/newstype/",
+            //                     dataType: "json",
+            //                     data: {
+            //                         page: page, //当前页面
+            //                         pagesize: pageSize //页面的数据量
+            //                     },
+            //                     success: function (data) {
+            //                         if (page <= total) {
+            //                             page++;
+            //                         }
+            //                         for (var k in data) {
+            //                             var html = $("<li>"+data[k].tname+"</li>")
+            //                         }                 
+            //                         $("#refreshContainer").prepend(html);
+            //                         $(".parent").css("transform", "translateY(0px)")
+            //                         $(".warning").hide()
+            //                     }
+            //                 })
+            //             }
+            //         }
+            //     })
+            // }
+            // relax()
+            // =================自 结束=================
+
+            // ==========课堂 开始========
+            function isTop() {
+                var t = document.documentElement.scrollTop || document.body.scrollTop;
+                return t === 0 ? true : false;
+            }
+
+            var page = 1;
+            var pageSize = 10;
+            function getData(callback) {
+                $.ajax({
+                    type: "post",
+                    url: "http://192.168.10.165:8088/newstype/",
+                    dataType: "json",
+                    data: {
+                        page: page, //当前页面
+                        pagesize: pageSize //页面的数据量
+                    },
+                    success: function(data) {
+                        var str = ''
+                        for (var k in data) {
+                            str += '<li>'+data[k].tname+'</li>'
+                        }
+                        $("#refreshContainer").prepend(str)
+                        callback && callback()
+                    }
+                })
+            }
+            // ==========课堂 结束========
+        })
+    </script>
+</body>
+
+</html>

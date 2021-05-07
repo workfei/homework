@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        select {
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        省: <select name="" id="pro"></select>
+        市: <select name="" id="city"></select>
+        区: <select name="" id="area"></select>
+        <!-- <div class="inform">正在努力加载中...</div> -->
+    </div>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script>
+        $(function () {
+            // 省
+            function getPro() {
+                $.ajax({
+                    type: "get",
+                    url: "http://192.168.10.165:8088/pro/",
+                    dataType: "json",
+                    async: false,//同步
+                    success: function (data) {
+                        var arr = [];
+                        // 得到的数据为对象型
+                        for (var k in data) {
+                            arr.push(data[k]) //对象转数组
+                            var html = template("op", arr)
+                            $("#pro").html(html)
+                        }
+                        getCity();//调用市
+                    }
+                })
+            }
+            getPro()
+            $("#pro").change(function() {
+                getCity()
+            })
+            // 市
+            function getCity() {
+                $.ajax({
+                    type: "get",
+                    url: "http://192.168.10.165:8088/city/",
+                    dataType: "json",
+                    async: false,//同步
+                    data: {
+                        parent_id: $("#pro").val(),
+                    },
+                    success: function(data) {
+                        var arr = [];
+                        // 得到的数据为对象型
+                        for (var k in data) {
+                            arr.push(data[k]) //对象转数组
+                            var html = template("op", arr)
+                            $("#city").html(html)
+                        }
+                        getArea();//调用区
+                    }
+                })
+            }
+            $("#city").change(function() {
+                getArea()
+            })
+            // 区
+            function getArea() {
+                $.ajax({
+                    type: "get",
+                    url: "http://192.168.10.165:8088/area/",
+                    dataType: "json",
+                    async: false,//同步
+                    data: {
+                        parent_id: $("#city").val(),
+                    },  
+                    success: function(data) {
+                        var arr = [];
+                        // 得到的数据为对象型
+                        for (var k in data) {
+                            arr.push(data[k]) //对象转数组
+                            var html = template("op", arr)
+                            $("#area").html(html)
+                        }
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>

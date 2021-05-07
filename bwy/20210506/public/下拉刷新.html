@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,
+        body,
+        header,
+        p,
+        main,
+        p,
+        span,
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #refreshContainer li {
+            background-color: #eee;
+            margin-bottom: 1px;
+            padding: 20px 10px;
+        }
+
+        .refreshText {
+            position: absolute;
+            width: 100%;
+            line-height: 50px;
+            text-align: center;
+            left: 0;
+            top: 0;
+            transform: translateY(-50px);
+        }
+        /* .parent {
+            transition: all 1s;
+        } */
+    </style>
+</head>
+<body>
+    <main class="parent">
+        <p class="refreshText"></p>
+        <ul id="refreshContainer"></ul>
+    </main>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script>
+        var x = 0;
+        var movex = 0;
+        var page = 1;
+        var pagesize = 10;
+        function getData(callback) {
+            $.ajax({
+                type: 'post',
+                url: 'http://192.168.10.165:8088/newstype/',
+                data: {
+                    page: page,
+                    pagesize: pagesize,
+                },
+                dataType: 'json',
+                success: function(data) {
+                    var str = '';
+                    for(var k in data) {
+                        str += '<li>'+ data[k].tname +'</li>';
+                    }
+                    // console.log(str);
+                    // console.log($('#refreshContainer'));
+                    // $('#refreshContainer').html(str);
+                    $('#refreshContainer').prepend(str);
+                    callback && callback();
+                }
+            })
+        }
+        getData();
+        $('.parent').on('touchstart',function(e) {
+            x = e.targetTouches[0].pageY;
+        })
+        $('.parent').on('touchmove',function(e) {
+            movex = e.targetTouches[0].pageY - x;
+            // console.log(movex);
+           if(movex > 0) {
+                if(movex > 50) {
+                    movex = 50;
+                }
+                $('.parent').css({transform: 'translateY('+ movex + 'px)'});
+                $('.refreshText').html('下拉刷新');
+                $('.refreshText').css({height: movex});
+           }
+        })
+        $('.parent').on('touchend', function(e) {
+            $('.refreshText').html('正在刷新...');
+            setTimeout(function() {
+                // $('#refreshContainer').prepend('<li>123</li>');
+                page++;
+                getData(function() {
+                    console.log(1);
+                    $('.parent').css({transition: 'all .5s'});
+                    $('.parent').css({transform: 'translateY(0)'});
+                });
+            },2000)
+        })
+    </script>
+</body>
+</html>
