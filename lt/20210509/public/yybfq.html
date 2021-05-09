@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .yy {
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+        }
+        .yy > div {
+            display: flex;
+        }
+        .top {
+            height: 50px;
+            background-color: skyblue;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .center {
+            height: 500px;
+            
+        }
+        .music,.pl {
+            width: 200px;
+            overflow: auto;
+            list-style: none;
+        }
+        .geci {
+            width: 400px;
+            background-color:grey;
+        }
+        .pl {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="yy">
+        <div class="top">
+            <p>音魔</p>
+            <div>
+              <input type="text" id="search" value="李易峰">  
+              <input type="button" value="搜索" class="btn">
+            </div>
+            
+        </div>
+        <div class="center">
+            <ul class="music"></ul>
+            <div class="geci">
+                <ul class="">
+
+                </ul>
+            </div>
+            <ul class="pl"></ul>
+        </div>
+        <div class="jindu">
+            <audio src="" controls autoplay></audio>
+        </div>
+    </div>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(function(){
+            // 搜索歌曲
+            function search() {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/search',
+                    data:{
+                        keywords:$('#search').val()
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            var arr = [];
+                            data.result.songs.forEach(val => {
+                                arr.push(`<li id="${val.id}">${val.name}</li>`);
+                            })
+                            // 渲染数据
+                            $('.music').html(arr.join(''));
+                            // 点击事件
+                            $('.music li').click(function(){
+                                getUrl($(this).prop('id'));
+                                getComment($(this).prop('id'));
+                            })
+                        }
+                    }
+                })
+            }
+            // 获取歌曲的url
+            function getUrl(id) {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/song/url',
+                    data:{
+                        id:id
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            // 播放歌曲
+                            $('audio').prop('src',data.data[0].url);
+                        }
+                    }
+                })
+            }
+            // 获取热门评论
+            function getComment(id) {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/comment/hot',
+                    data:{
+                        type:0,
+                        id:id
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            var arr = [];
+                            data.hotComments.forEach((val,index) => {
+                                arr.push(`<li>${index}.${val.content}</li>`);
+                            })
+                            // 渲染数据
+                            $('.pl').html(arr.join(''));
+                        }
+                    }
+                })
+            }
+            search()
+        })
+        
+    </script>
+</body>
+</html>
