@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        .box {
+            width: 800px;
+            height: 546px;
+            margin: 0 auto;
+        }
+        
+        .head {
+            height: 60px;
+            line-height: 60px;
+            background-color: #1eacda;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .head a {
+            font-size: 25px;
+            color: #fff;
+            text-decoration: none;
+            padding-left: 23px;
+        }
+        
+        .head input {
+            float: right;
+            width: 281px;
+            height: 36px;
+            font-size: 15px;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            background-color: #83d1eb;
+            padding-left: 15px;
+            margin: 11px 0px 0 0;
+        }
+        
+        .head button {
+            float: right;
+            width: 35px;
+            height: 36px;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            color: #fff;
+            background-color: orange;
+            margin: 11px 23px 0 0;
+        }
+        
+        .main {
+            height: 433px;
+            background-color: #e7cbad;
+        }
+        
+        .active {
+            width: 182px;
+            height: 42px;
+            background-color: #c1c2c3;
+            border-radius: 5px;
+        }
+        
+        .main span {
+            float: right;
+            font-size: 14px;
+            margin: 12px 139px 0 0;
+        }
+        
+        .footer {
+            height: 56px;
+            background-color: #ccc;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .footer audio {
+            width: 800px;
+            border-radius: 5px;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="box">
+        <div class="head">
+            <a href="javascript:;">悦听</a>
+            <button id="btn">搜索</button>
+            <input type="text" id="text">
+        </div>
+        <div class="main">
+            <ul class="list"></ul>
+            <div class="record"></div>
+            <span>热门留言</span>
+            <ol class="list2"></ol>
+        </div>
+        <div class="footer">
+            <audio src="" controls="controls" autoplay="autoplay"></audio>
+        </div>
+    </div>
+    <script>
+        $(function() {
+            function getUrl(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/song/url?id=' + id,
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data);
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>
