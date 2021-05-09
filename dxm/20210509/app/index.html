@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网易云播放器</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/layer/jquery-3.6.0.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <script src="js/ajax.js"></script>
+</head>
+
+<body>
+    <div class="wy-player">
+
+        <header>
+            <div class="title">
+                <h3>XM PLAYER</h3>
+            </div>
+            <div class="search">
+                <input type="text" value="" autocomplete="on">
+                <img src="img/search.png" alt="" class="sear-icon">
+            </div>
+        </header>
+
+        <article>
+            <div class="left">
+                <ul></ul>
+            </div>
+            <div class="center">
+                <div class="cd">
+                    <div class="poster"><img src="img/logo.png" alt=""></div>
+                </div>
+            </div>
+            <div class="right">
+                <h4>热门留言</h4>
+                <ul></ul>
+            </div>
+        </article>
+
+        <footer>
+            <audio src="" controls autoplay></audio>
+        </footer>
+    </div>
+
+    <script>
+        $(function () {
+            var mid = [];  //存储当前搜索到歌曲id
+            var deg = 0;  //存储旋转角度
+            var timer;  //定义唱片旋转的定时器
+            var local;  //获取当前音乐地址
+            //查询歌曲信息
+            function getMusic() {
+                mid = [];
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/search',
+                    data: {
+                        keywords: $(".search input").val()
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (!data.msg) {
+                            var songs = data.result.songs;
+                            var str = "";
+                            $(songs).each((num, arr) => {
+                                mid.push(songs[num].id);
+                                str += '<li><img src="img/icon.png" alt=""><span>' + songs[num].name + '</span></li>';
+                            })
+                            $(".left ul").html(str);
+                            $(".left ul").children().on("click", function () {
+                                getMusrc($(this).index());
+                                getInform($(this).index());
+                                getHot($(this).index());
+                            })
+                        } else {
+                            layer.msg("查无此歌曲/歌星", { icon: 3 });
+                        }
+                    }
+                })
+            }
+            $(".search input").on('keydown', function (e) {
+                if (e.keyCode == 13) {
+                    getMusic();
+                }
+            })
+            $(".sear-icon").on('click', function () {
+                getMusic();
+            })
+
+            //获取歌曲详情
+            function getInform(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/song/detail',
+                    data: {
+                        ids: mid[id]
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        $(".poster img")[0].src = data.songs[0].al.picUrl;
+                    }
+                })
+            }
+
+            //获取热门评论
+            function getHot(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/comment/hot?type=0',
+                    data: {
+                        id: mid[id]
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var str = "";
+                        $(data.hotComments).each((num, arr) => {
+                            str += '<li><img src=' + data.hotComments[num].user.avatarUrl + ' alt="">';
+                            str += '<span>' + data.hotComments[num].user.nickname + '</span>';
+                            str += '<p>' + data.hotComments[num].content + '</p></li>';
+                        })
+                        $(".right ul").html(str);
+                    }
+                })
+            }
+
+            //获取歌曲链接
+            function getMusrc(id) {  //接收点击时的准确索引值
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/song/url',
+                    data: {
+                        id: mid[id]
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        getAudio(data.data[0].url);
+                    }
+                })
+            }
+
+            //播放音乐
+            function getAudio(url) {
+                if (url !== local) {
+                    layer.load(1);
+                    setTimeout(function () {
+                        layer.closeAll('loading');
+                    }, 500);
+                    local = url;
+                    $("footer audio")[0].src = url;
+                    deg = 0;
+                } else {
+                    layer.msg("请勿重复播放", { icon: 6 });
+                }
+            }
+
+            $(window).on("click", function () {
+                setTimeout(function () {
+                    var player = $("footer audio")[0];
+                    if (player.paused) {
+                        clearInterval(timer);
+                        console.log("暂停");
+                    } else {
+                        clearInterval(timer);
+                        timer = setInterval(() => {
+                            $(".poster").css({
+                                "transform": "rotateZ(" + deg + "deg)"
+                            })
+                            deg++;
+                        }, 30);
+                        console.log("播放");
+                    }
+                }, 1000)
+            })
+        })
+    </script>
+</body>
+
+</html>
