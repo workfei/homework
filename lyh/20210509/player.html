@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: tan;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .player {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            margin: 20px auto;
+            box-sizing: border-box;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: oldlace;
+        }
+        .above {
+            width: 100%;
+            height: 50px;
+            background-color: skyblue;
+            position: relative;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .above p {
+            color: #fff;
+            line-height: 50px;
+            font-size: 25px;
+        }
+        .search {
+            width: 300px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 30px;
+            border-radius: 20px;
+            background-color: powderblue;
+            box-sizing: border-box;
+            padding: 0 10px;
+            overflow: hidden;
+        }
+        .search input {
+            outline: none;
+            height: 99%;
+            border: none;
+            background-color: powderblue;
+        }
+        .search input:nth-of-type(1) {
+            width: 100%;
+        }
+        .search input:nth-of-type(2) {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+        }
+        .box {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+        .box-l {
+            float: left;
+            width: 200px;
+            height: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            overflow-y: scroll;
+        }
+        .box-c {
+            float: left;
+            width: 400px;
+            height: 100%;
+            border: 1px solid #666;
+            border-top: none;
+            border-bottom: none;
+            box-sizing: border-box;
+            transform: translateX(-20px);
+            background-color: rgb(230, 210, 185);
+        }
+        .box-c img {
+            width: 100%;
+            height: 80%;
+            overflow: hidden;
+        }
+        .box-c-box {
+            height: 68px;
+        }
+        .box-c p {
+            display: block;
+            height: 34px;
+            width: 100%;
+            background-color: rgb(230, 210, 185);
+            color: #fff;
+            text-align: center;
+            line-height: 34px;
+        }
+        .box-l ul,
+        .box-l li {
+            list-style: none;
+        }
+        .box-l li {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-indent: 35px;
+            font-size: 15px;
+            overflow: hidden;
+        }
+        .box-l li::after {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: url("./img/1.png") no-repeat 0 0;
+            background-size: 100% 100%;
+            border-radius: 10px;
+        }
+        .box-l li:nth-of-type(2n) {
+            background-color:#fff;
+        }
+        .box-r {
+            float: right;
+            width: 200px;
+            height: 100%;
+        }
+        .below {
+            width: 100%;
+            height: 50px;
+
+        }
+        .below audio {
+            width: 100%;
+            height: 100%;
+        }
+        .box-r-box {
+            line-height: 25px;
+            color: #333;
+            padding-left: 20px;
+            padding-right: 10px;
+        }
+        .box-r h2 {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 做一个简易版的网易云播放器: （样式可以不写成这样，但大概框架需要这样，搜索之后需要一个列表） -->
+
+    <div class="player">
+        <div class="above">
+            <p>悦听</p>
+            <div class="search">
+                <input type="text" name="text" id="text">
+                <input type="button" value="搜索" id="btn">
+            </div>
+        </div>
+
+        <div class="box">
+            <ul class="box-l">
+            </ul>
+
+            <div class="box-c">
+                <img src="img/0.png" alt="">
+                <div class="box-c-box">
+
+                </div>
+            </div>
+
+            <div class="box-r">
+                <h2>热门留言</h2>
+                <ol class="box-r-box">
+            
+                </ol>
+            </div>
+        </div>
+
+        <div class="below">
+            <audio src="" controls autoplay></audio>
+        </div>
+    </div>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        $(function() {
+            //点击选择播放的url
+            function getPlay(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/song/url?id=' + id,
+                    dataType: 'json',
+                    success: function(data) {
+                        // console.log(data.data[0].url);
+                        var str = data.data[0].url;
+                        $('.below audio').attr('src', str);
+                    } 
+                })
+            }
+
+            //搜索 渲染
+            function getSearch(text) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/search',
+                    dataType: 'json',
+                    data: {
+                        keywords: text,
+                    },
+                    success: function(data) {
+                        // console.log(data.result.songs);
+                        //列表
+                        $('.box-l').html('');
+                        data.result.songs.forEach(val => {
+                            var str = '<li id="'+val.id+'">'+val.name+'</li>'
+                            $('.box-l').append(str);
+                        })
+                        $('.box-l li').click(function() {
+                            getPlay($(this).attr('id'));
+                            getComment($(this).attr('id'));
+                            getdetail($(this).attr('id'));
+                        })
+                    } 
+                })
+            }
+            //按钮点击事件
+            $('#btn').click(function() {
+                getSearch($('#text').val());
+            })
+
+            //热门留言 评论
+            function getComment(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/comment/hot?type=0',
+                    data: {
+                        id: id,
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // console.log(data.hotComments);
+                        $('.box-r .box-r-box').html('');
+                        data.hotComments.forEach(val => {
+                            var str = '<li>'+val.content+'</li>'
+                            $('.box-r-box').append(str);
+                        })
+                    } 
+                })
+            }
+
+            function getdetail(id) {
+                $.ajax({
+                    type: 'get',
+                    url: 'https://autumnfish.cn/song/detail',
+                    data: {
+                        ids: id,
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        // console.log(data.songs[0].al.name);
+                        // console.log(data.songs[0].ar[0].name);
+                        $('.box-c-box').html(`
+                            <p>${data.songs[0].al.name}</p>
+                            <p>${data.songs[0].ar[0].name}</p>
+                        `);
+                    } 
+                })
+            }
+        })
+    </script>
+</body>
+</html>
