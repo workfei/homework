@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .con {
+            display: flex;
+            width: 100%;
+        }
+        .con ul {
+            flex: 33%;
+            height: 800px;
+            overflow: auto;
+        }
+        .con div {
+            flex: 33%;
+            height: 800px;
+            overflow: hidden;
+        }
+        .con div img {
+            width: 100%;
+        }
+        li {
+            list-style: none;
+        }
+        audio {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-box"><input type="text" id="search" value="刘德华"><input type="button" value="搜索" class="btn"></div>
+    <div class="con">
+        <ul class="song"></ul>
+        <div><img src="" alt=""></div>
+        <ul class="comment"><li>热门评论</li></ul>
+    </div>
+    <audio src="" controls autoplay></audio>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            // 搜索歌曲
+            function search() {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/search',
+                    data:{
+                        keywords:$('#search').val()
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            var arr = [];
+                            data.result.songs.forEach(val => {
+                                arr.push(`<li id="${val.id}">${val.name}</li>`);
+                            })
+                            // 渲染数据
+                            $('.song').html(arr.join(''));
+                            // 点击事件
+                            $('.song li').click(function(){
+                                getUrl($(this).prop('id'));
+                                getComment($(this).prop('id'))
+                                getDetail($(this).prop('id'))
+                            })
+                        }
+                    }
+                })
+            }
+            // 获取歌曲的url
+            function getUrl(id) {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/song/url',
+                    data:{
+                        id:id
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            // 播放歌曲
+                            $('audio').prop('src',data.data[0].url);
+                        }
+                    }
+                })
+            }
+            // 获取热门评论
+            function getComment(id) {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/comment/hot',
+                    data:{
+                        type:0,
+                        id:id
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 200) {
+                            var arr = [];
+                            data.hotComments.forEach((val,index) => {
+                                arr.push(`<li>${index}.${val.content}</li>`);
+                            })
+                            // 渲染数据
+                            $('.comment').html(arr.join(''));
+                        }
+                    }
+                })
+            }
+            // 获取歌曲详情
+            function getDetail(id) {
+                $.ajax({
+                    type:'get',
+                    url:'https://autumnfish.cn/song/detail',
+                    data:{
+                        type:0,
+                        ids:id
+                    },
+                    dataType:'json',
+                    success:function(data){
+                        console.log(data);
+                        if (data.code == 200) {
+                            $('div img').prop('src',data.songs[0].al.picUrl);
+                        }
+                    }
+                })
+            }
+            $('.btn').click(function(){
+                search();
+            })
+            search();
+        })
+    </script>
+</body>
+</html>
