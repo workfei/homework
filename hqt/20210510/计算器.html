@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算器</title>
+</head>
+
+<body>
+    <h1>实现简单的计算器功能</h1>
+    <ol>
+        <li>用vue框架实现一下功能</li>
+        <li>计算两个输入框中的值的结果</li>
+        <li>通过切换按钮实现加减乘除运算</li>
+        <li>输入完第一个值时,按回车键自动切换到第二个参数</li>
+        <li>输入完第二个值时,按回车键直接显示当前的计算结果</li>
+    </ol>
+    <div id="app">
+        <input type="text" class="num1" v-model='num1' @keyup.enter="enterNum1">
+        <select class="opt" v-model='type'>
+            <option value='+'>+</option>
+            <option value='-'>-</option>
+            <option value='*'>*</option>
+            <option value='/'>/</option>
+        </select>
+        <input type="text" class="num2" v-model='num2' @keyup.enter="enterNum2">
+        <button @click="count">=</button>
+        <span class="result">{{result}}</span>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el:'#app',
+            data:{
+               num1:null,
+               num2:null,
+               result:null,
+               type:'+'
+            },
+            methods:{
+                // 计算两个输入框中的值的结果
+                count:function(e){
+                    this.num1 = parseInt(this.num1);
+                    this.num2 = parseInt(this.num2);
+                    switch (this.type) {
+                        case '+':
+                            this.result = this.num1 + this.num2;
+                            break;
+                        case '-':
+                            this.result = this.num1 - this.num2;
+                            break;
+                        case '*':
+                            this.result = this.num1 * this.num2;
+                            break;
+                        case '/':
+                            this.result = this.num1 / this.num2;
+                            break;
+                    }
+                },
+                enterNum1(e){
+                    // 输入完第一个值时,按回车键自动切换到第二个参数
+                    var num2 = document.querySelector('.num2');
+                    num2.focus();
+                },
+                enterNum2(e){
+                    // 输入完第二个值时,按回车键直接显示当前的计算结果
+                    var num2 = document.querySelector('.num2');
+                    num2.blur();
+                    this.count();
+                }
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+    <!-- <script>
+        let opt = document.querySelector('.opt');
+        let resultDiv = document.querySelector('.result');
+        let num1Input = document.querySelector('.num1');
+        let num2Input = document.querySelector('.num2');
+        function calc(e) {
+            let type = opt.options[opt.selectedIndex].text;
+            let num1 = num1Input.value;
+            num1 = parseInt(num1);
+            let num2 = num2Input.value;
+            num2 = parseInt(num2);
+            let result = 0;
+            switch (type) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    result = num1 / num2;
+                    break;
+            }
+            resultDiv.innerHTML = result;
+        }
+
+        num1Input.addEventListener('keyup', function (e) {
+            if (e && e.key == 'Enter') {
+                num2Input.focus();
+            }
+        })
+        num2Input.addEventListener('keyup', function (e) {
+            if (e && e.key == 'Enter') {
+                num2Input.blur();
+                calc();
+            }
+        })
+    </script> -->
+</body>
+
+</html>
