@@ -78,6 +78,10 @@
         ul {
             list-style: none;
             overflow-y: auto;
+            
+        }
+        ul::-webkit-scrollbar {
+            display:none
         }
 
         .bd ul {
@@ -87,11 +91,20 @@
             padding: 10px 0 10px 10px;
             box-sizing: border-box;
         }
-
+        .bd ul .mv {
+            display: none;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            background-color: green;
+            text-align: center;
+            color: #fff;
+        }
         .bd li {
+            position: relative;
             width: 100%;
-            padding: 10px;
-            padding-left: 20px;
+            padding: 10px 20px;
             cursor: pointer;
             font-size: 12px;
             box-sizing: border-box;
@@ -130,6 +143,9 @@
             color: red;
             font-size: 12px;
         }
+        .bd .massage::-webkit-scrollbar {
+            display:none
+        }
         .bd .massage p {
             padding: 10px 3px;
             border: 1px solid gray;
@@ -167,14 +183,17 @@
             <div class="massage"></div>
         </div>
         <div class="footer">
-            <audio src="" controls="controls"></audio>
+            <audio src="" controls="controls" loop></audio>
         </div>
     </div>
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/template-web.js"></script>
     <script id="music-name" type="text/html">
         {{each}}
-        <li id="{{$value.id}}">{{$value.album.name}}</li>
+        <li id="{{$value.id}}" mvid="{{$value.mvid}}">
+            {{$value.album.name}}
+            <span class="mv">M</span>
+        </li>
         {{/each}}
     </script>
     <script id="comments" type="text/html">
@@ -212,11 +231,18 @@
                         var html = template("music-name", data.result.songs);
                         $(".bd .lf").html(html);
 
+                        $(".bd .lf li").each(function(i,ele) {
+                            if ($(ele).attr("mvid") != 0) {
+                                $(this).children(".mv").show()
+                            }
+                        })
                         // 请求成功后给歌名点击事件
                         $(".bd .lf li").click(function () {
                             getUrl($(this).attr("id"))//歌曲路径调用
                             getMessage($(this).attr("id"))//热评调用
                             getDetail($(this).attr("id"))
+
+                            getMv($(this).attr("mvid"))
                         })
                     }
                 })
@@ -267,6 +293,21 @@
                     success: function(data) {
                         var html = template("comments",data.hotComments)
                         $(".bd .massage").html(html)
+                    }
+                })
+            }
+
+            // MV
+            function getMv(id) {
+                $.ajax({
+                    type: "get",
+                    url: "https://autumnfish.cn/mv/url",
+                    dataType: "json",
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {
+                        console.log(data.data.url);//调整样式,以及冒泡
                     }
                 })
             }

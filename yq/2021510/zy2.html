@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            display: flex;
+            justify-content: center;
+        }
+        .hi {
+            width: 500px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: 700;
+            font-style: italic;
+            color: gold;
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" class="hi" v-on:keydown.96="sayHi" value="Hello">
+    </div>
+    <script src="js/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            methods:{
+                sayHi: function() {
+                    var hi = document.querySelector(".hi")
+                    console.log(hi);
+                    hi.style.background = "skyblue"
+                }
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
