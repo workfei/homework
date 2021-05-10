@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>自定义按钮修饰符</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{weather}}</h1>
+        <input type="text" id="text" name="" v-model="weather" v-on:keydown.0="getOnce">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                weather: "今天天气针不戳！"
+            },
+            methods: {
+                getWeather() {
+                    console.log(1);
+                    var input = document.querySelector("#text");
+                    this.weather = input.value;
+                },
+                getOnce() {
+                    document.querySelector("h1").innerHTML = "<h1 v-once>{{" + this.weather + "}}</h1>";
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
