@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+</head>
+<body>
+    <div id="app">
+        <ol>
+            <li>账号 admin</li>
+            <li>密码 admin</li>
+            <li>密码输入时 要用密文显示</li>
+            <li>点击登录按钮 实现登录</li>
+            <li>当账户不对时 提示账户错误</li>
+            <li>当密码不对的时候 提示密码错误</li>
+            <li>当账户密码都对是时候，提示登录成功</li>
+        </ol>
+        账号：<input type="text" name="uname" v-model="myname">
+        密码：<input type="password" name="upwd" v-model="mypwd">
+        <input type="button" value="登录" v-on:click="login">
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                uname:'admin',
+                upwd:'admin',
+                myname:'',
+                mypwd:'',
+            },
+            methods:{
+                // 点击登录按钮
+                login(){
+                    if (this.myname == this.uname) {
+                        if (this.mypwd == this.upwd) {
+                            // 当账户密码都对是时候，提示登录成功
+                            layer.msg('登录成功');
+                        } else {
+                            // 当密码不对的时候 提示密码错误
+                            layer.msg('密码错误');
+                        }
+                    } else {
+                        // 当账户不对时 提示账户错误
+                        layer.msg('账户错误');
+                    }
+                }
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
