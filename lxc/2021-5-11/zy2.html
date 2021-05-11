@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style></style>
+</head>
+
+<body>
+    <div id="app">
+        <form action="">
+            账户： <input type="text" name="uname" id="" placeholder="账户" v-model="text"><br> 密码：
+            <input type="password" name="upwd" id="" placeholder="密码" v-model="password"><br>
+            <input type="button" value="登录" @click="getLogin">
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                uname: 'admin',
+                upwd: '123456',
+                text: '',
+                password: '',
+            },
+            methods: {
+                getLogin() {
+                    if (this.uname == this.text && this.upwd == this.password) {
+                        alert('登录成功');
+                    } else if (this.uname != this.text) {
+                        alert('账户错误');
+                    } else {
+                        alert('密码错误');
+                    }
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
