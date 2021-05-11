@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-简单的登录系统</title>
+    <script src="layer/jquery-3.6.0.js"></script>
+    <script src="layer/layer.js"></script>
+</head>
+
+<body>
+    <h1>简单的登录系统</h1>
+    <div id="app">
+        账号:<input type="text" name="account" v-model="account" ref="input" v-on:keydown.enter="login"><br>
+        密码:<input type="password" name="pwd" v-model="pwd" ref="input1" v-on:keydown.enter="login">
+        <input type="button" value="登录" @click="login" style="cursor: pointer;">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                account: null,
+                pwd: null
+            },
+            methods: {
+                login() {
+                    if (this.account != "admin") {
+                        this.$refs.input.focus();
+                        this.$refs.input.select();
+                        layer.msg("账号输入错误,请重新输入", { icon: 2 });
+                        return;
+                    } else if (this.pwd != "admin") {
+                        this.$refs.input1.focus();
+                        this.$refs.input1.select();
+                        layer.msg("密码输入错误,请重新输入", { icon: 2 });
+                        return;
+                    } else {
+                        this.account = null;
+                        this.pwd = null;
+                        this.$refs.input.blur();
+                        this.$refs.input1.blur();
+                        layer.msg("登录成功！", { icon: 1 });
+                    }
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
