@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        账号: <input type="text" v-model="id" v-on:blur="setId()">
+        密码: <input type="password" v-model='password' v-on:blur="serPassword()">
+        <button>登录</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                id: '',
+                password: ''
+            },
+            methods: {
+                setId() {
+                    if (this.id == 'admin') {
+                        console.log('账户正确');
+                    } else {
+                        console.log('账户错误');
+                    }
+                },
+                serPassword() {
+                    if (this.password == 'admin') {
+                        console.log('密码正确');
+                    } else {
+                        console.log('密码错误');
+                    }
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
