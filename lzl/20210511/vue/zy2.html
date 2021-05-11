@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <ol>
+            ​ <li>账号 admin</li>
+            ​ <li>密码 admin</li>
+            ​ <li>密码输入时 要用密文显示</li>
+            ​ <li>点击登录按钮 实现登录</li>
+            ​ <li>当账户不对时 提示账户错误</li>
+            ​ <li>当密码不对的时候 提示密码错误</li>
+            ​ <li>当账户密码都对是时候，提示登录成功</li>
+        </ol>
+        账号: <input type="text" name="username" id="uname" v-on:keyup.13="num" v-model="uname" autofocus>
+        密码: <input type="password" name="userpwd" id="upwd" v-on:keyup.13="goods" v-model.number="upwd" ref="goods">
+        <button @click="getResult">登录</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                uname: null,
+                upwd: null,
+            },
+            methods: {
+                getResult() {
+                    if (this.uname == '老张真帅' && this.upwd == 123456) {
+                        alert('登录成功')
+                    } else if (this.uname != '老张真帅') {
+                        alert('账号错误')
+                    } else if(this.upwd != 123456) {
+                        alert('密码错误')
+                    } 
+                },
+                num() {
+                    this.$refs['goods'].focus() 
+                },
+                goods() {
+                    this.$refs['goods'].blur()
+                    this.getResult()
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
