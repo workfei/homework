@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 40%;
+            margin: 50px auto;
+        }
+        .news h2 {
+            padding-bottom: 10px;
+            border-bottom: 2px solid red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="box">
+            <div class="search">
+                <input type="text" v-model="newsName"><button @click="search">搜索</button>
+            </div>
+            <div class="news" v-for="(value,index) in copyData" :key="value.id">
+                <h2>{{value.type}}</h2>
+                <ul class="list">
+                    <li v-for="(value,index) in value.news">{{value}}</li>
+                </ul>
+            </div>      
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                newsName: '',
+                theData: [{
+                    id: 1,
+                    type: '娱乐',
+                    news: [
+                        '上综艺都要用替身？大明星这么忙？',
+                        '赚了钱还来恶心人，不取关留着过年吗？',
+                        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光',
+                        '上综艺都要用替身？大明星这么忙？',
+                        '赚了钱还来恶心人，不取关留着过年吗？',
+                        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光'
+                    ]
+                }, {
+                    id: 2,
+                    type: '体育',
+                    news: [
+                        '记者：罗霍将3年合约签约博卡青年队',
+                        '李娜退出中国国籍？还有领事证明？驻釜山总领事馆发表声明',
+                        '单场62分破纪录 是库里对“体系球员”最好的回答',
+                        '老里：哈里斯当选对大家都是好消息 我非常喜欢“三球”',
+                        '0-1！大冷门！利物浦轰然倒下，3轮丢7分，曼联秒变赢家',
+                        '全联盟第一！周琦顶替阿联成新一哥 1数据已冠绝全CBA？'
+                    ]
+                }, {
+                    id: 3,
+                    type: '财经',
+                    news: [
+                        '樊纲：我们要争取最好的结果，避免最坏的结果',
+                        '玩命工作像重回高三，受够大厂法则，这些年轻人选择逃离',
+                        '你的房租降了吗？全国40个重点城市中32个去年租金下降',
+                        '凌晨两三点接到领导电话是常事，PUA式加班逼着95后裸辞',
+                        '中银基金：2021年股市结构性机会可期 债券性价比或更高',
+                        '中信证券：白酒板块仍有上行空间，建议继续紧抱龙头股'
+                    ]
+                }],
+                copyData: [{
+                    id: 1,
+                    type: '娱乐',
+                    news: [
+                        '上综艺都要用替身？大明星这么忙？',
+                        '赚了钱还来恶心人，不取关留着过年吗？',
+                        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光',
+                        '上综艺都要用替身？大明星这么忙？',
+                        '赚了钱还来恶心人，不取关留着过年吗？',
+                        '生日快乐！80岁宫崎骏《崖上的波妞》手写中文信曝光'
+                    ]
+                }, {
+                    id: 2,
+                    type: '体育',
+                    news: [
+                        '记者：罗霍将3年合约签约博卡青年队',
+                        '李娜退出中国国籍？还有领事证明？驻釜山总领事馆发表声明',
+                        '单场62分破纪录 是库里对“体系球员”最好的回答',
+                        '老里：哈里斯当选对大家都是好消息 我非常喜欢“三球”',
+                        '0-1！大冷门！利物浦轰然倒下，3轮丢7分，曼联秒变赢家',
+                        '全联盟第一！周琦顶替阿联成新一哥 1数据已冠绝全CBA？'
+                    ]
+                }, {
+                    id: 3,
+                    type: '财经',
+                    news: [
+                        '樊纲：我们要争取最好的结果，避免最坏的结果',
+                        '玩命工作像重回高三，受够大厂法则，这些年轻人选择逃离',
+                        '你的房租降了吗？全国40个重点城市中32个去年租金下降',
+                        '凌晨两三点接到领导电话是常事，PUA式加班逼着95后裸辞',
+                        '中银基金：2021年股市结构性机会可期 债券性价比或更高',
+                        '中信证券：白酒板块仍有上行空间，建议继续紧抱龙头股'
+                    ]
+                }]
+            },
+            methods: {
+                search() { 
+                    var arr = [];
+                    this.theData.filter((val) => {
+                        if (val.type == this.newsName) {
+                            arr.push(val);
+                            this.copyData = arr;
+                        }
+                    })
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

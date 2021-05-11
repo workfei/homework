@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .register {
+            margin: 50px 0 20px;
+            text-align: center;
+            color: goldenrod;
+            font-size: 30px;
+        }
+        table {
+            padding: 20px;
+            border: 1px solid skyblue;
+        }
+
+        .hide {
+            display: none;
+        }
+        .wrong {
+            display: block;
+            color: red;
+        }
+        .right {
+            display: block;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="register">登录</div>
+        <table align="center">
+            <tr>
+                <td>账户: <input type="text" v-model="account"></td>
+            </tr>
+            <tr>
+                <td>密码: <input type="password" v-model="password"></td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <button @click="judge">登录</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span :class="state == 1 ? 'wrong': 'hide'">账户错误</span>
+                    <span :class="state == 2 ? 'wrong': 'hide'">密码错误</span>
+                    <span :class="state == 3 ? 'right': 'hide'">登录成功</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        //         ## 2.实现简单的登录系统
+
+        // ​    <ol>
+        // ​        <li>账号 admin</li>
+        // ​        <li>密码 admin</li>
+        // ​        <li>密码输入时 要用密文显示</li>
+        // ​        <li>点击登录按钮 实现登录</li>
+        // ​        <li>当账户不对时 提示账户错误</li>
+        // ​        <li>当密码不对的时候 提示密码错误</li>
+        // ​        <li>当账户密码都对是时候，提示登录成功</li>
+        // ​    </ol>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                rightUname: "spider-man",
+                rightUpwd: 123456,
+                account: null,
+                password: null,
+                state: null
+            },
+            methods: {
+                judge() {
+                    if (this.account != this.rightUname) {
+                        this.state = 1;
+                    } else if (this.password != this.rightUpwd) {
+                        this.state = 2;
+                    } else {
+                        this.state = 3;
+                    }
+                },
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -19,7 +19,7 @@
     </ol>
     <div id="app">
         <input type="text" class="num1" v-model="num1" @keydown="keydown1">
-        <select class="opt">
+        <select class="opt" v-model="type">
             <option value='+'>+</option>
             <option value='-'>-</option>
             <option value='*'>*</option>
@@ -27,7 +27,7 @@
         </select>
         <input type="text" class="num2" v-model="num2" @keydown="sum">
         <button @click="sum">=</button>
-        <span class="result"></span>
+        <span class="result" v-text="result"></span>
     </div>
 
     <script src="js/vue.js"></script>
@@ -36,32 +36,32 @@
             el: "#app",
             data: {
                 num1: 1,
-                num2: 2
+                num2: 2,
+                result: null,
+                type: "+"
             },
             methods: {
                 sum: function () {
-                    var result = document.querySelector(".result");
-                    var type = document.querySelector(".opt").value;
-                    switch (type) {
+                    switch (this.type) {
                         case '+':
-                            result.innerText = this.num1 + this.num2;
-                            break;
+                            this.result = this.num1 + this.num2;
+                        break;
                         case '-':
-                            result.innerText = this.num1 - this.num2;
-                            break;
+                            this.result = this.num1 - this.num2;
+                        break;
                         case '*':
-                            result.innerText = this.num1 * this.num2;
-                            break;
+                            this.result = this.num1 * this.num2;
+                        break;
                         case '/':
-                            result.innerText = this.num1 / this.num2;
-                            break;
+                            this.result = this.num1 / this.num2;
+                        break;
                     }
                 },
                 keydown1: function (e) {
-                    var num2 = document.querySelector(".num2")
-                    if (e.keyCode == 13) {
-                        num2.focus();
-                    }
+                    // var num2 = document.querySelector(".num2")
+                    // if (e.keyCode == 13) {
+                    //     num2.focus();
+                    // }
                 }
             }
         })
