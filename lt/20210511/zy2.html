@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 账号 admin
+​        密码 admin
+​        密码输入时 要用密文显示
+​        点击登录按钮 实现登录
+​        当账户不对时 提示账户错误
+​        当密码不对的时候 提示密码错误
+​        当账户密码都对是时候，提示登录成功 -->
+    <div id="app">
+        账号:<input type="text" name="" id="" v-model="name">
+        密码: <input type="password" name="" id="" v-model.number="pwd">
+        <button @click="return1()">登录</button>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                name:'',
+                name1:'liutao',
+                pwd:'',
+                pwd1:123456
+            },
+            methods:{
+                return1() {
+                    if (this.name ===this.name1 && this.pwd === this.pwd1) {
+                        alert('登录成功')
+                    } else if (this.name !=this.name1) {
+                        alert('账号错误')
+                    } else {
+                        alert('密码错误')
+                    }
+                }
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
