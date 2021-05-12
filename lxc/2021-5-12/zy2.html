@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <section id="todoapp" class="todoapp">
+        <header class="header">
+            <h1>todos</h1>
+            <input placeholder="What needs to be done?" class="new-todo" @keyup.13="getAdd">
+        </header>
+        <section class="main">
+            <input id="toggle-all" type="checkbox" class="toggle-all">
+            <label for="toggle-all">Mark all as complete</label>
+            <ul class="todo-list">
+                <li v-for="(itme,index) in todos" v-bind:class="{completed:itme.completed}">
+                    <div class="view">
+                        <input type="checkbox" class="toggle">
+                        <label>{{itme.title}}</label>
+                        <button class="destroy" @click="getRemove(delIndex)"></button>
+                    </div>
+                    <input class="edit">
+                </li>
+            </ul>
+        </section>
+        <footer class="footer">
+            <span class="todo-count">
+                <strong>2</strong> item left</span>
+            <ul class="filters">
+                <li><a href="#/" class="selected">All</a></li>
+                <li><a href="#/active">Active</a></li>
+                <li><a href="#/completed">Completed</a></li>
+            </ul>
+            <button class="clear-completed">Clear completed</button>
+        </footer>
+    </section>
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: "#todoapp",
+            data: {
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }]
+            },
+            methods: {
+                getAdd(e) {
+                    var totdText = e.target.value.trim();
+                    if (!totdText.length) {
+                        return;
+                    }
+                    let lastTodo = this.todos[this.todos.length - 1];
+                    let id = lastTodo ? lastTodo.id + 1 : 1;
+                    this.todos.push({
+                        id,
+                        title: totdText,
+                        completed: false
+                    })
+                    e.target.value = '';
+                },
+                getRemove(delIndex) {
+                    this.todos.splice(delIndex, 1);
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
