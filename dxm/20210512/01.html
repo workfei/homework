@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue-随机颜色</title>
+    <style>
+        .trans {
+            transition: all 2s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1 v-color="color" :class="classA">整个颜色都是随机的</h1>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                color: {
+                    tcolor: "",
+                    bcolor: ""
+                },
+                classA: "trans"
+            },
+            methods: {
+            },
+            directives: {
+                color: {
+                    bind: function (el, binding) {
+                        getColor();
+                        var timer = setInterval(getColor, 2000);
+                        function getColor() {
+                            binding.value.tcolor = "#" + Math.random().toString(16).slice(2, 8); //可以生成6位数的16进制随机数
+                            binding.value.bcolor = "#" + Math.random().toString(16).slice(2, 8);
+                            el.style.color = binding.value.tcolor;
+                            el.style.backgroundColor = binding.value.bcolor;
+                        }
+                    }
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
