@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input class="new-todo" v-model="addMsg" placeholder="What needs to be done?" @keyup.enter="add"
+                    v-focus-a>
+            </header>
+            <section class="main">
+                <input id="toggle-all" type="checkbox" class="toggle-all">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li v-for="todo in todos" :key="todo.id" :class="{'completed':todo.completed,'editing':todo==myTodo}">
+                        <div class="view">
+                            <input class="toggle" type="checkbox" v-model="todo.completed">
+                            <label @dblclick="myTodo=todo">{{todo.title}}</label>
+                            <button class="destroy" @click="del(index)"></button>
+                        </div>
+                        <input v-model="todos.title"  class="edit" ref="editInp" v-focus>
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong>2</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected">All</a></li>
+                    <li><a href="#/active">Active</a></li>
+                    <li><a href="#/completed">Completed</a></li>
+                </ul>
+                <button class="clear-completed">Clear completed</button>
+            </footer>
+        </section>
+
+
+
+        <!---   2CSS -->
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/index.css">
+
+        <!---   3、 提供的数据  -->
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive('focusA', {
+            inserted: function (el) {
+                el.focus()
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                addMsg: '',
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }],
+                myTodo: {}
+            },
+            methods: {
+                add() {
+                    let id = this.todos.length ? this.todos[this.todos.length - 1].id + 1 : 1
+                    this.todos.push({
+                        id,
+                        title: this.addMsg,
+                        completed: false
+                    })
+                    this.addMsg = ''
+                },
+                del(index) {
+                    this.todos.splice(index, 1); 
+                },
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
