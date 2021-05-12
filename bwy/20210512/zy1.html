@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div v-box="divColor">123</div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive('box', {
+            bind: function(el,binding) {
+                el.style.color = binding.value.color;
+                el.style.backgroundColor = binding.value.bgcolor;
+            }
+        })
+        function getRand() {
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`
+        }
+        // console.log(getRand());
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                divColor: {
+                    color: getRand(),
+                    bgcolor: getRand()
+                }
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

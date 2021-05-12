@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>作业2</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div id="app">
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input placeholder="What needs to be done?" class="new-todo" @keyup.13="getadd" v-model.lazy = 'text' >
+            </header>
+            <section class="main">
+                    <input id="toggle-all" type="checkbox" class="toggle-all"> 
+                    <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li :class="val.completed == true? 'completed': '' " v-for="val in todos" >
+                        <div class="view">
+                            <input type="checkbox" class="toggle" v-model="val.completed"> 
+                            <label  @dblclick="dbl(val.id)">{{val.title}}</label> 
+                            <button class="destroy" @click='del(val.id)'></button>
+                        </div> 
+                        <!-- <input class="edit" > -->
+                        <!-- <input :class="flag == val.id? '': 'edit' "> -->
+                        <input class="edit" v-show="flag == val.id" @keyup.13 = 'inp(val.id)' v-model='edit' ref="input + val.id">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong>2</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected">All</a></li>
+                    <li><a href="#/active">Active</a></li>
+                    <li><a href="#/completed">Completed</a></li>
+                </ul> 
+                <button class="clear-completed">Clear completed</button>
+            </footer>
+        </section>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+          new Vue({
+            el: "#todoapp",
+            data: {
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: false
+                }],
+                text: '',
+                newtext: '',
+                flag: null,
+                edit: null,
+            },
+            methods:{
+                getadd: function() {
+                    this.newtext = this.text;
+                    if(this.newtext != '') {
+                        this.todos.push({id: this.todos.length + 1, title: this.newtext, completed: false})
+                        this.text = ''
+                    }
+                },
+                del: function(id) {
+                    this.todos.splice(id - 1,1);
+                    this.todos.forEach((val,index) => {
+                        val.id = index + 1
+                    })
+                },
+                dbl: function(id) {
+                    this.flag = id;
+                    // var fo = 'input' + id;
+                    // this.$refs.fo.focus();
+                    // console.log(fo);
+                    // console.log(this);
+                },
+                inp: function(id) {
+                   
+                    if(this.edit) {
+                        this.todos[id - 1].title = this.edit;
+                    }
+                    this.flag = null;
+                    this.edit = null;
+                }
+            },
+        })
+    </script>
+</body>
+</html>
