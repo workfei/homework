@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input placeholder="What needs to be done?" class="new-todo" v-model="needsDo" @keydown.13="addTodos">
+            </header>
+            <section class="main">
+                <input id="toggle-all" type="checkbox" class="toggle-all">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li :class="value.completed == false ? '' : 'completed'" v-for="(value,index) in todos" :key="value.id">
+                        <div class="view"><input type="checkbox" class="toggle" :value="index" v-model="value.completed">
+                            <label @dblclick="edit(value.id)">{{value.title}}</label>
+                            <button class="destroy" @click="removeTodos(index)"></button>
+                        </div>
+                        <input class="edit" v-show="flag == value.id" v-model="editTodos" @keydown.13="editText(value.id - 1)">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong>2</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected">All</a></li>
+                    <li><a href="#/active">Active</a></li>
+                    <li><a href="#/completed">Completed</a></li>
+                </ul>
+                <button class="clear-completed">Clear completed</button>
+            </footer>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                flag: false,
+                editTodos: "",
+                needsDo: "",
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }]
+            },
+            methods: {
+                addTodos() {
+                    // 给数据源添加数据
+                    this.todos.push({
+                        id: this.todos.length + 1,
+                        title: this.needsDo,
+                        completed: false
+                    })
+                },
+                removeTodos(id) {
+                    // 移除元素
+                    this.todos.splice(id,1)
+                },
+                edit(id) {
+                    this.flag = id;
+                },
+                editText(id) {
+                    this.todos[id].title = this.editTodos;
+                    this.flag = false;
+                    this.editTodos = '';
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

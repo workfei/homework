@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1 v-random-color1="color" v-random-color2="bgColor">faith is forever</h1>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive("randomColor1", {
+            bind: function (el, binding) {
+                el.style.color = binding.value 
+            },
+        })
+        Vue.directive("randomColor2", {
+            bind: function (el, binding) {
+                el.style.backgroundColor = binding.value    
+            },
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                color: "",
+                bgColor: ""
+            },
+            methods: {
+
+            },
+            created() {
+                function getColor() {
+                    var r = Math.floor(Math.random() * 256);
+                    var g = Math.floor(Math.random() * 256);
+                    var b = Math.floor(Math.random() * 256);
+                    return `rgb(${r},${g},${b})`;
+                }
+                this.color = getColor();
+                this.bgColor = getColor();
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
