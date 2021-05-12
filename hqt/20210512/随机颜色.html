@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1 v-random-color>黄奇特天天向上好好学习</h1>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 写一个给标签字体随机颜色及背景随机颜色指令
+        Vue.directive('randomColor', {
+            inserted:function(el) {
+                function getColor (){
+                    var r = Math.floor(Math.random() * 256);
+                    var g = Math.floor(Math.random() * 256);
+                    var b = Math.floor(Math.random() * 256);
+                    return `rgb(${r},${g},${b})`;
+                }
+                // 给标签字体随机颜色
+                el.style.color = getColor();
+                // 给标签字体背景随机颜色
+                el.style.backgroundColor = getColor();
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
