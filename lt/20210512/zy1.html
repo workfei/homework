@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1 v-mytext="hcolor" >帅的不谈</h1>
+        <button @click="color()">随机颜色</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive('mytext', {
+            update:function(el,binding) {
+                el.style.color = binding.value;
+                el.style.backgroundColor = binding.value;
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                hcolor:'',
+            },
+            methods:{
+                color() {
+                    var r=Math.floor(Math.random()*256);
+                    var g=Math.floor(Math.random()*256);
+                    var b=Math.floor(Math.random()*256);
+                    this.hcolor="rgb("+r+','+g+','+b+")";
+                }
+            },
+            // directives:{
+            //     mytext: {
+            //     bind:function(el,binding) {
+            //         console.log(binding.value);
+            //         el.style.color = binding.value;
+            //         el.style.backgroundColor = binding.value;
+            // }
+            //     }
+            // },
+            computed:{
+                
+            }
+        })
+    </script>
+</body>
+</html>
