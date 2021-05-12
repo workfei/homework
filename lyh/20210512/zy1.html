@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h2 v-sjs-color="color()" v-sjs-Background-color="color()">写一个给标签字体随机颜色及背景随机颜色指令</h2>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive('sjsColor', {
+            bind:function(el,binding) {
+                console.log(binding.value);
+                el.style.color = binding.value;
+
+            }
+        })
+        Vue.directive('sjsBackgroundColor', {
+            bind:function(el,binding) {
+                console.log(binding.value);
+                el.style.backgroundColor = binding.value;
+            }
+        })
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                color: function() {
+                    var r = Math.floor(Math.random() * 256);
+                    var g = Math.floor(Math.random() * 256);
+                    var b = Math.floor(Math.random() * 256);
+                    return 'rgb(' + r +','+ g + ',' + b + ')';
+                }
+            },
+            methods:{
+                
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
