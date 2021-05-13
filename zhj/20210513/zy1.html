@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <section id="todoapp" class="todoapp">
+        <header class="header">
+            <h1>todos</h1>
+            <input placeholder="What needs to be done?" class="new-todo" @keyup.enter="addTodo">
+        </header>
+        <section class="main">
+            <input id="toggle-all" type="checkbox" class="toggle-all" v-model="toggleStat">
+            <label for="toggle-all">Mark all as complete</label>
+            <ul class="todo-list">
+                <li :class="{completed:item.completed,editing:editflag ===item.id}" v-for="(item,index) in data2"
+                    :key="item.id">
+                    <div class="view"><input type="checkbox" class="toggle" v-model="item.completed">
+                        <label @dblclick="editflag=item.id">{{item.title}}</label>
+                        <button class="destroy" @click="del(item.id)"></button>
+                    </div>
+                    <input class="edit" v-model="item.title" @keyup.enter="editflag=null" @keyup.esc="editflag=null">
+                </li>
+            </ul>
+        </section>
+        <footer class="footer">
+            <span class="todo-count">
+                <strong>{{leftCount}}</strong> item left</span>
+            <ul class="filters">
+                <li><a href="#/" class="selected" :class="{selected:flag[0]}" @click="setAll">All</a></li>
+                <li><a href="#/active" :class="{selected:flag[1]}" @click="setActive">Active</a></li>
+                <li><a href="#/completed" :class="{selected:flag[2]}" @click="setcompleted">Completed</a></li>
+            </ul>
+            <button class="clear-completed" @click="removeAllDone">Clear completed</button>
+        </footer>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#todoapp',
+            data: {
+                editflag: null,
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }],
+                data2: [],
+                flag: [true, false, false]
+            },
+            methods: {
+                addTodo(e) {
+                    var todoText = e.target.value.trim()
+                    if (!todoText.length) {
+                        return
+                    }
+
+                    let id = 0;
+                    this.todos.forEach(val => {
+                        if (val.id > id) {
+                            id = val.id
+                        }
+                    })
+                    id++;
+                    this.todos.push({
+                        id,
+                        title: todoText,
+                        completed: false
+                    })
+                    event.target.value = ''
+                },
+                del(id) {
+                    var index = this.data2.findIndex(val => val.id == id)
+                    this.data2.splice(index, 1)
+                },
+                removeAllDone() {
+                    this.data2 = this.data2.filter(item => !item.completed)
+                },
+                setAll() {
+                    this.flag[0] = true;
+                    this.data2 = this.todos
+                },
+                setActive() {
+                    this.flag[1] = true;
+                    this.data2 = this.todos.filter(item => {
+                        if (item.completed == false) {
+                            return item
+                        }
+                    })
+                },
+                setcompleted() {
+                    this.flag[2] = true;
+                    this.data2 = this.todos.filter(item => {
+                        if (item.completed == true) {
+                            return item
+                        }
+                    })
+                }
+            },
+            computed: {
+                toggleStat: {
+                    get() {
+                        return this.data2.every(item => item.completed)
+                    },
+                    set(val) {
+                        this.data2.forEach(data => data.completed = val)
+                    }
+                },
+                leftCount: function () {
+                    return this.data2.filter(item => !item.completed).length
+                }
+            },
+            created() {
+                this.data2 = this.todos;
+            },
+        })
+    </script>
+</body>
+
+</html>
