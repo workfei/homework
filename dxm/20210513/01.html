@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- HTML   -->
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input placeholder="What needs to be done?" class="new-todo" @keyup.13="getAdd">
+            </header>
+            <section class="main">
+                <input id="toggle-all" type="checkbox" class="toggle-all" v-model="checkAll">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li :class="{completed: item.completed,editing:editflag === item.id}"
+                        v-for="(item,index) in newtodos" :key="item.id">
+                        <div class="view"><input type="checkbox" class="toggle" v-model="item.completed">
+                            <label @dblclick="editflag=item.id">{{item.title}}</label>
+                            <button class="destroy" @click="del(item.id)"></button>
+                        </div>
+                        <input class="edit" v-model="item.title" @keyup.enter="editflag=null"
+                            @keyup.esc="editflag=null">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong>{{getCount}}</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected" @click="all">All</a></li>
+                    <li><a href="#/active" @click="lose">Active</a></li>
+                    <li><a href="#/completed" @click="finish">Completed</a></li>
+                </ul>
+                <button class="clear-completed" @click="clear">Clear completed</button>
+            </footer>
+        </section>
+    </div>
+
+    <script src="vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                editflag: null,
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }],
+                newtodos: []
+            },
+            methods: {
+                getAdd(e) {
+                    var todoText = e.target.value.trim();
+                    if (!todoText.length) {
+                        return;
+                    }
+                    let id = 0;
+                    this.todos.forEach(val => {
+                        if (val.id > id) {
+                            id = val.id
+                        }
+                    })
+                    id++
+                    this.todos.push({
+                        id,
+                        title: todoText,
+                        completed: false
+                    })
+                    e.target.value = '';
+                    this.newtodos = this.todos;
+                },
+                del(id) {
+                    var index = this.newtodos.findIndex(val => val.id == id)
+                    this.newtodos.splice(index, 1);
+                },
+                all() {
+                    this.newtodos = this.todos;
+                },
+                lose() {
+                    this.newtodos = this.todos.filter(val => val.completed == false);
+                },
+                finish() {
+                    this.newtodos = this.todos.filter(val => val.completed == true);
+                },
+                clear() {
+                    this.todos = [];
+                    this.newtodos = [];
+                },
+            },
+            created() {
+                this.newtodos = this.todos;
+            },
+            computed: {
+                checkAll: {
+                    get() {
+                        return this.todos.every(val => val.completed);
+                    },
+                    set(mycompleted) {
+                        this.todos.forEach(val => {
+                            val.completed = mycompleted;
+                        })
+                    }
+                },
+                getCount() {
+                    var num = 0;
+                    this.newtodos.filter(val => {
+                        if (val.completed == false) {
+                            num++;
+                        }
+                    })
+                    return num;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
