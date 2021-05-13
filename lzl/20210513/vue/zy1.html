@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input class="new-todo" v-model="addMsg" placeholder="What needs to be done?" @keyup.enter="add"
+                    v-focus-a>
+            </header>
+            <section class="main">
+                <input id="toggle-all" type="checkbox" class="toggle-all" v-model="chkAll">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li v-for="(todo,index) in todos" :key="todo.id"
+                        :class="{'completed':todo.completed,'editing':editflag == todo.id}">
+                        <div class="view">
+                            <input class="toggle" type="checkbox" v-model="todo.completed">
+                            <label @dblclick="editflag=todo.id">{{todo.title}}</label>
+                            <button class="destroy" @click="del(index)"></button>
+                        </div>
+                        <input v-model="todo.title" class="edit" ref="editInp" @keyup.13="editflag=null"
+                            @keyup.esc="editflag=null">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count"><strong>{{numLeft}}</strong> item left</span>
+                <ul class="filters">
+                    <li><a href="#/" class="selected" @click="all">All</a></li>
+                    <li><a href="#/active" @click="all2">Active</a></li>
+                    <li><a href="#/completed" @click="all3">Completed</a></li>
+                </ul>
+                <button class="clear-completed" @click="clear">Clear completed</button>
+            </footer>
+        </section>
+
+
+
+        <!---   2CSS -->
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/index.css">
+
+        <!---   3、 提供的数据  -->
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.directive('focusA', {
+            inserted: function (el) {
+                el.focus()
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                arr:[],
+                editflag: null,
+                addMsg: '',
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }],
+            },
+            methods: {
+                all() {
+                    this.arr = this.todos
+                    this.todos=this.arr
+                },
+                all2() {
+                    this.arr = this.todos.filter(val => val.completed == false);
+                    this.todos=this.arr
+                },
+                all3(){
+                    this.arr = this.todos.filter(val => val.completed)
+                    this.todos=this.arr
+                },
+                clear() {
+                    this.todos = this.todos.filter(val => val.completed == false)
+                    this.arr = this.arr.filter(val => val.completed == false)
+                },
+                add() {
+                    let id = 0;
+                    this.todos.forEach(val => {
+                        if (val.id > id) {
+                            id = val.id
+                        }
+                    })
+                    id++
+                    this.todos.push({
+                        id,
+                        title: this.addMsg,
+                        completed: false
+                    })
+                    this.addMsg = ''
+                },
+                del(index) {
+                    this.todos.splice(index, 1);
+                },
+            },
+            computed: {
+                numLeft: function () {
+                    return this.todos.filter(t => !t.completed).length
+                },
+                chkAll: {
+                    //get用来获取一个值并赋值给CheckBox
+                    get() {
+                        return this.todos.every(val => val.completed)
+                    },
+                    //set把v-model双向绑定的值拿来进行计算
+                    set(completed) {
+                        this.todos.forEach(val => {
+                            val.completed = completed
+                        })
+                    }
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>
