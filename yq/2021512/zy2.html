@@ -21,12 +21,17 @@
                 <input id="toggle-all" type="checkbox" class="toggle-all">
                 <label for="toggle-all">Mark all as complete</label>
                 <ul class="todo-list">
-                    <li :class="value.completed == false ? '' : 'completed'" v-for="(value,index) in todos" :key="value.id">
-                        <div class="view"><input type="checkbox" class="toggle" :value="index" v-model="value.completed">
-                            <label @dblclick="edit(value.id)">{{value.title}}</label>
-                            <button class="destroy" @click="removeTodos(index)"></button>
+                    <!-- :class="value.completed == false ? '' : 'completed'" -->
+                <li :class="{completed: value.completed,editing: editflag == value.id}" v-for="(value,index) in todos"
+                        :key="value.id">
+                        <div class="view">
+                            <input type="checkbox" class="toggle" :value="index" v-model="value.completed">
+                            <!-- @dblclick="edit(value.id)" -->
+                            <label @dblclick="editflag = value.id">{{value.title}}</label>
+                            <button class="destroy" @click="removeTodos(value.id)"></button>
                         </div>
-                        <input class="edit" v-show="flag == value.id" v-model="editTodos" @keydown.13="editText(value.id - 1)">
+                        <!-- v-show="flag == value.id" v-model="value.title" @keydown.13="editText(value.id - 1)" -->
+                        <input class="edit" v-model="value.title" @keydown.13="editflag = null">
                     </li>
                 </ul>
             </section>
@@ -49,7 +54,7 @@
             el: '#app',
             data: {
                 flag: false,
-                editTodos: "",
+                editflag: false,
                 needsDo: "",
                 todos: [{
                     id: 1,
@@ -68,21 +73,24 @@
             methods: {
                 addTodos() {
                     // 给数据源添加数据
-                    this.todos.push({
-                        id: this.todos.length + 1,
-                        title: this.needsDo,
-                        completed: false
-                    })
+                    if (this.needsDo.trim() != '') {
+                        this.todos.push({
+                            id: this.todos.length + 1,
+                            title: this.needsDo,
+                            completed: false
+                        })
+                        this.needsDo = ""
+                    }
                 },
                 removeTodos(id) {
                     // 移除元素
-                    this.todos.splice(id,1)
+                    var index = this.todos.findIndex(val => val.id == id)
+                    this.todos.splice(index, 1)
                 },
                 edit(id) {
                     this.flag = id;
                 },
                 editText(id) {
-                    this.todos[id].title = this.editTodos;
                     this.flag = false;
                     this.editTodos = '';
                 }

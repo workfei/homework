@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <section id="todoapp" class="todoapp">
+            <header class="header">
+                <h1>todos</h1>
+                <input placeholder="What needs to be done?" class="new-todo" v-model="needsDo" @keydown.13="addTodos">
+            </header>
+            <section class="main">
+                <input id="toggle-all" type="checkbox" class="toggle-all" v-model="chkAll">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul class="todo-list">
+                    <li :class="{completed: value.completed,editing: editflag == value.id}"
+                        v-for="(value,index) in todos" :key="value.id">
+                        <div class="view">
+                            <input type="checkbox" class="toggle" :value="index" v-model="value.completed">
+                            <label @dblclick="editflag = value.id">{{value.title}}</label>
+                            <button class="destroy" @click="removeTodos(value.id)"></button>
+                        </div>
+                        <input class="edit" v-model="value.title" @keydown.13="editflag = null">
+                    </li>
+                </ul>
+            </section>
+            <footer class="footer">
+                <span class="todo-count">
+                    <strong>{{doneNum}}</strong> item left</span>
+                    <ul class="filters">
+                        <li><a href="#/" :class="{selected: selected[0]}" @click="all">All</a></li>
+                        <li><a href="#/active" :class="{selected: selected[1]}" @click="active">Active</a></li>
+                        <li><a href="#/completed" :class="{selected: selected[2]}" @click="completed">Completed</a></li>
+                    </ul>
+                <button class="clear-completed" @click="doneTodo">Clear completed</button>
+            </footer>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                flag: false,
+                editflag: false, //编辑的开关
+                needsDo: "", //增加数据的双向绑定
+                selected: [true,false,false],
+                newtodos: [],
+                todos: [{
+                    id: 1,
+                    title: '吃饭',
+                    completed: false
+                }, {
+                    id: 2,
+                    title: '睡觉',
+                    completed: false
+                }, {
+                    id: 3,
+                    title: '打豆豆',
+                    completed: true
+                }]
+            },
+            methods: {
+                // 增加
+                addTodos() {
+                    if (this.needsDo.trim() != '') {
+                        this.todos.push({
+                            id: this.todos.length + 1,
+                            title: this.needsDo,
+                            completed: false
+                        })
+                        this.needsDo = ""
+                    }
+                },
+                // 删除
+                removeTodos(id) {
+                    var index = this.todos.findIndex(val => val.id == id)
+                    this.todos.splice(index, 1)
+                },
+                // 全部的
+                all() {
+                    this.todos = this.newtodos;
+                    // 修改类名
+                    this.selected[0] = true;
+                    this.selected[1] = false;
+                    this.selected[2] = false;
+                },
+                // 未完成的
+                active() {
+                    this.todos = this.newtodos.filter(val => {
+                        if (val.completed == false) {
+                            return val;
+                        }
+                    })
+                    // 修改类名
+                    this.selected[0] = false;
+                    this.selected[1] = true;
+                    this.selected[2] = false;
+                },
+                // 完成的
+                completed() {
+                    this.todos = this.newtodos.filter(val => val.completed == true)
+                    // 修改类名
+                    this.selected[0] = false;
+                    this.selected[1] = false;
+                    this.selected[2] = true;
+                },
+                doneTodo() {
+                    this.todos = this.newtodos.filter(val => val.completed == false)
+                    this.newtodos = this.todos
+                },
+                // 显示修改文本框
+                edit(id) {
+                    this.flag = id;
+                },
+                // 修改文本内容
+                editText(id) {
+                    this.flag = false;
+                    this.editTodos = '';
+                }
+            },
+            created() {
+                this.newtodos = this.todos
+            },
+            computed: {
+                // 全选
+                chkAll: {
+                    get() {
+                        return this.todos.every(val => val.completed)
+                    },
+                    set(myflag) {
+                        this.todos.forEach(val => {
+                            val.completed = myflag
+                        })
+                    }
+                },
+                doneNum() {
+                    var num = 0;
+                    this.todos.filter(val => {
+                        if (val.completed == false) {
+                            num++;
+                        }
+                    })
+                    return num;
+                }   
+            }
+        })
+    </script>
+</body>
+
+</html>
