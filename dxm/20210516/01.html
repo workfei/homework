@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue-过滤器替换文本</title>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" name="" id="" v-model="msg"><br>
+        过滤器1:<h1>{{msg | upper}}</h1><br>
+        过滤器2:<h1>{{msg | upper | replace}}</h1>
+    </div>
+
+    <script src="vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: ''
+            },
+            filters: {
+                upper: function (val) {
+                    return val.toUpperCase();
+                },
+                replace: function (val) {
+                    return val.replace(new RegExp("A", "g"), "中国");
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

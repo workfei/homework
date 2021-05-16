@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>vue-带参数的过滤器</title>
+</head>
+
+<body>
+    <div id="app">
+        {{msg | news('某国某岛','***')}}
+    </div>
+
+    <script src="vue.js"></script>
+    <script>
+        Vue.filter('news', function (oldmsg, newmsg, str) {
+            if (oldmsg.indexOf('日本福岛') != -1) {
+                return oldmsg.replace('日本福岛', newmsg);
+            } else if (oldmsg.indexOf('核废水') != -1) {
+                return oldmsg.replace('核废水', str);
+            } else {
+                return oldmsg;
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: "日本福岛排放核废水"
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
