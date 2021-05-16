@@ -10,7 +10,7 @@
 
 <body>
     <div id="app">
-        <input type="text" v-model="search" >
+        <input type="text" v-model.trim="search" >
         <button >搜索</button>
         <div class="box" v-for="(val,index) in arr">
             <h3>{{val.type}}</h3>

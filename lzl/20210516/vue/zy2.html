@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>{{msg | upper('j','老张巨帅')}}</h1>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.filter('upper', function(val,str,str2) {
+            str = '/'+ str + '/g';
+            return val.replace(eval(str),str2);
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg:'ajdiajdoajd',
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
