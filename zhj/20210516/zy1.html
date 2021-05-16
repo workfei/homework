@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{msg | upper | replace}}</h1>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.filter('upper', function (val) {
+            return val.toUpperCase()
+        })
+
+        Vue.filter('replace', function(val){
+            return val.replace(/A/g,'中国')
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'qawaearatayaua'
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
