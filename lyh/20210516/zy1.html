@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h2>{{msg | upper | lower}}</h2>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        /* 1.写一个过滤器把小写字母全部换成大写，再使用一个过滤器把大写字母中的A全部换成“中国” */
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg: 'fsoajgooiagahjwghagjahgwehguaghnagh',
+            },
+            filters: {
+                upper: function(val) {
+                    return val.toUpperCase()
+                },
+                lower: function(val) {
+                    for(var i = 0; i < val.length; i++) {
+                        val = val.replace(/A/g, '中国')
+                    }
+                    return val
+                }
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
