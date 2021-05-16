@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>{{msg | upper('a','xxx')}}</h1>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 2.（参考笔记）写一个带参数的过滤器，带两个参数（些时应该有三个参数），第一个参数是需要过滤的字符串，第二个参数指定要替换的字符串，第三个参数是把字符替换后的字符（比如***）
+        Vue.filter('upper', function(val,str1,str2) {
+            str1 = '/'+ str1 + '/g';
+            return val.replace(eval(str1),str2);
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg:'asdfdsklfhdsajflsafafa',
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
