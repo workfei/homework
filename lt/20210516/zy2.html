@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>{{msg | upper('h','xxx')}}</h1>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.filter('upper', function(val,str1,str2) {
+            str1 = '/'+ str1 + '/g';
+            return val.replace(eval(str1),str2);
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg:'askujdghaslkjdgaoskdhcasjkdfhaskldfashjikfvgbhajkltgfuajikodghaujit'
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

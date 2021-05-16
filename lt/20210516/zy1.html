@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <h1>{{msg | upper | china}}</h1>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 把小写字母全部换成大写
+        Vue.filter('upper', function(val) {
+            return val.toUpperCase();
+        })
+        // 大写字母中的A全部换成“中国”
+        Vue.filter('china', function(val) {
+            return val.replace(/A/g,'中国');
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg:'aaakhhkhikhikgihutgkqebrkhafvaldalkdyahdsiahdlagaiusydkavdxyahlk鱼头啊啊啊加攻击bnajgxiuagshiuasoiaghduoitaoidfwhkajgxcachkljagch',
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
