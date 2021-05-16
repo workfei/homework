@@ -35,11 +35,12 @@
             <footer class="footer">
                 <span class="todo-count">
                     <strong>{{doneNum}}</strong> item left</span>
-                    <ul class="filters">
-                        <li><a href="#/" :class="{selected: selected[0]}" @click="all">All</a></li>
-                        <li><a href="#/active" :class="{selected: selected[1]}" @click="active">Active</a></li>
-                        <li><a href="#/completed" :class="{selected: selected[2]}" @click="completed">Completed</a></li>
-                    </ul>
+                <ul class="filters">
+                    <li v-for="(val,index) in checkData" :class="{selected: checkId == val.id}" :key="val.id"><a :href="val.url" @click="check2(val.id)">{{val.name}}</a></li>
+                    <!-- <li><a href="#/" :class="{selected: selected[0]}" @click="all">All</a></li>
+                    <li><a href="#/active" :class="{selected: selected[1]}" @click="active">Active</a></li>
+                    <li><a href="#/completed" :class="{selected: selected[2]}" @click="completed">Completed</a></li> -->
+                </ul>
                 <button class="clear-completed" @click="doneTodo">Clear completed</button>
             </footer>
         </section>
@@ -53,7 +54,21 @@
                 flag: false,
                 editflag: false, //编辑的开关
                 needsDo: "", //增加数据的双向绑定
-                selected: [true,false,false],
+                checkId: 1,//底部选项方案二
+                checkData: [{
+                    id: 1,
+                    name: "All",
+                    url: "#"
+                }, {
+                    id: 2,
+                    name: "Active",
+                    url: "#"
+                }, {
+                    id: 3,
+                    name: "Completed",
+                    url: "#"
+                }],//底部选项方案二
+                // selected: [true, false, false],//底部选项方案一
                 newtodos: [],
                 todos: [{
                     id: 1,
@@ -86,33 +101,46 @@
                     var index = this.todos.findIndex(val => val.id == id)
                     this.todos.splice(index, 1)
                 },
-                // 全部的
-                all() {
-                    this.todos = this.newtodos;
-                    // 修改类名
-                    this.selected[0] = true;
-                    this.selected[1] = false;
-                    this.selected[2] = false;
-                },
-                // 未完成的
-                active() {
-                    this.todos = this.newtodos.filter(val => {
-                        if (val.completed == false) {
-                            return val;
-                        }
-                    })
-                    // 修改类名
-                    this.selected[0] = false;
-                    this.selected[1] = true;
-                    this.selected[2] = false;
-                },
-                // 完成的
-                completed() {
-                    this.todos = this.newtodos.filter(val => val.completed == true)
-                    // 修改类名
-                    this.selected[0] = false;
-                    this.selected[1] = false;
-                    this.selected[2] = true;
+                // ===底部选项方法一===
+                // // 全部的
+                // all() {
+                //     this.todos = this.newtodos;
+                //     // 修改类名
+                //     this.selected[0] = true;
+                //     this.selected[1] = false;
+                //     this.selected[2] = false;
+                // },
+                // // 未完成的
+                // active() {
+                //     this.todos = this.newtodos.filter(val => {
+                //         if (val.completed == false) {
+                //             return val;
+                //         }
+                //     })
+                //     // 修改类名
+                //     this.selected[0] = false;
+                //     this.selected[1] = true;
+                //     this.selected[2] = false;
+                // },
+                // // 完成的
+                // completed() {
+                //     this.todos = this.newtodos.filter(val => val.completed == true)
+                //     // 修改类名
+                //     this.selected[0] = false;
+                //     this.selected[1] = false;
+                //     this.selected[2] = true;
+                // },
+                // 移除已完成的
+                // ===底部方案方法二===
+                check2(id) {
+                    this.checkId = id;
+                    if (id == 1) {
+                        this.todos = this.newtodos;
+                    } else if (id == 2) {
+                        this.todos = this.newtodos.filter(val => val.completed == false)
+                    } else if (id == 3) {
+                        this.todos = this.newtodos.filter(val => val.completed == true)
+                    }
                 },
                 doneTodo() {
                     this.todos = this.newtodos.filter(val => val.completed == false)
@@ -144,14 +172,8 @@
                     }
                 },
                 doneNum() {
-                    var num = 0;
-                    this.todos.filter(val => {
-                        if (val.completed == false) {
-                            num++;
-                        }
-                    })
-                    return num;
-                }   
+                    return this.todos.filter(val => !val.completed).length
+                }
             }
         })
     </script>

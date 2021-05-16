@@ -18,7 +18,7 @@
 </head>
 <body>
     <div id="app">
-        <input type="text" v-model="search">
+        <input type="text" v-model.trim="search">
         <div class="box" v-for="(val,index) in myData">
             <h1>{{val.type}}</h1>
             <ul class="list" v-for="(val2,index2) in val.news">
@@ -74,11 +74,7 @@
             },
             watch: {
                 search: function(text) {
-                    this.copyData.filter(val => {
-                        if (val.type == text) {
-                            this.myData = [val]
-                        }
-                    })
+                    this.myData = this.copyData.filter(val => val.type == text)
                     // 判断为空时,全部显示
                     if (text == "") {
                         this.myData = this.copyData

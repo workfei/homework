@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <input type="text">
+        <h1>{{text | upper | transform}}</h1>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.filter('upper', function(val) {
+            return val.toUpperCase()
+        })
+        Vue.filter('transform', function(val) {
+            return val.replace(/A/g, '中国')
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                text: "only a in your eyes,a yes"
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
