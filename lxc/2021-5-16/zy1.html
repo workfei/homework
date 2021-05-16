@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{msg | upper | regs}}</h1>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.filter('upper', function(val) {
+            return val.toUpperCase();
+        })
+        Vue.filter('regs', function(val) {
+            var reg = /A/g;
+            return val.replace(reg, '中国');
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                msg: 'afdwadrasafasgagseak'
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
