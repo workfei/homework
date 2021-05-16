@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 1.写一个过滤器把小写字母全部换成大写，再使用一个过滤器把大写字母中的A全部换成“中国” -->
+    <div id="app">
+        <input type="text" v-model="msg">
+        <div>{{msg | daxie}}</div>
+        <div>{{msg | daxie | zg}}</div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.filter('daxie', function(val) {
+            return val.toUpperCase();
+        })
+        Vue.filter('zg',function(val) {
+            return val.replaceAll('A', '中国');
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+               msg : '',
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
