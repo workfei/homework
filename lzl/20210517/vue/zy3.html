@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <mycom></mycom>
+    </div>
+
+    <script src="js/vue.js"></script>
+
+    <script>
+        Vue.component('mycom', {
+            data: function () {
+                return {
+                    num1:null,
+                    num2:null,
+                    result:0,
+                    opt: '+'
+                }
+            },
+            methods: {
+                sum() {
+                    
+                    switch (this.opt) {
+                        case '+':
+                            this.result = parseInt(this.num1) + parseInt(this.num2);
+                            break;
+                        case '-':
+                            this.result = parseInt(this.num1) - parseInt(this.num2);
+                            break;
+                        case '*':
+                            this.result = parseInt(this.num1) * parseInt(this.num2);
+                            break;
+                        case '/':
+                            this.result = parseInt(this.num1) / parseInt(this.num2);
+                            break;
+                    }
+                },
+                num() {
+                    this.$refs['goods'].focus() 
+                },
+                goods() {
+                    this.$refs['goods'].blur()
+                    this.sum()
+                }
+            },
+            template: `
+                <div>
+                    <input type="text" class="num1" v-on:keyup.13="num" v-model="num1" autofocus>
+                    <select class="opt" @change="" v-model="opt">
+                        <option value='+'>+</option>
+                        <option value='-'>-</option>
+                        <option value='*'>*</option>
+                        <option value='/'>/</option>
+                    </select>    
+                    <input type="text" class="num2" v-on:keyup.13="goods" v-model="num2" ref="goods">
+                    <button @click="sum">=</button>
+                    <span class="result" v-text="result"></span>
+                </div>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

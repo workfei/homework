@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="app">
+        <input type="text" v-model="msg">
         <h1>{{msg | upper | china}}</h1>
     </div>
     
@@ -22,7 +23,7 @@
         var vm=new Vue({
             el:'#app',
             data:{
-                msg:'aaaaadjsadhjasgdjasgbdhagdfasdfafwSFA',
+                msg:'',
             },
             methods:{
             

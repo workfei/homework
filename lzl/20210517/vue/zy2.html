@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+            <h1>图书管理</h1>
+            <div class="book">
+                <div>
+                    <label for="id">
+                        编号：
+                    </label>
+                    <input type="text" id="id" v-model='id' :disabled="flag">
+                    <label for="name">
+                        名称：
+                    </label>
+                    <input type="text" id="name" v-model='name'>
+                    <button @click='handle' :disabled="btnflag" >{{btnMsg}}</button>
+                </div>
+            </div>
+        </div>
+        <h5>图书总数：<span>{{getSum}}</span></h5>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>图书名称</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr :key='item.id' v-for='item in books'>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.date}}</td>
+                    <td>
+                        <a href="" @click.prevent="xg(item.id)">修改</a>
+                        <span>|</span>
+                        <a href="" @click.prevent="del(item.id)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                id: '',
+                name: '',
+                flag: false,
+                btnflag: false,
+                btnMsg: '提交',
+                books: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '20210517'
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: '20210517'
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: '20210517'
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: '20210517'
+                }]
+            },
+            methods: {
+                handle: function () {
+                    if (this.flag) {
+                        this.books.some((item) => {
+                            if (item.id == this.id) {
+                                item.name = this.name;
+                                return true;
+                            }
+                        });
+                        this.flag = false;   
+                    } else {
+                        var book = {};
+                        book.id = this.id;
+                        book.name = this.name;
+                        book.date = '';
+                        this.books.push(book);
+                        this.id = '';
+                        this.name = '';
+                    }
+                    this.id = '';
+                    this.name = '';
+                    this.btnMsg = '提交'
+
+                },
+                xg(id) {
+                    this.btnMsg = '修改'
+                    this.flag = true;
+                    console.log(id)
+                    var book = this.books.filter(function(item) {
+                        return item.id == id;
+                    });
+                    console.log(book)
+                    this.id = book[0].id;
+                    this.name = book[0].name;
+                    
+                },
+                del(id) {
+                    // this.books.splice(index, 1);
+                    this.books = this.books.filter(val => val.id != id)
+                }
+            },
+            watch: {
+                id: function () {
+                    var flag = this.books.some(val => val.id == this.id)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                },
+                name: function () {
+                    var flag = this.books.some(val => val.name == this.name)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                }
+            },
+            computed: {
+                getSum: function () {
+                    return this.books.length
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
