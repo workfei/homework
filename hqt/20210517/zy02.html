@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .add {
+            width: 500px;
+            margin: 0 auto;
+            background-color: skyblue;
+        }
+        .count {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="add">ID: <input type="text" name="" id="" v-model.trim="id" :disabled="disflag">&nbsp;&nbsp;名称： <input type="text" name="" id="" v-model.trim="name"><button :disabled="btnflag" @click="add">{{btnMsg}}</button></div>
+        <h5 class="count">图书总数：{{counts}}</h5>
+        <table border="1" width="500" align="center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="val in books" :key="val.id">
+                    <td>{{val.id}}</td>
+                    <td>{{val.name}}</td>
+                    <td>{{val.date | time('yyyy-MM-dd')}}</td>
+                    <td align="center"><a href="" @click.prevent="edit(val.id)">修改</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" @click.prevent="del(val.id)">删除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                id: '',
+                name: '',
+                btnMsg: '提交',
+                books: [],
+                btnflag: false,
+                idflag: false,
+                disflag: false,
+            },
+            filters:{
+                time:function(val,type) {
+                    // 年
+                    var y = val.getFullYear();
+                    // 月
+                    var M = val.getMonth() + 1;
+                    M = M < 10 ? '0' + M : M;
+                    // 日
+                    var d = val.getDate();
+                    d = d < 10 ? '0' + d : d;
+                    type = type.replace('yyyy',y);
+                    type = type.replace('MM',M);
+                    type = type.replace('dd',d);
+                    return type;
+                }
+            },
+            methods:{
+                add() {
+                    if(this.disflag) { 
+                        //修改
+                        this.books.some(val => {
+                            if(val.id == this.id) {
+                                val.name = this.name;
+                            }
+                        })
+                        this.disflag = false;
+                        this.id = '';
+                        this.name = '';
+                        this.btnMsg = '提交';
+                    } else {
+                        //添加
+                        if (this.id != '' && this.name != '') {
+                            this.books.push({
+                                id: this.id,
+                                name: this.name,
+                                date: new Date(),
+                            });
+                            this.id = '';
+                            this.name = '';
+                        }
+                    }
+                    
+                },
+                // 删除
+                del(id) {
+                   this.books = this.books.filter(val => val.id != id)
+                },
+                // 修改
+                edit(id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.disflag = true;
+                    this.btnMsg = '修改';
+                }
+            },
+            //挂载后
+            mounted() {
+                var data= [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                },{
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                },{
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                },{
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }]
+                this.books = data;
+            },
+            //计算属性
+            computed:{
+                counts: function() {
+                    return this.books.length;
+                }
+            },
+            //侦听器
+            watch: {
+                id: function() {
+                    var flag = this.books.some(val => val.id == this.id);
+                    if(!this.disflag){
+                        if(flag) {
+                            this.btnflag = true
+                            this.idflag = true
+                        } else {
+                            this.btnflag = false
+                            this.idflag = false
+                        }
+                    }
+                },
+                name: function() {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if(!this.idflag) {
+                        if(flag) {
+                            this.btnflag = true
+                        } else {
+                            this.btnflag = false
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
