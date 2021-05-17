@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>时间过滤器</title>
+</head>
+<body>
+    <!-- 1.写一个自己的时间过滤器（带参数），如参数为"yyyy-MM-dd h:m:s" 则显示  2021-05-17 15:49:20 -->
+    <div id="app">
+        <h1>{{msg | time('yyyy-MM-dd h:m:s')}}</h1>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        // 过滤器（带参数）
+        Vue.filter('time', function(val,type){
+            // 年
+            var y = val.getFullYear();
+            // 月
+            var M = val.getMonth() + 1;
+            M = M < 10 ? '0' + M : M;
+            // 日
+            var d = val.getDate();
+            d = d < 10 ? '0' + d : d;
+            // 时
+            var h = val.getHours();
+            h = h < 10 ? '0' + h : h;
+            // 分
+            var m = val.getMinutes();
+            m = m < 10 ? '0' + m : m;
+            // 秒
+            var s = val.getSeconds();
+            s = s < 10 ? '0' + s : s;
+            type = type.replace('yyyy',y);
+            type = type.replace('MM',M);
+            type = type.replace('dd',d);
+            type = type.replace('h',h);
+            type = type.replace('m',m);
+            type = type.replace('s',s);
+            return type;
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg:new Date(),
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

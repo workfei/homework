@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 3.写一个计算器组件 -->
+    <div id="app">
+       <calculator></calculator>
+    </div>
+    
+    <script src="vue.js"></script>
+    <script>
+        Vue.directive('inp', {
+            inserted: function(el) {
+                el.focus();
+            }
+        })
+        Vue.component('calculator', {
+            data: function() {
+                return {
+                    text1: '',
+                    text2: '',
+                    js: '+',
+                    result: '',
+                }
+            },
+            methods: {
+                cal() {
+                    if(this.text1 == '' || this.text2 == '') {
+                        alert('输入框不能为空')
+                    } else {
+                        if(this.js == '+') {
+                            this.result = parseInt(this.text1) + parseInt(this.text2);
+                        } else if(this.js == '-') {
+                            this.result = this.text1 - this.text2;
+                        } else if(this.js == '*') {
+                            this.result = this.text1 * this.text2;
+                        } else if(this.js == '/') {
+                            this.result = this.text1 / this.text2;
+                        }
+                    }
+                }
+            },
+            template: `
+                <div>
+                    <input type="text" v-model= 'text1' v-inp>
+                    <select name="" id="" v-model='js'>
+                        <option value="+">+</option>
+                        <option value="-">-</option>
+                        <option value="*">*</option>
+                        <option value="/">/</option>
+                    </select>
+                    <input type="text" v-model= 'text2'>
+                    <button @click="cal">=</button>
+                    <span>{{result}}</span>
+                </div>
+            `
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

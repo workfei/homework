@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <my-com></my-com>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component('myCom', {
+            data: function(){
+                return {
+                    books:[],
+                    // 点击按钮值
+                    btnMsg:'添加',
+                    name:'',
+                    modify1:false,
+                    btnflag:false
+                }
+            },
+            template:`
+            <div class="add">名称:  <input type="text" name="" id="" v-model.trim="name" > <button @click="add()" :disabled="btnflag">{{btnMsg}}</button></div>
+            <h4 class="count">图书总数:{{counts}}</h4>
+            <table border="1" width="500" align="center">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  v-for='item in books' :key='item.id'>
+                        <td>{{item.id}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.date}}</td>
+                        <td>
+                        <a href="" @click.prevent="modify(item.id)">修改</a>
+                        <span>|</span>
+                            <a href="" @click.prevent="del(item.id)">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            `,
+            methods:{
+                
+            },
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2021/05/17'
+                    },{
+                    id: 2,
+                    name: '水浒传',
+                    date: '2021/05/17'
+                    },{
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2021/05/17'
+                    },{
+                    id: 4,
+                    name: '西游记',
+                    date: '2021/05/17'
+                }];
+                this.books = data;
+            },
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

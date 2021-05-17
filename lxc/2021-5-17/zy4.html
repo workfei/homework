@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 515px;
+            margin: 0 auto;
+        }
+        
+        .book {
+            background-color: skyblue;
+        }
+        
+        .totle {
+            margin-top: 5px;
+        }
+        
+        thead {
+            text-align: center;
+            background-color: skyblue;
+        }
+        
+        tbody {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-com></my-com>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component('myCom', {
+            data: function() {
+                return {
+                    id: '',
+                    name: '',
+                    btnMsg: '提交',
+                    books: [],
+                    btnflag: false,
+                    idflag: false,
+                    disflag: false
+                }
+            },
+            template: `
+                <div>
+                    <div class="book">
+                    ID：<input type="text" name="" id="" v-model.trim="id"> 图书名称：<input type="text" name="" id="" v-model.trim="name"><button :disabled="btnflag" @click="add">{{btnMsg}}</button>
+                    </div>
+                    <div class="totle">图书总数：{{books.length}}</div>
+                    <table border="1" width="515px">
+                        <thead>
+                            <tr>
+                                <td>ID</td>
+                                <td>图书名称</td>
+                                <td>时间</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(val,index) in books" :key="val.id">
+                                <td>{{val.id}}</td>
+                                <td>{{val.name}}</td>
+                                <td>{{val.date}}</td>
+                                <td>
+                                    <a href="" @click.prevent="edit(val.id)">修改</a>
+                                    <span>|</span>
+                                    <a href="" @click.prevent="del(val.id)">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            methods: {
+                add() {
+                    if (this.disflag) {
+                        this.books.some(val => {
+                            if (val.id == this.id) {
+                                val.name = this.name;
+                            }
+                        })
+                        this.disflag = false;
+                        this.id = '';
+                        this.name = '';
+                        this.btnMsg = '提交';
+                    } else {
+                        this.books.push({
+                            id: this.id,
+                            name: this.name,
+                            date: '2021/5/17',
+                        })
+                    }
+                    this.id = '';
+                    this.name = '';
+                },
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                },
+                edit(id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.disflag = true;
+                    this.btnMsg = '修改';
+                }
+            },
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2021/5/17'
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: '2021/5/17'
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2021/5/17'
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: '2021/5/17'
+                }]
+                this.books = data;
+            },
+            watch: {
+                id: function() {
+                    var flag = this.books.some(val => val.id == this.id);
+                    if (!this.disflag) {
+                        if (flag) {
+                            this.btnflag = true;
+                            this.idflag = true;
+                        } else {
+                            this.btnflag = false;
+                            this.idflag = false;
+                        }
+                    }
+                },
+                name: function() {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if (!this.idflag) {
+                        if (flag) {
+                            this.btnflag = true;
+                        } else {
+                            this.btnflag = false;
+                        }
+                    }
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            methods: {
+
+            },
+            mounted() {
+
+            },
+            computed: {
+
+            },
+            watch: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

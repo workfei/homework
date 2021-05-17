@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        
+    </div>
+    
+    <script src="vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                id: '',
+                name: '',
+                books: '',
+                btntext: '提交',
+                disflag: false,
+                idflag: false,
+                btnflag: false,
+            },
+            methods:{
+                add() {
+                    if(this.disflag) {
+                        this.books.some(val => {
+                            if(val.id == this.id) {
+                                val.name = this.name
+                            }
+                        })
+                        this.disflag = false
+                        this.id = ''
+                        this.name = ''
+                        this.btntext = '提交'
+                    } else {
+                            var time = new Date();
+                            var y = time.getFullYear();
+                            var mon = time.getMonth() + 1;
+                            var d = time.getDay();
+                            var h = time.getHours();
+                            var m = time.getMinutes();
+                            var s = time.getSeconds();
+                            this.books.push({
+                                id: this.id,
+                                name: this.name,
+                                date: y + '-' + mon + '-' + d + ' ' + h + ':' + m + ':' + s,
+                            })
+                            this.id = ''
+                            this.name = ''
+                    }
+                },
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                },
+                rep(id) {
+                    this.btntext = '替换';
+                    var data = this.books.filter(val => val.id == id);
+                    this.id = data[0].id;
+                    this.name = data[0].name;
+                    this.disflag = true;
+                }
+            },
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: 2525609975000
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: 2525609975000
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: 2525609975000
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: 2525609975000
+                }];
+                data.forEach(val => {
+                    var time = new Date(val.date);
+                    var y = time.getFullYear();
+                    var mon = time.getMonth() + 1;
+                    var d = time.getDay();
+                    var h = time.getHours();
+                    var m = time.getMinutes();
+                    var s = time.getSeconds();
+                    val.date = y + '-' + mon + '-' + d + ' ' + h + ':' + m + ':' + s;
+                })
+                this.books = data;
+            },
+            watch: {
+                id: function() {
+                    var flag = this.books.some(val => val.id == this.id);
+                    if(!this.disflag) {
+                        if(flag) {
+                            this.btnflag = true;
+                            this.idflag = true;
+                        } else {
+                            this.btnflag = false;
+                            this.idflag = false;
+                        }
+                    } 
+                },
+                name: function() {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if(!this.idflag) {
+                        if(flag) {
+                            this.btnflag = true;
+                        } else {
+                            this.btnflag = false;
+                        }
+                    } 
+                }
+            },
+            computed:{
+                
+            }
+        })
+    </script>
+</body>
+</html>
