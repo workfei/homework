@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .hd {
+            padding: 2px;
+            background-color: goldenrod;
+        }
+
+        .hd span {
+            padding: 2px;
+            background-color: red;
+            color: #fff;
+            vertical-align: middle;
+        }
+
+        .total {
+            margin: 3px 0;
+        }
+
+        table {
+            width: 100%;
+            text-align: center;
+        }
+
+        thead {
+            background-color: skyblue;
+            color: orangered;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-com></my-com>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component('myCom', {
+            data: function () {
+                return {
+                    inputId: '',
+                    inputName: '',
+                    books: [],
+                    btnflag: false, //提交按钮的禁用与允许
+                    idflag: false, //修改是的禁用与允许
+                }
+            },
+            methods: {
+                add() {
+                    if (this.idflag) { //修改状态
+                        this.books.some(val => {
+                            if (val.id == this.inputId) {
+                                val.name = this.inputName
+                            }
+                        })
+                        this.idflag = false
+                        this.inputId = ''
+                        this.inputName = ''
+                    } else { //添加
+                        if (this.inputName != '' && this.inputId != '') {
+                            this.books.push({
+                                id: this.inputId,
+                                name: this.inputName,
+                                date: new Date()
+                            })
+                            this.inputId = ''
+                            this.inputName = ''
+                        } else {
+                            alert('ID或图书名称有问题')
+                        }
+                    }
+                },
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id)
+                },
+                edit(id) {
+                    this.idflag = true;
+                    this.inputId = id;
+                    var obj = this.books.find(val => val.id == id)
+                    this.inputName = obj.name
+                }
+            },
+            watch: {
+                inputId: function () {
+                    var flag = this.books.some(val => val.id == this.inputId)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                },
+                inputName: function (name) {
+                    var flag = this.books.some(val => val.name == this.inputName)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                },
+            },
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }]
+                this.books = data;
+            },
+            computed: {
+                counts: function () {
+                    return this.books.length
+                }
+            },
+            filters: {
+                timer: function(val) {
+                    var year = val.getFullYear()
+                    var month = (val.getMonth() + 1)
+                    var date = val.getDate()
+                    var hour = val.getHours() 
+                    var minute = val.getMinutes()
+                    var second = val.getSeconds()
+                                  
+                    return ''+year+'-'+month+'-'+date+' '+hour+':'+minute+':'+second+''
+                }
+            },
+            template: `
+            <div>
+                <div class="hd">
+                    <span>ID</span><input type="text" :disabled='idflag' v-model.trim='inputId'><span>图书名称</span><input type="text" v-model.trim='inputName'><button @click='add' :disabled='btnflag'>提交</button>
+                </div>
+                <div class="total">图书总数: {{counts}}</div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for='(val,index) in books'>
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.date | timer}}</td>
+                            <td><a href="javascript:;" @click.prevent='edit(val.id)'>修改</a> <a href="javascript:;" @click.prevent='del(val.id)'>删除</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            watch: {
+
+            },
+            mounted() {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

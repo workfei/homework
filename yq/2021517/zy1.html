@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <div>{{time | timer('yyyy-MM-dd h:m:s')}}</div>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                time: new Date()
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            filters: {
+                timer: function(val,text) {
+                    var year = val.getFullYear()
+                    var month = (val.getMonth() + 1)
+                    month = month < 10 && text.match(/M/g).length > 1 ? '0' + month : month; 
+                    var date = val.getDate()
+                    date = date < 10 && text.match(/d/g).length > 1 ? '0' + date : date;
+                    var hour = val.getHours()
+                    hour = hour < 10 && text.match(/h/g).length > 1 ? '0' + hour : hour; 
+                    var minute = val.getMinutes()
+                    minute = minute < 10 && text.match(/m/g).length > 1 ? '0' + minute : minute; 
+                    var second = val.getSeconds()
+                    second = second < 10 && text.match(/s/g).length > 1 ? '0' + second : second; 
+
+                    if (text.indexOf('-') != -1) {                   
+                        return ''+year+'-'+month+'-'+date+' '+hour+':'+minute+':'+second+''
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
