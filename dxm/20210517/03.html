@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-计算器组件</title>
+</head>
+
+<body>
+    <div id="app">
+        <my-component></my-component>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component("my-component", {
+            data() {
+                return {
+                    num1: 0,
+                    num2: 0,
+                    pot: "+",
+                    total: 0
+                }
+            },
+            computed: {
+                getCount2() {
+                    switch (this.pot) {
+                        case "+": this.total = parseInt(this.num1) + parseInt(this.num2)
+                            return this.total;
+                        case "-": this.total = this.num1 - this.num2
+                            return this.total;
+                        case "*": this.total = this.num1 * this.num2
+                            return this.total;
+                        case "/": this.total = this.num1 / this.num2
+                            return this.total;
+                    }
+                }
+            },
+            template: `
+                <div>
+                    <h1>Vue-简单的计算器组件</h1>
+                    <input type="text" v-model.trim="num1">
+                    <select name="" id="" v-model="pot">
+                        <option value="+">+</option>
+                        <option value="-">-</option>
+                        <option value="*">*</option>
+                        <option value="/">/</option>
+                    </select>
+                    <input type="text" v-model.trim="num2">
+                    <button>=</button>
+                    <span >{{getCount2}}</span>
+                </div>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
