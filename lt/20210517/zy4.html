@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        #app {
+            text-align: center;
+        }
+        .add {
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
@@ -24,7 +32,80 @@
                     btnflag:false
                 }
             },
+            methods:{
+                // 添加
+                add() {
+                    if (this.modify1 != false) {
+                        this.books.some(val => {
+                            if(val.id == this.id) {
+                                val.name = this.name
+                            }
+                        });
+                        this.modify1 = false;
+                        this.name = '';
+                        this.id = '';
+                        this.btnMsg='提交';
+                    } else {
+                        if (this.name != '') {
+                            this.books.push({id:this.books.length+1,name:this.name,date:'2021/05/17'})
+                            this.name ='';
+                        }
+                    }
+                    
+                },
+                // 删除
+                del(id) {
+                    this.books = this.books.filter(function(item) {
+                        return item.id != id;
+                    })
+                },
+                // 修改
+                modify (id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.name = obj.name;
+                    this.id = obj.id;
+                    this.btnMsg='修改';
+                    this.modify1 = true;
+                }
+            },
+            computed:{
+                counts: function() {
+                    return this.books.length
+                }
+            },
+            // 挂载后
+            mounted() {
+                var data = [{
+                id: 1,
+                name: '三国演义',
+                date: '2021/05/17'
+                },{
+                id: 2,
+                name: '水浒传',
+                date: '2021/05/17'
+                },{
+                id: 3,
+                name: '红楼梦',
+                date: '2021/05/17'
+                },{
+                id: 4,
+                name: '西游记',
+                date: '2021/05/17'
+                }];
+                this.books = data;
+            },
+            watch: {
+                name:function() {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if (flag) {
+                        this.btnflag = true;
+                    } else {
+                        this.btnflag = false;
+                    }
+                }
+            },
             template:`
+            <div>
             <div class="add">名称:  <input type="text" name="" id="" v-model.trim="name" > <button @click="add()" :disabled="btnflag">{{btnMsg}}</button></div>
             <h4 class="count">图书总数:{{counts}}</h4>
             <table border="1" width="500" align="center">
@@ -49,30 +130,8 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
             `,
-            methods:{
-                
-            },
-            mounted() {
-                var data = [{
-                    id: 1,
-                    name: '三国演义',
-                    date: '2021/05/17'
-                    },{
-                    id: 2,
-                    name: '水浒传',
-                    date: '2021/05/17'
-                    },{
-                    id: 3,
-                    name: '红楼梦',
-                    date: '2021/05/17'
-                    },{
-                    id: 4,
-                    name: '西游记',
-                    date: '2021/05/17'
-                }];
-                this.books = data;
-            },
         })
         var vm=new Vue({
             el:'#app',
