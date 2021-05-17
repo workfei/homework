@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <my-com></my-com>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        /* 3.写一个计算器组件 */
+        Vue.component('myCom', {
+            data: function () {
+                return {
+                    msg1: '',
+                    msg2: '',
+                    result: '',
+                    opt: '+',
+                }
+            },
+            methods: {
+                next() {
+                    var num2Input = document.querySelector('.num2');
+                    num2Input.focus();
+                },
+                calc() {
+                    switch (this.opt) {
+                        case '+':
+                            this.result = parseInt(this.msg1) + parseInt(this.msg2);
+                            break;
+                        case '-':
+                            this.result = this.msg1 - this.msg2;
+                            break;
+                        case '*':
+                            this.result = this.msg1 * this.msg2;
+                            break;
+                        case '/':
+                            this.result = this.msg1 / this.msg2;
+                            break;
+                    }
+                },
+            },
+            template: `
+            <div>
+                <input type="text" class="num1" v-model="msg1" v-on:keyup.enter="next">
+                <select class="opt" v-model="opt">
+                    <option value='+'>+</option>
+                    <option value='-'>-</option>
+                    <option value='*'>*</option>
+                    <option value='/'>/</option>
+                </select>
+                <input type="text" class="num2" v-model="msg2" v-on:keyup.enter="calc">
+                <button @click="calc">=</button>
+                <span class="result">{{result}}</span>    
+            </div>
+            `,
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
