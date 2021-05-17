@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        {{time | myTime('yyyy-MM-dd h:m:s')}}
+        {{time | myTime('yyyy/MM/dd h:m:s')}}
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        console.log(new Date().getMinutes);
+        Vue.filter('myTime', function (val, formate) {
+            var y = val.getFullYear();
+            var M = (val.getMonth() + 1) < 10 ? "0" + (val.getMonth() + 1) : val.getMonth() + 1;
+            var d = val.getDate() < 10 ? '0' + val.getDate() : val.getDate()
+            var h = val.getHours() < 10 ? '0' + val.getHours() : val.getHours();
+            var m = val.getMinutes()
+            var s = val.getSeconds()
+            if (formate.indexOf('-') != -1) {
+                return y + '-' + M + '-' + d + ' ' + h + ':' + m + ':' + s;
+            }else if(formate.indexOf('/') != -1){
+                return y + '/' + M + '/' + d + ' ' + h + ':' + m + ':' + s;
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                time: new Date()
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

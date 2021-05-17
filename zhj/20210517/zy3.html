@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <my-com></my-com>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component('myCom', {
+            data: function () {
+                return {
+                    num1: null,
+                    num2: null,
+                    result: null,
+                    opt: '+'
+                }
+            },
+            methods: {
+                getEnter() {
+                    var num2Input = document.querySelector('.num2').focus();
+                },
+                calc() {
+                    var result = 0;
+                    switch (this.opt) {
+                        case '+':
+                            result = parseInt(this.num1) + parseInt(this.num2);
+                            break;
+                        case '-':
+                            result = this.num1 - this.num2;
+                            break;
+                        case '*':
+                            result = this.num1 * this.num2;
+                            break;
+                        case '/':
+                            result = this.num1 / this.num2;
+                            break;
+                    }
+                    var resultDiv = document.querySelector('.result').innerText = result;
+                }
+            },
+            template: `
+            <div>
+                <input type="text" class="num1" v-model="num1" v-on:keyup.enter="getEnter">
+        <select class="opt" v-model="opt">
+            <option value='+'>+</option>
+            <option value='-'>-</option>
+            <option value='*'>*</option>
+            <option value='/'>/</option>
+        </select>
+        <input type="text" class="num2" v-model="num2" v-on:keyup.enter="calc">
+        <button @click="calc">=</button>
+        <span class="result"></span>
+                </div>
+            `,
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
