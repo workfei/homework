@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 1.写一个自己的时间过滤器（带参数），如参数为"yyyy-MM-dd h:m :s" 则显示  2021-05-17 15:49:20 -->
+    <div id="app">
+        <h1>{{msg | time('yyyy-MM-dd h:m:s')}}</h1>
+    </div>
+    <script src="vue.js"></script>
+    <script>
+        Vue.filter("time", function(val,a) {
+            var str = a.split(' ');
+            var date = str[0].split('-');
+            var times = str[1].split(':');
+
+
+            var y = val.getFullYear();
+            var mon = val.getMonth() + 1;
+            var d = val.getDate();
+            var h = val.getHours();
+            var m = val.getMinutes();
+            var s = val.getSeconds();
+            mon = mon < 10? '0' + mon: mon;
+            d = d < 10? '0' + d: d;
+            h = h < 10? '0' + h: h;
+            m = m < 10? '0' + m: m;
+            s = s < 10? '0' + s: s;
+            return y + '-' + mon + '-' + d + '   ' + h + ':' + m + ':' + s;
+            
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                msg: new Date(),
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
