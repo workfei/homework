@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>购物车</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+        table tr {
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        td {
+            box-sizing: border-box;
+            padding: 13px 0;
+        }
+        table tr td:first-child {
+            padding: 0;
+        }
+        table tr td:first-child img {
+            width: 150px;
+            height: 50px;
+            margin: 0;
+        }
+        table tr td:last-child img {
+            width: 30px;
+            height: 30px;
+        }
+        input {
+            text-align: center;
+            width: 30px;
+        }
+        table button {
+            width: 20px;
+        }
+        .header {
+            padding: 15px;
+            text-align: center;
+            background-color: skyblue;
+        }
+        h4 {
+            margin-bottom: 10px;
+        }
+        .footer {
+            padding: 15px 0;
+            background-color: orange;
+            text-align: right;
+            color: red;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 头部 开始 -->
+        <my-head :list="list" :uname="uname" :dellist="dellist" @add="add"></my-head>
+        <!-- 头部 结束 -->
+
+        <!-- 产品 开始 -->
+        <my-table :list="list" @del="del" @jian="jian" @jia="jia"></my-table>
+        <!-- 产品 结束 -->
+
+        <!-- 总价 开始 -->
+        <my-zj :delcid="delcid" :counts="counts" @add="add"></my-zj>
+        <!-- 总价 结束 -->
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        // 创建事件中心
+        var hub = new Vue();
+        // 头部
+        Vue.component('myHead', {
+            props: ['uname','list','dellist'],
+            data: function() {
+                return {
+                    setadd: '1'
+                }
+            },
+            template: `
+            <div class="header">
+                <h4>{{uname}}</h4>
+                <p v-if="dellist.length">
+                    <select v-model="setadd">
+                        <option v-for="val in dellist" :key="val.id" :value="val.id" selected="selected">{{val.name}}</option>
+                    </select>
+                    <button @click="$emit('add',setadd)">新增</button>
+                </p>
+            </div>
+            `,
+        })
+        //产品列表
+        Vue.component('myTable', {
+            props: ['list','dellist'],
+            template: `
+            <table width="500" align="center">
+                <tr v-for="(val,index) in list" :key="val.id">
+                    <td><img :src="val.img"></td>
+                    <td>
+                        <button @click="$emit('jian',val.id)">-</button>
+                        <input type="text" :value="val.num">
+                        <button @click="$emit('jia',val.id)">+</button>
+                    </td>
+                    <td>{{val.price * val.num}}</td>
+                    <td><img src="img/x.png" @click="$emit('del',index)"></td>
+                </tr>
+            </table>
+            `,
+        })
+        //总价
+        Vue.component('myZj', {
+            props: ['delcid'],
+            template: `
+            <div class="footer">总价: {{delcid}}</div>
+            `,
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                dellist: [],
+                delcid: 0,
+                uname: '张三',
+                list: [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+            },
+            methods: {
+                //添加
+                add(id) {
+                    console.log(id);
+                    var obj = this.dellist.filter(val => val.id == id)
+                    this.list.push({
+                        id: obj[0].id,
+                        name: obj[0].name,
+                        price: obj[0].price,
+                        num: obj[0].num,
+                        img: obj[0].img
+                    })
+                },
+                //删除添加到新数组
+                del(index) {
+                    this.dellist.push(this.list.splice(index,1)[0])
+                },
+                //减
+                jian(id) {
+                    this.list.filter(val => {
+                        if (val.id == id) {
+                            val.num--; 
+                            if (val.num < 0) {
+                                val.num = 0;
+                            }
+                        }
+                    })
+                },
+                //加
+                jia(id) {
+                    this.list.filter(val => {
+                        if (val.id == id) {
+                            val.num++; 
+                        }
+                    })
+                }
+            },
+            computed: {
+                //自动进行累加
+                counts: function() {
+                    this.delcid = 0;
+                    this.list.forEach(val => this.delcid += val.price * val.num)
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
