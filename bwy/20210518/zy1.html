@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{
+            -webkit-appearance: none !important;
+        }
+        #app {
+            width: 500px;
+            margin: auto;
+        }
+        .head {
+            text-align: center;
+        }
+        .body {
+            list-style: none;
+        }
+        .body li {
+            display: flex;
+            justify-content: space-between;
+        }
+        .body input {
+            width: 30px;
+            height: 20px;
+        }
+        .foot {
+            text-align: right;
+        }
+        .active{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <gethead :man="uname" :data="dellist" @add = "add"></gethead>
+        <get-body :datas="list" @plus="plus" @subtract="subtract" @del="del" @num="num"></get-body>
+        <getfoot :data="list"></getfoot>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.component("gethead",{
+            props: ['man','data'],
+            data : function() {
+                return {
+                    id: '',
+                }
+            },
+            template: `
+            <div class="head">
+                <h1>{{man}}</h1>
+                <div :class="data.length == 0? 'active': '' ">
+                    <select name="" id=""  v-model="id">
+                        <option :value="val.id" v-for="val in data">{{val.name}}</option>
+                    </select>
+                    <button @click="$emit('add',id)">新增</button>
+                </div>
+            </div>
+            `
+        })
+        Vue.component('getBody', {
+            props: ['datas'],
+            data: function() {
+                return{
+                    // num1: '',
+                    // num2: '',
+                    // num3: '',
+                    // num4: '',
+                    // num5: '',
+                }
+               
+            },
+            template: `
+            <ul class="body">
+                <li v-for="val in datas" :key="val.id">
+                    <span>{{val.name}}</span>
+                    <div>
+                        <button @click="$emit('subtract',val.id,val.num)">-</button>
+                        <input type="number"  :value="val.num" @keyup.enter="$emit('num',val.id,this.value)">
+                      
+                        <button @click="$emit('plus',val.id)">+</button>
+                    </div>
+                    <span>{{val.price}}</span>
+                    <button @click="$emit('del',val.id)">X</button>
+                </li>
+            </ul>
+            `
+        })
+        Vue.component('getfoot',{
+            props: ['data'],
+            template: `
+                <div class="foot">总价:<span>{{zj}}</span></div>
+            `,
+            computed: {
+                zj() {
+                    var sum = 0;
+                    this.data.forEach(val => {
+                        sum += val.price;
+                    })
+                    return sum;
+                }
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                dellist: [],
+                delcid: 0,
+                uname: '张三',
+                list: [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+            },
+            methods:{
+                plus(id) {
+                    this.list.some(val => {
+                        if(val.id == id) {
+                            val.price = val.price / val.num * (parseInt(val.num) + 1);
+                            val.num++;
+                            return true;
+                        }
+                    })
+                },
+                subtract(id,num) {
+                    if(num != 1) {
+                        this.list.some(val => {
+                            if(val.id == id) {
+                                val.price = val.price / val.num * (parseInt(val.num) - 1);
+                                val.num--;
+                                return true;
+                            }
+                        })
+                    }
+                },
+                num(id,num) {
+                    // console.log(this);
+                    this.list.some(val => {
+                        if(val.id == id) {
+                            val.price = val.price / val.num * num;
+                            val.num = num;
+                            return true;
+                        }
+                    })
+                },
+                del(id) {
+                    this.list.filter(val => {
+                        if(val.id == id) {
+                            this.dellist.push(val)
+                        }
+                        });
+                    this.list = this.list.filter(val => val.id != id)
+                },
+                add(id) {
+                    this.dellist.filter(val => {
+                        if(val.id == id) {
+                            this.list.push(val)
+                        }
+                    })
+                    this.dellist = this.dellist.filter(val => val.id != id);
+                }
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
