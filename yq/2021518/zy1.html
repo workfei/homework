@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .add-goods {
+            display: none; 
+        }
+        .active {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .hd {
+            padding: 10px 0;
+            background-color: skyblue;
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .product li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid skyblue;
+        }
+
+        .product li input {
+            width: 45px;
+            height: 25px;
+            padding-left: 5px;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+
+        .product li button {
+            width: 15px;
+            height: 25px;
+        }
+
+        .product li .del {
+            border: none;
+            background-color: #fff;
+            font-size: 25px;
+            font-weight: 700;
+            color: red;
+        }
+        .product li div {
+            flex: 20%;
+            text-align: center;
+        }
+        .total {
+            padding: 15px 0;
+            background-color: orange;
+            text-align: right;
+            color: purple;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <add-goods :uname="uname" :dellist="dellist" @addlist="addlist"></add-goods>
+        <product :list="list" @addnum="addNum" @reducenum="reduceNum" @delgoods="delGoods"></product>
+        <total :counts="counts"></total>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        // 名称组件
+        Vue.component('addGoods', {
+            data: function() {
+                return {
+                    name: 0
+                }
+            },
+            props: ['uname','dellist'],
+            template: `
+                <div class="hd">
+                    <div>{{uname}}</div>
+                    <div :class="dellist == '' ? 'add-goods' : 'active'">
+                        <select name="" id="" v-model="name">
+                            <option :value="index" v-for="(val,index) in dellist">{{val.name}}</option>
+                        </select>
+                        <button @click.prevent="addlist(name)">新增</button>
+                    </div>
+                </div>
+            `,
+            methods: {
+                addlist(index) {
+                    this.$emit('addlist',index)
+                }
+            },
+            watch: {
+                name: function() {
+                    this.name = 0;
+                }
+            }
+        })
+        // 产品组件
+        Vue.component('product', {
+            props: ['list'],
+            template: `
+            <div class="product">
+                <ul>
+                    <li v-for="(items,index) in list">
+                        <div><span>{{items.name}}</span></div>
+                        <div class="add-reduce">
+                            <button @click.prevent="reducenum(items.id)">-</button>
+                            <input type="text" :value="items.num">
+                            <button @click.prevent="addnum(items.id)">+</button>
+                        </div>
+                        <div><span>{{items.price}}</span></div>
+                        <div><button class="del" @click.prevent="delgoods(index)">X</button></div>
+                    </li>
+                </ul>
+            </div>
+            `,
+            methods: {
+                addnum(id) {
+                    this.$emit('addnum',id)
+                },
+                reducenum(id) {
+                    this.$emit('reducenum',id)
+                },
+                delgoods(index) {
+                    this.$emit('delgoods',index)
+                }
+            },
+        })
+        // 总数组件
+        Vue.component('total', {
+            props: ['counts'],
+            template: `
+            <div class="total">
+                <span>总价: {{counts}}</span>
+            </div>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                uname: '张三',
+                dellist: [],
+                list: [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+            },
+            methods: {
+                // 数量加
+                addNum(id) {
+                    this.list.find(val => {
+                        if (val.id == id) {
+                            val.num++;
+                            val.price = val.money * val.num;
+                        }
+                    })
+                },
+                // 数量减
+                reduceNum(id) {
+                    this.list.find(val => {
+                        if (val.id == id && val.num > 1) {
+                            val.num--;
+                            val.price = val.money * val.num;
+                        }
+                    })
+                },
+                // 删除数据
+                delGoods(index) {
+                    this.dellist.push(this.list.splice(index, 1)[0])
+                },
+                addlist(index) {
+                    this.list.push(this.dellist.splice(index, 1)[0])
+                }
+            },
+            created() {
+                this.list.forEach(val => {
+                    val.money = val.price//添加一个不变的单价
+                })
+            },
+            computed: {
+                // 计算总价
+                counts() {
+                    var total = 0;                
+                    this.list.forEach(val => {
+                        total += val.price
+                    })
+                    return total                  
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
