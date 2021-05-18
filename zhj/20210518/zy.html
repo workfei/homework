@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .top {
+            width: 100%;
+            height: 100px;
+            background-color: skyblue;
+            text-align: center;
+        }
+
+        .top p {
+            margin-bottom: 40px;
+        }
+
+        input {
+            width: 60px;
+            height: 30px;
+            text-align: center;
+        }
+
+        .jia {
+            height: 30px;
+            background-color: #999;
+        }
+
+        .jian {
+            height: 30px;
+            background-color: #999;
+        }
+
+        .img img {
+            width: 50px;
+            height: 40px;
+        }
+
+        .fot {
+            width: 500px;
+            height: 50px;
+            line-height: 50px;
+            background-color: orange;
+        }
+
+        .fot span {
+            float: right;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" style="width: 500px; margin: 0 auto;">
+        <top :uname="uname" :dellist="dellist" @add="add"></top>
+        <commodity :list="list" @del="del($event)" @jian="jian" @jia="jia"></commodity>
+        <fot :totalprice="totalprice()"></fot>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        //头部
+        Vue.component('top', {
+            props: ['uname', 'dellist'],
+            data: function () {
+                return {
+                    len: ''
+                }
+            },
+            template: `
+                <div class="top">
+                    <p>{{uname}}</p>
+                    <select name="" id="" v-model="len">
+                        <option value="" v-for="val in dellist">{{val.id}}</option>
+                    </select>
+                    <button>新增</button>
+                </div>
+            `
+        })
+
+        //商品部分
+        Vue.component('commodity', {
+            props: ['list', 'totalPrice'],
+            data: function () {
+                return {
+                    jian: '-',
+                    jia: '+'
+                }
+            },
+            template: `
+                <div class="commodity">
+                    <table style="width: 500px;">
+                        <tbody align="center">
+                            <tr v-for="(val,index) in list" :key="val.id">
+                                <td class="img"><img :src="val.img" alt=""></td>
+                                <td>{{val.name}}</td>
+                                <td class="jian" @click="$emit('jian',index)">{{jian}}</td>
+                                <td><input type="text" :value="val.num"></td>
+                                <td class="jia" @click="$emit('jia',index)">{{jia}}</td>
+                                <td>{{val.num * val.price}}</td>
+                                <td @click.prevent="$emit('del',val.id)"><img src="img/del.png" alt=""></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `
+        })
+
+        //尾部
+        Vue.component('fot', {
+            props: ['totalprice'],
+            template: `
+                <div class="fot">
+                    <span>总价: {{totalprice}}</span>
+                </div>
+            `
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                dellist: [],
+                delcid: 0,
+                uname: '张三',
+                list: [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+            },
+            methods: {
+                del(id) {
+                    this.list = this.list.filter(val => val.id != id)
+                },
+                jian(index) {
+                    if (this.list[index].num == 1) {
+                        this.list[index].num = 1
+                    } else {
+                        this.list[index].num--
+                    }
+                },
+                jia(index) {
+                    this.list[index].num++
+                },
+                totalprice: function () {
+                    var sum = 0;
+                    this.list.forEach(val => {
+                        sum += val.num * val.price
+                    })
+                    return sum;
+                },
+                add(id, name, price, num, img) {
+                    this.list.push({
+                        id: id,
+                        name: name,
+                        price: price,
+                        num: num,
+                        img: img
+                    })
+                }
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
