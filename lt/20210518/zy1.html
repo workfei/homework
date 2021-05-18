@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            text-align: center;
+        }
+        td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h3>{{uname}}</h3>
+        
+        <sg :list="list" :delcid="delcid"></sg>    
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue();
+        Vue.component('sg', {
+            data:function() {
+                return {
+                    name:'',
+                    id:'',
+                    dellist: []
+                }
+            },
+            props:['list','delcid'],
+            template:`  
+            <div>
+                <select name="" id="" >
+                    <option value=""v-for='val in dellist'>{{val.name}}</option>
+                    </select><button @click="add(dellist.name)">新增</button>
+                <table border="1" width="500" align="center">
+                    <tbody>
+                        <tr v-for='val in list' :key="val.id">
+                            <td>{{val.name}}</td>
+                            <td><button @click="jian(val.id)">-</button>{{val.num}}<button @click="jia(val.id)">+</button></td>
+                            <td >{{val.price}}</td>
+                            <td><h1 @click="delCart(val.id)">x</h1></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr><h3>{{zongshu}}</h3></tr>
+                    </tfoot>
+                </table>
+            </div>
+            `,
+            methods:{
+                delCart: function(id){
+                // 根据id删除list中对应的数据
+                // 1、找到id所对应数据的索引
+                // 2、根据索引，删除对应数据
+                    var index= this.list.filter(function(item){
+                        return item.id == id;
+                    });
+                    this.list.splice(index, 0);
+                    this.dellist.push(this.list.splice(index, 1)[0])
+                // this.list= this.list.filter(function(item){
+                //   return item.id != id;
+                // })
+                },
+                jian:function(id) {
+                    this.list.some(function(item){
+                        if(item.id== id){
+                            item.num> 0? item.num--: 0;
+                            return true;
+                        }
+                    })
+                },
+                jia:function(id) {
+                    this.list.some(function(item){
+                        if(item.id== id){
+                            item.num< 99? item.num++: 99;
+                            return true;
+                        }
+                    })
+                },
+                add:function(name){
+                    var index = this.dellist.findIndex(val => val.name == name);
+                    var arr = this.dellist.splice(index,1);
+                    this.list = this.list.concat(arr);
+                }
+            },
+            computed: {
+                zongshu: function(){
+                    // 计算商品的总价
+                    var t= 0;
+                    this.list.map(item=> {
+                    t+= item.price* item.num;
+                    });
+                    return t;
+                }
+            }
+        });
+
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                dellist: [],
+                delcid: 0,
+                uname: '张三',
+                list: [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+            },
+            methods:{
+                
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
