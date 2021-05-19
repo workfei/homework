@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <to-head :data="books" @add="add" :flag="flag"></to-head>
+        <to-num :data="books"></to-num>
+        <to-body :data="books" @del="del"></to-body>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var hub =new Vue();
+        Vue.component('toHead', {
+            props: ['data','flag'],
+            data: function() {
+                return {
+                    id: '',
+                    name: '',
+                    msg: '提交',
+                    idflag: false,
+                }
+            },
+            template: `
+            <div>
+                id: <input type="text" v-model="id" :disabled="this.idflag"> 
+                名称 <input type="text" v-model="name" > 
+                <button @click="add" :disabled="this.flag">{{msg}}</button>
+            </div>
+            `,
+            methods: {
+                add() {
+                    this.$emit('add',this.id,this.name,this.msg)
+                    this.id = ''
+                    this.name = ''
+                    this.msg = '提交'
+                    this.idflag = false
+                }
+            },
+            mounted() {
+                hub.$on('getid', val => {
+                    console.log(val);
+                    this.msg = '替换'
+                    this.id = val.id
+                    this.name = val.name
+                    this.idflag = true
+                })
+            },
+        })
+        Vue.component('toNum', {
+            props: ['data'],
+            template: `
+                <div>图书的总数:{{data.length}}</div>
+            `
+        })
+        Vue.component('toBody', {
+            props: ['data'],
+            template: `
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>名称</th>
+                        <th>日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="val in data">
+                        <td>{{val.id}}</td>
+                        <td>{{val.name}}</td>
+                        <td>{{val.date}}</td>
+                        <td><a href="##" @click="getid(val)">修改</a> <a href="##" @click.prevent="$emit('del',val.id)">删除</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            `,
+            methods: {
+                getid(obj) {
+                    hub.$emit('getid',obj);
+                }
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                books: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2050-01-12'
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: '2050-01-12'
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2050-01-12'
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: '2050-01-12'
+                }],
+                flag: false
+            },
+            methods:{
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id)
+                },
+                add(id,name,msg) {
+                   if(msg == '提交'){
+                         this.books.push({id:id,name:name,date:'2050-01-12'})
+                   } else {
+                        this.books.some(val => {
+                            if(val.id == id) {
+                                val.name = name
+                            }
+                        })
+                   }
+                },
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
