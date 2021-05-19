@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app" style="width: 500px; margin: 0 auto;">
+        <add-books @accretion="accretion"></add-books>
+        <count :extent="extent"></count>
+        <my-books :data="data" @del="del($event)"></my-books>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        //事件中心
+        var hub = new Vue()
+
+        //添加组件
+        Vue.component('addBooks', {
+            data: function () {
+                return {
+                    id: '',
+                    name: '',
+                    btnTxt: '提交'
+                }
+            },
+            template: `
+                <div>
+                    <div class="add">
+                        ID: <input type="text" name="" id="" v-model.trim="id" >  
+                        名称： <input type="text" name="" id="" v-model.trim="name">
+                        <button @click="add">{{btnTxt}}</button>
+                    </div>
+                </div>
+            `,
+            methods: {
+                add() {
+                    this.$emit('accretion', this.id, this.name, this.btnTxt)
+                    this.id = ''
+                    this.name = ''
+                    this.btnTxt = '提交'
+                }
+            },
+            mounted() {
+                hub.$on('sendadd', val => {
+                    if(val) {
+                        this.id = val.id
+                        this.name = val.name
+                        this.btnTxt = '修改'
+                    }
+                })
+            }
+        })
+
+        //统计组件
+        Vue.component('count', {
+            props: ['extent'],
+            template: `
+                <div>
+                    <h5 class="count">图书总数：{{extent}}</h5>
+                </div>
+            `
+        })
+
+        //数据列表
+        Vue.component('myBooks', {
+            props: ['data'],
+            template: `
+                <div>
+                    <table border="1" width="500" align="center">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody align="center">
+                            <tr v-for="val in data" :key="val.id">
+                                <td>{{val.id}}</td>
+                                <td>{{val.name}}</td>
+                                <td>{{val.date}}</td>
+                                <td align="center">
+                                    <a href="" @click.prevent="sendAdd(val)">修改</a>
+                                    <a href="" @click.prevent="$emit('del',val.id)">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            methods: {
+                sendAdd(val) {
+                    hub.$emit('sendadd', val)
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                data: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2021-05-17'
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: '2021-05-17'
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2021-05-17'
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: '2021-05-17'
+                }]
+            },
+            methods: {
+                //删除
+                del(id) {
+                    this.data = this.data.filter(val => val.id != id);
+                },
+                //添加
+                accretion(id, name, btnTxt) {
+                    if (btnTxt == '修改') {
+                        this.data.some(val => {
+                            if (val.id == id) {
+                                val.name = name
+                                return true
+                            }
+                        })
+                    } else {
+                        this.data.push({
+                            id: id,
+                            name: name,
+                            date: new Date().getTime()
+                        })
+                    }
+                }
+            },
+            computed: {
+                //data的长度
+                extent: function () {
+                    return this.data.length
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
