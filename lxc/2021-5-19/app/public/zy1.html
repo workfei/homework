@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <add-books @add-b="addBook"></add-books>
+        <count :counts="counts"></count>
+        <my-books :books="books" @remove="del($event)" @amend="edit($event)"></my-books>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue();
+        Vue.component('addBooks', {
+                data: function() {
+                    return {
+                        id: '',
+                        name: '',
+                        btnMsg: '提交',
+                        btnflag: false,
+                        idflag: false,
+                        disflag: false
+                    }
+                },
+                template: `
+                <div>
+                    <div class="book">
+                        ID：<input type="text" name="" id="" v-model.trim="id"> 图书名称：<input type="text" name="" id="" v-model.trim="name"><button @click="hand">{{btnMsg}}</button>
+                    </div>
+                </div>
+            `,
+                methods: {
+                    hand() {
+                        this.$emit('add-b', this.id, this.name, this.btnMsg);
+                        this.name = '';
+                        this.id = '';
+                        this.btnMsg = '提交';
+                    }
+                },
+                mounted() {
+                    hub.$on('sendinfo', val => {
+                        console.log(val);
+                        if (val) {
+                            this.btnMsg = '修改';
+                            this.id = val.id;
+                            this.name = val.name;
+                        }
+                    })
+                }
+            }),
+            Vue.component('count', {
+                props: ['counts'],
+                template: `
+                    <div>
+                        <div class="count">图书总数：{{counts}}</div> 
+                    </div>
+                `
+            })
+        Vue.component('myBooks', {
+            props: ['books'],
+            template: `
+                <div>
+                    <table border="1" width="600px">
+                        <thead>
+                            <tr>
+                                <td>ID</td>
+                                <td>图书名称</td>
+                                <td>时间</td>
+                                <td>操作</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(val,index) in books" >
+                                <td>{{val.id}}</td>
+                                <td>{{val.name}}</td>
+                                <td>{{val.date}}</td>
+                                <td>
+                                    <a href="" @click.prevent="sendInfo(val)">修改</a>
+                                    <span>|</span>
+                                    <a href="" @click.prevent="$emit('remove',val.id)">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            methods: {
+                sendInfo(val) {
+                    hub.$emit('sendinfo', val);
+                }
+            },
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }]
+            },
+            methods: {
+                addBook(id, name, btnMsg) {
+                    if (btnMsg == '修改') {
+                        this.books.some(val => {
+                            if (val.id == id) {
+                                val.name = name;
+                                return true;
+                            }
+                        })
+                    } else {
+                        this.books.push({
+                            id: id,
+                            name: name,
+                            date: new Date()
+                        })
+                    }
+                },
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                }
+            },
+            computed: {
+                counts() {
+                    return this.books.length;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .w500 {
+            width: 500px;
+            margin: 0 auto;
+        }
+        
+        input {
+            width: 30px;
+        }
+        
+        .head {
+            text-align: center;
+            background-color: skyblue;
+        }
+        
+        .head h1 {
+            text-align: center;
+        }
+        
+        .remove {
+            font-size: 40px;
+            cursor: pointer;
+            color: red;
+        }
+        
+        .totle {
+            font-weight: 600;
+            height: 42px;
+            line-height: 42px;
+            color: red;
+            background-color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-cart></my-cart>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue()
+        var arr = [1, 2, 3]
+        console.log(arr.slice(1, 2));
+        console.log(arr);
+        //创建头部组件
+        var myHead = {
+            props: ['uname', 'dellist', 'delcid'],
+            data: function() {
+                return {
+                    myid: this.delcid,
+                    mydellist: []
+                }
+            },
+            mounted() {
+                hub.$on('delid', val => {
+                    console.log('测试' + val)
+                    this.myid = val
+                })
+            },
+            template: `
+                <div class="w500 head">
+                    <h1>{{uname}}</h1>
+                    <div v-show="dellist.length > 0 ? true : false">
+                        <select v-model="myid">
+                            <option :value="item.id" v-for="item in dellist">{{item.name}}</option>
+                        </select>
+                        <button @click="add(myid)">新增</button>
+                    </div>
+                </div>
+            `,
+            methods: {
+                add(id) {
+                    this.$emit('headadd', id)
+                    console.log('mytest', this.dellist);
+                    this.mydellist = this.dellist
+                    this.mydellist = this.mydellist.filter(val => val.id != id)
+                    if (this.mydellist.length > 0) {
+                        this.myid = this.mydellist[0].id;
+                    }
+                }
+            },
+        }
+
+        //创建列表组件
+        var myList = {
+                props: ['list', 'sum'],
+                template: `
+                <div class="w500">
+                    <table width="100%">
+                        <tr v-for="item in list">
+                            <td><img :src="item.img" width="80" height="50" /></td>
+                            <td>{{item.name}}</td>
+                            <td><button @click="sub(item.id)">-</button><input type="text" v-model="item.num" /><button @click="add(item.id)">+</button></td>
+                            <td>{{item.price}}</td>
+                            <td class="remove" @click="del(item.id)">x</td>
+                        </tr>
+                    </table>
+                </div>
+            `,
+                methods: {
+                    add(id) {
+                        this.$emit('addnum', id)
+                    },
+                    sub(id) {
+                        this.$emit('subnum', id)
+                    },
+                    res(id) {
+                        this.$emit('ressum', id)
+                    },
+                    del(id) {
+                        this.$emit('delpro', id)
+                        hub.$emit('delid', id)
+                    }
+                },
+            }
+            //创建总计组件
+        var myTotal = {
+            props: ['list'],
+            template: `
+                <div class="totle w500" style="text-align:right">
+                    结价：{{totle}}
+                </div>
+            `,
+            computed: {
+                totle: function() {
+                    var t = 0
+                    this.list.forEach(val => {
+                        t += val.price * val.num;
+                    });
+                    return t;
+                }
+            },
+        }
+
+        //创建主组件
+        Vue.component('myCart', {
+            data: function() {
+                return {
+                    dellist: [], //删除列表
+                    delcid: 0, //最新删除的id
+                    uname: '张三',
+                    sum: 0,
+                    list: [{
+                        id: 1,
+                        name: 'TCL彩电',
+                        price: 800,
+                        num: 1,
+                        img: 'img/a.jpg'
+                    }, {
+                        id: 2,
+                        name: '机顶盒',
+                        price: 200,
+                        num: 1,
+                        img: 'img/b.jpg'
+                    }, {
+                        id: 3,
+                        name: '海尔冰箱',
+                        price: 1500,
+                        num: 1,
+                        img: 'img/c.jpg'
+                    }, {
+                        id: 4,
+                        name: '小米手机',
+                        price: 1000,
+                        num: 1,
+                        img: 'img/d.jpg'
+                    }, {
+                        id: 5,
+                        name: 'PPTV电视',
+                        price: 1200,
+                        num: 2,
+                        img: 'img/e.jpg'
+                    }]
+                }
+            },
+            components: {
+                myHead: myHead,
+                myList: myList,
+                myTotal: myTotal
+            },
+            template: `
+            <div class="w500">
+                <my-head :uname="uname" :dellist="dellist" :delcid="delcid" @headadd="headAdd"></my-head>
+                <my-list :list="list" @addnum="add($event)" @subnum="sub($event)" @delpro="del"></my-list>
+                <my-total :list="list"></my-total>
+            </div>
+            `,
+            methods: {
+                add(id) {
+                    this.list.some(val => {
+                        if (val.id == id) {
+                            val.num++
+                        }
+                    })
+                },
+                sub(id) {
+                    this.list.some(val => {
+                        if (val.id == id) {
+                            if (val.num > 1) {
+                                val.num--
+                            }
+                        }
+                    })
+                },
+                del(id) {
+                    this.delcid = id //删除id
+                    var index = this.list.findIndex(val => val.id == id)
+                    this.dellist = this.dellist.concat(this.list.slice(index, index + 1))
+                    console.log(this.dellist);
+                    this.list = this.list.filter(val => val.id != id)
+                },
+                headAdd(id) {
+                    //1.把删除数组列表中对应的数据找到
+                    var item = this.dellist.find(val => val.id == id)
+                    this.list.push(item) //把新的添加到list
+                    this.dellist = this.dellist.filter(val => val.id != id)
+                        //删除后保证始终有一个存在的id值
+                    if (this.dellist.length > 0) {
+                        this.delcid = this.dellist[0].id
+                    }
+                },
+            },
+        })
+
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省：<select name="" id="pro"></select> 市：
+    <select name="" id="city"></select> 区：
+    <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        $(function() {
+            function getPro() {
+                var p = new Promise(function(resolve, reject) {
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://192.168.10.165:8088/pro/',
+                        dataType: 'json',
+                        success: function(data) {
+                            var html = template('op', data);
+                            $('#pro').html(html);
+                            getCity();
+                            resolve('成功');
+                        },
+                        error: function() {
+                            reject('失败');
+                        }
+                    })
+                })
+                return p;
+            }
+
+            function getCity() {
+                var p = new Promise(function(resolve, reject) {
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://192.168.10.165:8088/pro/',
+                        data: {
+                            pid: $('#pro').val()
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            var html = template('op', data);
+                            $('#city').html(html);
+                            getArea();
+                            resolve('成功');
+                        },
+                        error: function() {
+                            reject('失败');
+                        }
+                    })
+                })
+                return p;
+            }
+
+            function getArea() {
+                var p = new Promise(function(resolve, reject) {
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://192.168.10.165:8088/pro/',
+                        data: {
+                            cid: $('#city').val()
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            var html = template('op', data);
+                            $('#area').html(html);
+                            resolve('成功');
+                        },
+                        error: function() {
+                            reject('失败');
+                        }
+                    })
+                })
+                return p;
+            }
+            getPro();
+            $('#pro').change(function() {
+                getCity($(this).val());
+            })
+
+            $('#city').change(function() {
+                getArea($(this).val());
+            })
+        })
+    </script>
+</body>
+
+</html>
