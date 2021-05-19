@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-图书管理</title>
+    <style>
+        .book {
+            width: 505px;
+            background-color: orange;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        thead {
+            background-color: orange;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="app">
+        <add-books @add="getAddbook" @update="updatebook" :books="books"></add-books>
+        <count :counts="counts"></count>
+        <my-books @delete="deletebook" :books="books"></my-books>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        /* 创建事件中心 */
+        var hub = new Vue();
+        /* 头部组件 */
+        Vue.component("addBooks", {
+            props: ["books"],
+            data() {
+                return {
+                    id: '',
+                    name: '',
+                    btnMsg: '提交',
+                    flag: false,
+                    btnflag: false,
+                    btnflag2: false
+                }
+            },
+            template: `
+            <div class='book'>
+                <label for="">ID:</label>
+                <input type="text" name="" id="" v-model.trim="id" ref="uid" :disabled="flag">
+                <label for="">图书名称:</label>
+                <input type="text" name="" id="" v-model.trim="name" ref="iname">
+                <button @click="handle(id,name)" :disabled="btnflag">{{btnMsg}}</button>
+            </div>
+            `,
+            methods: {
+                handle(id, name) {
+                    if (this.flag) {
+                        this.$emit('update', id, name);
+                        this.id = "";
+                        this.name = "";
+                        this.flag = false;
+                        this.btnMsg = "提交";
+                    } else {
+                        if (this.id == "") {
+                            this.$refs.uid.focus();
+                        } else if (this.name == "") {
+                            this.$refs.iname.focus();
+                        } else {
+                            this.$emit('add', id, name);
+                            this.id = "";
+                            this.name = "";
+                        }
+                    }
+                }
+            },
+            mounted() {
+                hub.$on('update', (id, name, flag) => {
+                    this.id = id;
+                    this.name = name;
+                    this.flag = flag;
+                    this.btnMsg = "修改";
+                })
+            },
+            watch: {
+                id: function () {
+                    var flag = this.books.some(val => val.id == this.id);
+                    if (!this.flag) {
+                        if (flag) {
+                            this.btnflag = true;
+                            this.btnflag2 = true;
+                        } else {
+                            this.btnflag = false;
+                            this.btnflag2 = false;
+                        }
+                    }
+                },
+                name: function () {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if (!this.btnflag2) {
+                        if (flag) {
+                            this.btnflag = true;
+                        } else {
+                            this.btnflag = false;
+                        }
+                    }
+                }
+            }
+        })
+        /* 内容组件 */
+        Vue.component("my-books", {
+            props: ["books"],
+            data() {
+                return {
+                    flag: true
+                }
+            },
+            template: `
+            <table width="505" border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="val in books" :key="val.id">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.date | format('yyyy-MM-dd hh:mm:ss')}}</td>
+                            <td>
+                            <a href="" @click.prevent="send(val.id,val.name,flag)">修改</a>
+                            <a href="" @click.prevent="$emit('delete',val.id)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `,
+            methods: {
+                send(id, name, flag) {
+                    hub.$emit('update', id, name, flag);
+                }
+            },
+            filters: {
+                format: function (value, arg) {
+                    function dateFormat(date, format) {
+                        if (typeof date === "string") {
+                            var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                            if (mts && mts.length >= 3) {
+                                date = parseInt(mts[2]);
+                            }
+                        }
+                        date = new Date(date);
+                        if (!date || date.toUTCString() == "Invalid Date") {
+                            return "";
+                        }
+                        var map = {
+                            "M": date.getMonth() + 1, //月份 
+                            "d": date.getDate(), //日 
+                            "h": date.getHours(), //小时 
+                            "m": date.getMinutes(), //分 
+                            "s": date.getSeconds(), //秒 
+                            "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                            "S": date.getMilliseconds() //毫秒 
+                        };
+                        format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                            var v = map[t];
+                            if (v !== undefined) {
+                                if (all.length > 1) {
+                                    v = '0' + v;
+                                    v = v.substr(v.length - 2);
+                                }
+                                return v;
+                            } else if (t === 'y') {
+                                return (date.getFullYear() + '').substr(4 - all.length);
+                            }
+                            return all;
+                        });
+                        return format;
+                    }
+                    return dateFormat(value, arg);
+                }
+            }
+        })
+        /* 统计组件 */
+        Vue.component("count", {
+            props: ["counts"],
+            template: `
+                <div>
+                    <p>图书总数：<span>{{counts}}</span></p>    
+                </div>
+            `
+        })
+
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: [],
+            },
+            //挂载后
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }];
+                this.books = data;
+            },
+
+            methods: {
+                getAddbook(id, name) {
+                    this.books.push({
+                        id: id,
+                        name: name,
+                        date: new Date()
+                    })
+                },
+                updatebook(id, name) {
+                    this.books.some(val => {
+                        if (val.id == id) {
+                            val.name = name;
+                        }
+                    })
+                },
+                deletebook(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                }
+            },
+            computed: {
+                counts: function () {
+                    return this.books.length;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

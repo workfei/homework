@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-购物车</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: 0;
+        }
+
+        .scar {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .head {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 70px;
+            background-color: aqua;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 60px;
+            border-bottom: 1px solid black;
+        }
+
+        .gname {
+            width: 40%;
+        }
+
+        .num {
+            width: 30%;
+        }
+
+        .price {
+            width: 15%;
+        }
+
+        .delete {
+            text-align: right;
+            width: 15%;
+            cursor: pointer;
+        }
+
+        li img {
+            width: 70px;
+            height: 60px;
+            vertical-align: middle;
+        }
+
+        li input {
+            width: 35px;
+            height: 25px;
+        }
+
+        li button {
+            width: 20px;
+            height: 20px;
+        }
+
+        .total {
+            height: 50px;
+            color: red;
+            text-align: right;
+            line-height: 50px;
+            font-weight: bold;
+            background-color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-scar></my-scar>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        /* 创建事件中心 */
+        var hub = new Vue();
+        /* 头部组件 */
+        Vue.component("my-hide", {
+            props: ["uname", "dellist", "delcid"],
+            data() {
+                return {
+                    myid: this.delcid,
+                    mydellist: []
+                }
+            },
+            mounted() {
+                //通过数据中心接收id,改变新定义mvid的值
+                hub.$on('delid', val => {
+                    this.myid = val;
+                })
+            },
+            template: `
+            <div class="head">
+                <p>{{uname}}</p>
+                <div class="hidselect" v-show="dellist != 0">
+                    <select v-model="myid">
+                        <option v-for="val in dellist" :key="val.id" :value="val.id">{{val.name}}</option>
+                    </select>
+                    <button @click='handle(myid)'>新增</button>
+                </div>
+            </div>
+            `,
+            methods: {
+                handle(id) {
+                    this.$emit('adg', id);
+                    this.mydellist = this.dellist;
+                    this.mydellist = this.mydellist.filter(val => val.id != id);
+                    if (this.mydellist.length > 0) {
+                        this.myid = this.mydellist[0].id;
+                    }
+                }
+            }
+        })
+        /* 内容组件 */
+        Vue.component("my-list", {
+            props: ["list"],
+            template: `
+            <ul class="goods">
+                <li v-for="(val,index) in list" :key="val.id">
+                   <div class="gname">
+                        <img :src="val.img" alt="">
+                        <span>{{val.name}}</span>
+                    </div>
+                    <div class="num">
+                        <button @click='$emit("red",val.id)'>-</button>
+                        <input type="text" v-model="val.num">
+                        <button @click='$emit("ad",val.id)'>+</button>
+                    </div>
+                    <div class="price">
+                        <span>{{val.price}}</span>
+                    </div>
+                    <div class="delete" @click='handle(val.id)'>
+                        <img src="img/del.png">
+                    </div>
+                </li>
+            </ul>
+            `,
+            methods: {
+                handle(id) {
+                    this.$emit("del", id);
+                    hub.$emit('delid', id);
+                }
+            }
+        })
+        /* 总计组件 */
+        Vue.component("my-total", {
+            props: ["totals"],
+            template: `
+            <div>
+                <div class="total"><span>总计:{{totals}}</span></div>
+            </div>
+            `
+        })
+        /* 全局组件 */
+        Vue.component("my-scar", {
+            data() {
+                return {
+                    uname: "dxm",
+                    dellist: [],
+                    delcid: 0,
+                    list: [{
+                        id: 1,
+                        name: 'TCL彩电',
+                        price: 800,
+                        num: 1,
+                        img: 'img/a.jpg'
+                    }, {
+                        id: 2,
+                        name: '机顶盒',
+                        price: 200,
+                        num: 1,
+                        img: 'img/b.jpg'
+                    }, {
+                        id: 3,
+                        name: '海尔冰箱',
+                        price: 1500,
+                        num: 1,
+                        img: 'img/c.jpg'
+                    }, {
+                        id: 4,
+                        name: '小米手机',
+                        price: 1000,
+                        num: 1,
+                        img: 'img/d.jpg'
+                    }, {
+                        id: 5,
+                        name: 'PPTV电视',
+                        price: 1200,
+                        num: 2,
+                        img: 'img/e.jpg'
+                    }]
+                }
+            },
+            template: `
+            <div class="scar">
+                <my-hide :uname="uname" :dellist="dellist" :delcid="delcid" @adg="addgoods"></my-hide>
+                <my-list :list="list" @red="reduce" @ad="add" @del="deleted"></my-list>
+                <my-total :totals="totals"></my-total>
+            </div>
+            `,
+            methods: {
+                reduce(id) {
+                    if (this.list.find(val => val.id == id).num > 1) {
+                        this.list.find(val => val.id == id).num--;
+                    }
+                },
+                add(id) {
+                    this.list.find(val => val.id == id).num++;
+                },
+                deleted(id) {
+                    this.delcid = id;
+                    var index = this.list.findIndex(val => val.id == id);
+                    this.dellist = this.dellist.concat(this.list.slice(index, index + 1));
+                    this.list = this.list.filter(val => val.id != id);
+                    this.dellist.forEach(val => val.num = 1);
+                },
+                addgoods(id) {
+                    this.list.push(this.dellist.find(val => val.id == id));
+                    this.dellist = this.dellist.filter(val => val.id != id);
+                }
+            },
+            computed: {
+                totals() {
+                    var sum = 0;
+                    this.list.forEach(val => {
+                        sum += val.price * val.num;
+                    });
+                    return sum;
+                }
+            }
+        })
+
+        var vm = new Vue({
+            el: '#app'
+        })
+    </script>
+</body>
+
+</html>

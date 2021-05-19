@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise三级联动</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省: <select name="" id="pro"></select>
+    市：<select name="" id="city"></select>
+    区：<select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            //当省级发送改变时,重新调用promise的then方法
+            $("#pro").on("change", function () {
+                getCity().then(function (data) {
+                    var html = template('op', data);
+                    $("#city").html(html);
+                    return getArea();
+                }).then(function (data) {
+                    var html = template('op', data);
+                    $("#area").html(html);
+                })
+            })
+            $("#city").on("change", function () {
+                getArea().then(function (data) {
+                    var html = template('op', data);
+                    $("#area").html(html);
+                })
+            })
+            //定义变量接收函数值返回的promise对象
+            function getPro() {
+                //创建promise对象,并且传入两个参数 resolve代表已完成 reject代表已失败
+                var promise = new Promise(function (resolve, reject) {
+                    //使用ajax封装
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:8088/pro',
+                        success: function (data) {
+                            resolve(data);  //传输成功后使用resolve接收后台获取到的数据值
+                        },
+                        error: function () {
+                            reject('服务器错误');
+                        }
+                    })
+                });
+                return promise;  //返回此promise对象
+            };
+            function getCity() {
+                var promise = new Promise(function (resolve, reject) {
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:8088/city',
+                        data: {
+                            pid: pro.value
+                        },
+                        success: function (data) {
+                            resolve(data);
+                        },
+                        error: function () {
+                            reject('服务器错误');
+                        }
+                    })
+                });
+                return promise;
+            };
+            function getArea() {
+                var promise = new Promise(function (resolve, reject) {
+                    $.ajax({
+                        type: 'get',
+                        url: 'http://localhost:8088/area',
+                        data: {
+                            aid: city.value
+                        },
+                        success: function (data) {
+                            resolve(data);
+                        },
+                        error: function () {
+                            reject('服务器错误');
+                        }
+                    })
+                });
+                return promise;
+            };
+            //在获取省级的方法上直接调用promise对象上的then方法,then接收一个参数,并且会拿到在getPro中调用resolve时传的的参数
+            getPro().then(function (data) {
+                var html = template('op', data);  //渲染数据时需要使用arttemplate模板来渲染数据
+                $("#pro").html(html);
+                return getCity();
+            }).then(function (data) {
+                var html = template('op', data);
+                $("#city").html(html);
+                return getArea();
+            }).then(function (data) {
+                var html = template('op', data);
+                $("#area").html(html);
+            })
+        })
+    </script>
+</body>
+
+</html>
