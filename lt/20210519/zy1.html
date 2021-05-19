@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            text-align: center;
+        }
+        .add {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <tsg></tsg>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue();
+        var books1 = {
+            data:function() {
+                return {
+                    name1:'',
+                    id:0,
+                    
+                }
+            },
+            props:['books','btnMsg','name','modify1'],
+            template:`
+            <div class="add">名称:<input type="text" name="" id="" v-model.trim="name1" > <button @click="add(name1,id)">{{btnMsg}}</button>
+            <h4 class="count">图书总数:{{counts}}</h4></div>
+            `,
+            methods:{
+                add(name1,id) { 
+                    this.$emit('add',name1,id);
+                    this.name1='',
+                    this.id=''
+                },
+            },
+            computed:{
+                counts: function() {
+                    return this.books.length
+                }
+            },
+            mounted() {
+                hub.$on('xgname',val=> {
+                    this.name1 = this.books[val-1].name;
+                    this.id = val;
+                })
+            }
+            
+        };
+        var bookscen= {
+            props:['books'],
+            template:`
+            <table border="1" width="500" align="center">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>日期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  v-for='item in books' :key='item.id'>
+                        <td>{{item.id}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.date}}</td>
+                        <td>
+                        <a href="" @click.prevent="modify(item.id)">修改</a>
+                        <span>|</span>
+                            <a href="" @click.prevent="del(item.id)">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            `,
+            methods: {
+                del(id) {
+                    this.$emit('del',id)
+                },
+                modify(id) {
+                    this.$emit('modify',id);
+                    hub.$emit('xgname',id)
+                }
+            }
+        }
+        Vue.component('tsg', {
+            data:function() {
+                return {
+                    books:[{
+                        id: 1,
+                        name: '三国演义',
+                        date: '2021/05/17'
+                        },{
+                        id: 2,
+                        name: '水浒传',
+                        date: '2021/05/17'
+                        },{
+                        id: 3,
+                        name: '红楼梦',
+                        date: '2021/05/17'
+                        },{
+                        id: 4,
+                        name: '西游记',
+                        date: '2021/05/17'
+                    }],
+                    btnMsg:'添加',
+                    name:'',
+                    modify1:false,
+                    btnflag:false
+                }
+            },
+            components: {
+                books1: books1,
+                bookscen: bookscen,
+            },
+            template:`
+                <div>
+                    <books1 :books="books" :btnMsg="btnMsg"  :name="name" :modify1="modify1" @add="add"></books1>
+                    <bookscen :books="books" @del="del($event)" @modify="modify($event)"></bookscen>
+                </div>    
+            `,
+            methods: {
+                del(id) { 
+                    this.books = this.books.filter(function(item) {
+                        return item.id != id
+                    })
+                },
+                modify (id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.name = obj.name;
+                    this.id = obj.id;
+                    this.btnMsg='修改';
+                    this.modify1 = true;
+                },
+                add(name1,id) {
+                    console.log(id);
+                    if (this.modify1 != false) {
+                        this.books.some(val => {
+                            if(val.id == id) {
+                                val.name = name1
+                                return true
+                            }
+                        });
+                        this.modify1 = false;
+                        this.btnMsg='提交';
+                    } else {
+                        if (name1 != '') {
+                            this.books.push({id:this.books.length+1,name:name1,date:'2021/05/17'})
+                            this.name ='';
+                        }
+                    } 
+                },
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+        })
+    </script>
+</body>
+</html>

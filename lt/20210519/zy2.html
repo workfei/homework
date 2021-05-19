@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .w500 {
+            width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        input {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <my-cart></my-cart>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue();
+        var myhead = {
+            data:function() {
+                return {
+                    myid:this.delcid,
+                    mydellist:this.delcid
+                }
+            },
+            mounted() {
+                hub.$on('delid',val=> {
+                    this.myid = val
+                })
+            },
+            props:['uname','dellist','delcid'],
+            template:`
+            <div class="w500">
+                <h1>{{uname}}</h1>
+                <div v-show="dellist.length > 0 ? true:false">
+                    <select name="" id="" v-model="myid">
+                        <option value="" :value="item.id" v-for="item in dellist">{{item.name}}</option>
+                    </select>
+                    <button  @click="add(myid)">新增</button>
+                </div>
+
+            </div>
+            `,
+            methods: {
+                add(id) {
+                    this.$emit('addlistnum',id);
+                    this.mydellist=this.dellist;
+                    this.mydellist = this.mydellist.filter(val=> val.id != id);
+                    if (this.mydellist.length > 0) {
+                        this.myid = this.mydellist[0].id
+                    }
+                }
+            }
+        };
+         var mylist = {
+            props:['list'],
+            template:`
+                <table border="1" width="500" align="center">
+                    <tr v-for='val in list' :key='val.id'>
+                        <td><img :src="val.img" alt=""></td>
+                        <td>{{val.name}}</td>
+                        <td>
+                            <button @click="sub(val.id)">-</button>
+                            <input type="text" class="num" :value='val.num' v-on:blur='changeNum(val.id, $event)' />
+                            <button @click="add(val.id)">+</button>
+                        </td>
+                        <td>{{val.price}}</td>
+                        <td @click="del(val.id)"><img src="img/del.png" alt=""></td>
+                    </tr>    
+                </table>
+            `,
+            methods: {
+                add(id) {
+                    this.$emit('addnum',id)
+                },
+                sub(id) {
+                    this.$emit('subnum',id)
+                },
+                changeNum: function(id, event){
+                    this.$emit('changenum', {
+                        id: id,
+                        num: event.target.value
+                    });
+                    console.log(id, event.target.value);
+                },
+                // changeNum(id) {
+                //     this.$emit('changenum',id)
+                // },
+                del(id) {
+                    this.$emit('delnum',id)
+                    hub.$emit('delid',id)
+                },
+            }
+
+        };
+
+        
+
+        // 总计
+        var zong ={
+            props:['list'],
+            template:`
+                <div class="w500">
+                    {{total}}
+                </div>
+            `,
+            computed: {
+                total: function(){
+                    // 计算商品的总价
+                    var t= 0;
+                    this.list.map(item=> {
+                    t+= item.price* item.num;
+                    });
+                    return t;
+                }
+            }
+        }
+
+        // 创建主组件
+        Vue.component('myCart', {
+            data:function() {
+                return {
+                    dellist: [],
+                    delcid: 0,
+                    uname: '张三',
+                    list: [{
+                        id: 1,
+                        name: 'TCL彩电',
+                        price: 800,
+                        num: 1,
+                        img: 'img/a.jpg'
+                    }, {
+                        id: 2,
+                        name: '机顶盒',
+                        price: 200,
+                        num: 1,
+                        img: 'img/b.jpg'
+                    }, {
+                        id: 3,
+                        name: '海尔冰箱',
+                        price: 1500,
+                        num: 1,
+                        img: 'img/c.jpg'
+                    }, {
+                        id: 4,
+                        name: '小米手机',
+                        price: 1000,
+                        num: 1,
+                        img: 'img/d.jpg'
+                    }, {
+                        id: 5,
+                        name: 'PPTV电视',
+                        price: 1200,
+                        num: 2,
+                        img: 'img/e.jpg'
+                    }]
+                }
+            },
+            components: {
+                'my-head': myhead,
+                'my-list': mylist,
+                'zongjia': zong,
+            },
+            template:`
+                <div class="w500">
+                    <my-head :uname='uname' :dellist="dellist" :delcid="delcid" @addlistnum="addlist($event)"></my-head>
+                    <my-list :list='list' @addnum="add($event)" @subnum="sub($event)" @changenum="change($event)" @delnum="del($event)"></my-list>
+                    <zongjia :list='list'></zongjia>
+                </div>
+            `,
+            methods: {
+                add(id) {
+                    this.list.some(val => {
+                        if(val.id == id) {
+                            val.num++
+                        }
+                    })
+                },
+                sub(id) {
+                    this.list.some(val => {
+                        if(val.id == id) {
+                            if (val.num != 1) {
+                                val.num--
+                            }
+                        }
+                    })
+                },
+                change(item) {
+                    this.list.some(val => {
+                        if(val.id == item.id){
+                            val.num = item.num;
+                        }
+                    })
+                },
+                del(id) {
+                    this.delcid=id;//删除
+                    var index= this.list.findIndex(val => val.id == id)
+                    this.dellist= this.dellist.concat(this.list.slice(index,index+1))
+                    this.list=this.list.filter(val=> val.id != id);
+                },
+                addlist(id) {
+                    // 把删除数组列表中对应的数据找到
+                    var item = this.dellist.find(val => val.id == id);
+                    this.list.push(item);
+                    this.dellist = this.dellist.filter(val => val.id != id);
+                    // 删除后保证始终有一个纯在的id值
+                    if(this.dellist.length >0) {
+                        this.delcid = this.dellist[0].id
+                    }
+                } 
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
