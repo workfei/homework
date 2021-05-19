@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script>
+        // 省
+        function getPro(url) {
+            var p = new Promise(function (resolve, reject) {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    success: function (data) {
+                        var html = template("op", data)
+                        $("#pro").html(html)
+                        resolve(data)
+                    },
+                    error: function () {
+                        reject('服务器错误')
+                    }
+                })
+            })
+            return p;
+        }
+        // 省改变事件
+        pro.onchange = function () {
+            getCity("http://localhost:3001/city")
+            getArea("http://localhost:3001/area")
+        }
+        // 区
+        function getCity(url) {
+            var p = new Promise(function (resolve, reject) {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    data: {
+                        pid: pro.value
+                    },
+                    success: function (data) {
+                        var html = template("op", data)
+                        $("#city").html(html)
+                        resolve(data)
+                    },
+                    error: function () {
+                        reject('服务器错误')
+                    }
+                })
+            })
+            return p;
+        }
+        // 区改变事件
+        city.onchange = function () {
+            getArea("http://localhost:3001/area")
+        }
+        // 市
+        function getArea(url) {
+            var p = new Promise(function (resolve, reject) {
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    data: {
+                        cid: city.value
+                    },
+                    success: function (data) {
+                        var html = template("op", data)
+                        $("#area").html(html)
+                        resolve(data)
+                    },
+                    error: function () {
+                        reject('服务器错误')
+                    }
+                })
+            })
+            return p;
+        }
+        getPro("http://localhost:3001/pro").then(function (data) {
+            return getCity("http://localhost:3001/city")
+        }).then(function (data) {
+            return getArea("http://localhost:3001/area")
+        }).then(function (data) {})
+    </script>
+</body>
+
+</html>

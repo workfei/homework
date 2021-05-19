@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,6 +66,9 @@
             flex: 20%;
             text-align: center;
         }
+        .product img {
+            vertical-align: middle;
+        }
         .total {
             padding: 15px 0;
             background-color: orange;
@@ -75,40 +77,32 @@
         }
     </style>
 </head>
-
 <body>
     <div id="app">
-        <add-goods :uname="uname" :dellist="dellist" @addlist="addlist" :delid="delid"></add-goods>
-        <product :list="list" @addnum="addNum" @reducenum="reduceNum" @delgoods="delGoods"></product>
+        <u-name :uname="uname" :dellist="dellist" :delid="delid" @addlist="addlist"></u-name>
+        <the-goods :list="list" @addnum="addNum" @subtract="subtract" @delgoods="delGoods"></the-goods>
         <total :counts="counts"></total>
     </div>
-
+    
     <script src="js/vue.js"></script>
     <script>
         var hub = new Vue()
-        // 名称组件
-        Vue.component('addGoods', {
+        // 名称,新增组件
+        Vue.component('uName', {
+            props: ['uname','dellist','delid'],
             data: function() {
                 return {
-                    myid: this.delid,
-                    // mydellist: this.dellist 
+                    myid: this.delid
                 }
             },
-            mounted() {
-                hub.$on('delcid', val=> {
-                    this.myid = val;
-                    this.mydellist = [];
-                })
-            },
-            props: ['uname','dellist','delid'],
             template: `
                 <div class="hd">
                     <div>{{uname}}</div>
-                    <div :class="dellist == '' ? 'add-goods' : 'active'">
+                    <div :class="dellist.length > 0 ? 'active' : 'add-goods'">
                         <select name="" id="" v-model="myid">
-                            <option :value="val.id" v-for="val in dellist">{{val.name}}</option>
+                            <option :value="val.id"  v-for="val in dellist">{{val.name}}</option>
                         </select>
-                        <button @click.prevent="addlist(myid)">新增</button>
+                        <button @click="addlist(myid)">新增</button>
                     </div>
                 </div>
             `,
@@ -122,51 +116,60 @@
                     }
                 }
             },
+            mounted() {
+                hub.$on('delid', val => {
+                    this.myid = val;
+                    this.mydellist = [];
+                })
+            }
         })
-        // 产品组件
-        Vue.component('product', {
-            props: ['list','delid'],
+        // 列表数据组件
+        Vue.component('theGoods', {
+            props: ['list'],
             template: `
             <div class="product">
                 <ul>
                     <li v-for="items in list">
-                        <div><span>{{items.name}}</span></div>
-                        <div class="add-reduce">
-                            <button @click.prevent="reducenum(items.id)">-</button>
-                            <input type="text" v-model="items.num">
-                            <button @click.prevent="addnum(items.id)">+</button>
+                        <div>
+                            <img :src="items.img" width="25">
+                            <span>{{items.name}}</span>
                         </div>
-                        <div><span>{{items.money * items.num}}</span></div>
-                        <div><button class="del" @click.prevent="delgoods(items.id)">X</button></div>
+                        <div class="add-reduce">
+                            <button @click="subtract(items.id)">-</button>
+                            <input type="text" v-model="items.num">
+                            <button @click="addNum(items.id)">+</button>
+                        </div>
+                        <div><span>{{items.price}}</span></div>
+                        <div><button class="del" @click="delGoods(items.id)">X</button></div>
                     </li>
                 </ul>
             </div>
             `,
             methods: {
-                addnum(id) {
+                addNum(id) {
                     this.$emit('addnum',id)
                 },
-                reducenum(id) {
-                    this.$emit('reducenum',id)
+                subtract(id) {
+                    this.$emit('subtract',id)
                 },
-                delgoods(id) {
+                delGoods(id) {
                     this.$emit('delgoods',id)
-                    hub.$emit('delcid',id)
-                },
-            },
+                    hub.$emit('delid', id)
+                }
+            }
         })
-        // 总数组件
+        // 总计组件
         Vue.component('total', {
             props: ['counts'],
             template: `
             <div class="total">
                 <span>总价: {{counts}}</span>
             </div>
-            `
+            `,
         })
-        var vm = new Vue({
-            el: '#app',
-            data: {
+        var vm=new Vue({
+            el:'#app',
+            data:{
                 uname: '张三',
                 dellist: [],
                 delid: "",
@@ -202,37 +205,33 @@
                     img: 'img/e.jpg'
                 }]
             },
-            methods: {
+            methods:{
                 // 数量加
                 addNum(id) {
                     this.list.find(val => {
                         if (val.id == id) {
                             val.num++;
-                            val.price = val.money * val.num;
                         }
                     })
                 },
                 // 数量减
-                reduceNum(id) {
+                subtract(id) {
                     this.list.find(val => {
                         if (val.id == id) {
                             if (val.num > 1) {
                                 val.num--;
-                                val.price = val.money * val.num;
-                            }                           
+                            } 
                         }
                     })
                 },
                 // 删除数据
                 delGoods(id) {
                     this.delid = id;
-                    // this.dellist.push(this.list.splice(index, 1)[0])//第一种方法(index改id)
                     var index = this.list.findIndex(val => val.id == id)
                     this.dellist = this.dellist.concat(this.list.slice(index,index+1))
                     this.list = this.list.filter(val => val.id != id)
                 },
                 addlist(id) {
-                    // this.list.push(this.dellist.splice(index, 1)[0])//第一种方法(index改id)
                     this.dellist.filter(val => {
                         if (val.id == id) {
                             this.list.push(val)
@@ -245,23 +244,16 @@
                     }
                 },
             },
-            created() {
-                this.list.forEach(val => {
-                    val.money = val.price//添加一个不变的单价
-                })
-            },
-            computed: {
-                // 计算总价
+            computed:{
                 counts() {
-                    var total = 0;                
+                    var total = 0;
                     this.list.forEach(val => {
-                        total += val.money * val.num
+                        total += val.num * val.price
                     })
-                    return total                  
+                    return total;
                 }
             }
         })
     </script>
 </body>
-
 </html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .hd {
+            padding: 2px;
+            background-color: goldenrod;
+        }
+
+        .hd span {
+            padding: 2px;
+            background-color: red;
+            color: #fff;
+            vertical-align: middle;
+        }
+
+        .total {
+            margin: 3px 0;
+        }
+
+        table {
+            width: 100%;
+            text-align: center;
+        }
+
+        thead {
+            background-color: skyblue;
+            color: orangered;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <to-give @add="add" :editflag='editFlag'></to-give>
+        <total :total="total"></total>
+        <my-list :books="books" @del="del" @edit="edit"></my-list>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue()
+        // 提交组件
+        Vue.component('toGive', {
+            props: ['editflag'],
+            data: function() {
+                return {
+                    inId: '', //输入的id
+                    inName: '', //输入的name
+                }
+            },
+            template: `
+            <div class="hd">
+                <span>ID</span><input type="text" v-model="inId" :disabled="editflag"><span>图书名称</span><input type="text" v-model="inName"><button @click="add(inId,inName)">提交</button>
+            </div>
+            `,
+            methods: {
+                add(id,name) {
+                    this.$emit('add',id,name)
+                    this.inId = ''
+                    this.inName = ''
+                }
+            },
+            mounted() {
+                hub.$on('getmsg', (i,val) => {
+                    this.inId = i;
+                    this.inName = val;
+                })
+            },
+        })
+        // 图书总数组件
+        Vue.component('total', {
+            props: ['total'],
+            template: `
+            <div>
+                <div class="total">图书总数:{{total}}</div>
+            </div>
+            `
+        })
+        // 列表组件
+        Vue.component('myList', {
+            props: ['books'],
+            template: `
+            <div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="val in books">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.date}}</td>
+                            <td><a href="javascript:;" @click.prevent="edit(val.id,val.name)">修改</a> <a href="javascript:;" @click.prevent="del(val.id)">删除</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            methods: {
+                del(id) {
+                    this.$emit('del',id)
+                },
+                edit(id, name) {
+                    this.$emit('edit', id, name)
+                    hub.$emit('getmsg', id, name)
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: [], //数据
+                editFlag: false
+            },
+            methods: {
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                },
+                add(id, name) {
+                    if (this.editFlag) {
+                        this.books.some(val => {
+                            if (val.id == id) {
+                                val.name = name
+                            }
+                        })
+                        this.editFlag = false
+                    } else {
+                        this.books.push({
+                            id: id,
+                            name: name,
+                            date: new Date()
+                        })
+                    }
+                },
+                edit(id, name) {
+                    this.editFlag = true;
+                    var obj = this.books.find(val => val.id == id);
+                    id = obj.id;
+                    name = obj.name;
+                }
+            },
+            computed: {
+                total() {
+                    return this.books.length;
+                }
+            },
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }]
+                this.books = data;
+            },
+        })
+    </script>
+</body>
+
+</html>
