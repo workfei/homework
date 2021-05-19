@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            text-align: center;
+        }
+
+        th,
+        td {
+            padding: 10px 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-head :books="books" @add="add"></my-head>
+        <count :counts="counts"></count>
+        <news :books="books" @del="del"></news>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        // 创建事件中心
+        var hub = new Vue();
+
+        Vue.component('news', {
+            props: ['books'], //接收指定数据名称
+            data: function () {
+                return {
+
+                }
+            },
+            methods: {
+                sendInof(val) {
+                    hub.$emit('myHead', val)
+                },
+            },
+            template: `
+                <div>
+                    <table border="1" align="center">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>图书名称</th>
+                                <th>时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="val in books" :key="val.id">
+                                <td>{{val.id}}</td>
+                                <td>{{val.name}}</td>
+                                <td>{{val.date | myTime}}</td>
+                                <td>
+                                    <a href="#" @click.prevent="sendInof(val)">修改</a>
+                                    <a href="#" @click.prevent="$emit('del',val.id)">删除</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+        })
+        //添加组件
+        Vue.component('myHead', {
+            props: ['books'],
+            data: function () {
+                return {
+                    name: '',
+                    id: '',
+                    btnMsg: '提交'
+                }
+            },
+            template: `
+                <div>
+                    <div class="add">
+                        ID: <input type="text" v-model.trim="id">
+                        图书名称: <input type="text" v-model.trim="name">
+                        <button @click="hand()">{{btnMsg}}</button>
+                    </div>
+                </div>
+            `,
+            //接收
+            mounted() {
+                hub.$on('myHead', val => {
+                    console.log(val);
+                    if (val) {
+                        this.btnMsg = '修改';
+                        this.id = val.id;
+                        this.name = val.name;
+                    }
+                })
+            },
+            methods: {
+                hand() {
+                    this.$emit('add', this.id, this.name, this.btnMsg)
+                    this.id = this.name = '';
+                    this.btnMsg = '提交';
+                },
+            }
+        })
+
+        //统计组件
+        Vue.component('count', {
+            props: ['counts'],
+            template: `
+                <div>
+                    <h5 class="count">图书总数: {{counts}}</h5>        
+                </div>
+            `,
+        })
+        Vue.filter('myTime', function (val) {
+            val = new Date(val);
+            var y = val.getFullYear();
+            var M = val.getMonth() + 1;
+            M = M < 10 ? '0' + M : M;
+            var d = val.getDate();
+            d = d < 10 ? '0' + d : d;
+            return y + '-' + M + '-' + d;
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: 2525609975000
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: 2525609975000
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: 2525609975000
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: 2525609975000
+                }],
+            },
+            methods: {
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                },
+                add(id, name, flag) {
+                    if (flag == '提交') {
+                        if (id != '' && name != '') {
+                            this.books.push({
+                                id: id,
+                                name: name,
+                                date: +new Date(),
+                            })
+                        }
+                    } else if (flag == '修改') {
+                        this.books.some(val => {
+                            if (val.id == id) {
+                                val.name = name;
+                                return true
+                            }
+                        })
+                    }
+                },
+            },
+            computed: {
+                counts: function () {
+                    return this.books.length;
+                }
+            },
+        })
+
+
+    </script>
+</body>
+
+</html>

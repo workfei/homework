@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>购物车</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+        table {
+            text-align: center;
+        }
+        table tr {
+            padding: 5px;
+        }
+        td {
+            box-sizing: border-box;
+            padding: 13px 0;
+        }
+        table tr td:first-child {
+            padding: 0;
+        }
+        table tr td:first-child img {
+            width: 80px;
+            height: 50px;
+            margin: 0;
+        }
+        table tr td:last-child img {
+            width: 30px;
+            height: 30px;
+        }
+        input {
+            text-align: center;
+            width: 30px;
+        }
+        table button {
+            width: 20px;
+        }
+        .header {
+            padding: 15px;
+            text-align: center;
+            background-color: skyblue;
+        }
+        h4 {
+            margin-bottom: 10px;
+        }
+        .footer {
+            padding: 15px 0;
+            background-color: orange;
+            text-align: right;
+            color: red;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <my-cart></my-cart>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue()
+
+        var myHead = {
+            props: ['uname','list','dellist','delcid'],
+            data: function() {
+                return {
+                    myid: this.delcid,
+                    mydellist: this.dellist,
+                }
+            },
+            mounted() {
+                hub.$on('delid', val => {
+                    this.myid = val
+                })
+            },
+            methods: {
+                add(id) {
+                    this.$emit('add',this.delcid)
+                    this.mydellist = this.dellist
+                    this.mydellist = this.mydellist.filter(val => val.id != id)
+                    if (this.mydellist.length > 0) {
+                        this.myid = this.mydellist[0].id;
+                    }
+                }
+            },
+            template: `
+            <div class="header">
+                <h4>{{uname}}</h4>
+                <p v-if="dellist.length">
+                    <select v-model="myid">
+                        <option v-for="val in dellist" :key="val.id" :value="val.id">{{val.name}}</option>
+                    </select>
+                    <button @click="add(myid)">新增</button>
+                </p>
+            </div>
+            `,
+        }
+        var myTable = {
+            props: ['list','dellist'],
+            methods: {
+                sendlt(id,index) {
+                    hub.$emit('delid', id)
+                    this.$emit('del',id,index)
+                },
+            },
+            template: `
+            <table width="500" align="center">
+                <tr>
+                    <td>产品图片</td>    
+                    <td>产品名</td>    
+                    <td>数量</td>    
+                    <td>单价</td>    
+                    <td>操作</td>    
+                </tr>
+                <tr v-for="(val,index) in list" :key="val.id">
+                    <td><img :src="val.img"></td>
+                    <td>{{val.name}}</td>
+                    <td>
+                        <button @click="$emit('jian',val.id)">-</button>
+                        <input type="text" v-model="val.num" @blur="$emit('amend',val.id,val.num)">
+                        <button @click="$emit('jia',val.id)">+</button>
+                    </td>
+                    <td>{{val.price}}</td>
+                    <td><img src="img/x.png" @click="sendlt(val.id,index)"></td>
+                </tr>
+            </table>
+            `,
+        }
+        var myZj = {
+            props: ['counts'],
+            template: `
+            <div class="footer">总价: {{counts}}</div>
+            `,
+        }
+
+        Vue.component('myCart', {
+            data: function() {
+                return {
+                    dellist: [],
+                    delcid: 0,
+                    uname: '张三',
+                    list: [{
+                        id: 1,
+                        name: 'TCL彩电',
+                        price: 800,
+                        num: 1,
+                        img: 'img/a.jpg'
+                    }, {
+                        id: 2,
+                        name: '机顶盒',
+                        price: 200,
+                        num: 1,
+                        img: 'img/b.jpg'
+                    }, {
+                        id: 3,
+                        name: '海尔冰箱',
+                        price: 1500,
+                        num: 1,
+                        img: 'img/c.jpg'
+                    }, {
+                        id: 4,
+                        name: '小米手机',
+                        price: 1000,
+                        num: 1,
+                        img: 'img/d.jpg'
+                    }, {
+                        id: 5,
+                        name: 'PPTV电视',
+                        price: 1200,
+                        num: 2,
+                        img: 'img/e.jpg'
+                    }]
+                }
+            },
+            methods: {
+                //添加
+                add(id) {
+                    var obj = this.dellist.filter(val => val.id == id);
+                    this.dellist = this.dellist.filter(val => val.id != id)
+                    if (this.dellist.length > 0) {
+                        this.delcid = this.dellist[0].id
+                    }
+                    this.list.push({
+                        id: obj[0].id,
+                        name: obj[0].name,
+                        price: obj[0].price,
+                        num: obj[0].num,
+                        img: obj[0].img
+                    })
+                },
+                //删除添加到新数组
+                del(id) {
+                    this.delcid = id; 
+                    this.dellist.push(this.list.filter(val => val.id == id)[0])
+                    this.list = this.list.filter(val => val.id != id)
+                },
+                //修改
+                amend(id,num) {
+                    this.list.filter(val => {
+                        if (val.id == id) {
+                            val.num = num;
+                        }
+                    })
+                },
+                //减
+                jian(id) {
+                    this.list.filter(val => {
+                        if (val.id == id) {
+                            val.num--; 
+                            if (val.num < 1) {
+                                val.num = 1;
+                            }
+                        }
+                    })
+                },
+                //加
+                jia(id) {
+                    this.list.filter(val => {
+                        if (val.id == id) {
+                            val.num++; 
+                        }
+                    })
+                }
+            },
+            computed: {
+                //自动进行累加
+                counts: function() {
+                    var sum = 0;
+                    this.list.forEach(val => sum += val.price * val.num)
+                    return sum;
+                }
+            },
+            components: {
+                myHead: myHead,
+                myTable: myTable,
+                myZj: myZj,
+            },
+            template: `
+            <div>
+                <my-head :delcid="delcid" :list="list" :uname="uname" :dellist="dellist" @add="add"></my-head>
+
+                <my-table :list="list" @del="del" @jian="jian" @jia="jia" @amend="amend"></my-table>
+                
+                <my-zj :counts="counts"></my-zj>  
+            </div>
+            `,
+        })
+
+
+        var vm = new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

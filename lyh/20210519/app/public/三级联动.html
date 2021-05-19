@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级联动</title>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+
+    <script id="op" type="text/html">
+        {{each}}
+            <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        //获取省
+        function getPro() {
+            var p = new Promise(function(resolve, reject) {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:3001/pro',
+                    data: {},
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#pro').html(html);
+                        getCity($('#pro').val());
+                    }
+                })
+            })
+            return p;
+        }
+        getPro()
+        $('#pro').change(function() {
+            getCity($(this).val());
+        })
+        //获取市
+        function getCity(pid) {
+            var p = new Promise(function(resolve, reject) {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:3001/city',
+                    data: {
+                        pid: pid
+                    },
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#city').html(html);
+                        getArea($('#city').val());
+                    }
+                })
+            })
+            return p;
+        }
+        $('#city').change(function() {
+            getCity($(this).val());
+        })
+        //获取区
+        function getArea(pid) {
+            var p = new Promise(function(resolve, reject) {
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:3001/area',
+                    data: {
+                        pid: pid
+                    },
+                    success: function(data) {
+                        var html = template('op', data);
+                        $('#area').html(html);
+                    }
+                })
+            })
+            return p;
+        }
+    </script>
+</body>
+</html>
