@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>购物车</title>
+    <style>
+        #app {
+            width: 600px;
+            margin: 0 auto;
+        }
+        .con-top {
+            text-align: center;
+        }
+        ul {
+            line-height: 46px;
+            list-style: none;
+            text-align: center;
+        }
+        span {
+            display: inline-block;
+            width: 50px;
+        }
+        .name,
+        .num {
+            width: 100px;
+        }
+        .num {
+            border: 1px solid #333;
+        }
+        a {
+            display: inline-block;
+            width: 100px;
+        }
+        .totalPrice {
+            text-align: right;
+            color: red;
+        }
+        .hao {
+            background-color: gray;
+            color: #fff;
+        }
+        input {
+            width: 100%;
+            height: 46px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <con-top :dellist="dellist" @addlist="add" :delcid="delcid" @changeid="changeid"></con-top>
+        <con :list="list" @jiannum="jian" @jianum="jia" @dellist="del"></con>
+        <total-price :list="list"></total-price>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component('conTop', {
+            props:['dellist','delcid'],
+            data:function(){
+                return {
+                    uname: '张三',
+                    id:this.delcid
+                }
+            },
+            template:`
+            <div class="con-top">
+                <h1>{{uname}}</h1>
+                <select v-model="id" v-if="dellist.length > 0" @change="$emit('changeid',id)">
+                    <option v-for="(val,index) in dellist" :value="val.id" :key="val.id" selected="selected">{{val.name}}</option>
+                </select>
+                <button @click="$emit('addlist',delcid)" v-if="dellist.length > 0">新增</button>
+            </div>
+            `,
+            watch:{
+                dellist:function(){
+                    if(this.dellist.length >= 1) {
+                        this.id = this.dellist[this.dellist.length - 1].id;
+                    }
+                }
+            }
+        })
+        Vue.component('con', {
+            props:['list'],
+            template:`
+            <ul>
+                <li v-for="(val,index) in list" :key="val.id">
+                    <span class="name">{{val.name}}</span>
+                    <span class="hao" @click="$emit('jiannum',val.id)">-</span>
+                    <span class="num"><input type="number" v-model="val.num"></span>
+                    <span class="hao" @click="$emit('jianum',val.id)">+</span>
+                    <span>{{val.price}}</span>
+                    <a href="javascript:;" @click="$emit('dellist',val.id)"><img src="img/del.png"></a>
+                </li>
+            </ul>
+            `,
+        })
+        Vue.component('totalPrice', {
+            props:['list'],
+            template:`
+            <div class="totalPrice">总价{{totalPrice}}</div>
+            `,
+            computed:{
+                totalPrice:function(){
+                    var total = 0;
+                    this.list.forEach(val => {
+                        total += val.price * val.num;
+                    });
+                    return total;
+                }
+            }
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                dellist: [],
+                delcid: 0,
+                uname: '张三',
+                list: [],
+                name:'',
+            },
+            methods:{
+                // 数量减少
+                jian(id){
+                    var index = this.list.findIndex(val => val.id == id);
+                    if (this.list[index].num > 1) {
+                        this.list[index].num--;
+                    }
+                },
+                // 数量增加
+                jia(id){
+                    var index = this.list.findIndex(val => val.id == id);
+                    this.list[index].num++;
+                },
+                // 删除
+                del(id){
+                    this.delcid = id;
+                    var index = this.list.findIndex(val => val.id == id);
+                    this.list[index].num = 1;
+                    var arr = this.list.splice(index,1);
+                    this.dellist = this.dellist.concat(arr);
+                },
+                add(id){
+                    var index = this.dellist.findIndex(val => val.id == id);
+                    var arr = this.dellist.splice(index,1);
+                    this.list = this.list.concat(arr);
+                },
+                changeid(id){
+                    this.delcid = id;
+                }
+            },
+            //挂载后
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: 'TCL彩电',
+                    price: 800,
+                    num: 1,
+                    img: 'img/a.jpg'
+                }, {
+                    id: 2,
+                    name: '机顶盒',
+                    price: 200,
+                    num: 1,
+                    img: 'img/b.jpg'
+                }, {
+                    id: 3,
+                    name: '海尔冰箱',
+                    price: 1500,
+                    num: 1,
+                    img: 'img/c.jpg'
+                }, {
+                    id: 4,
+                    name: '小米手机',
+                    price: 1000,
+                    num: 1,
+                    img: 'img/d.jpg'
+                }, {
+                    id: 5,
+                    name: 'PPTV电视',
+                    price: 1200,
+                    num: 2,
+                    img: 'img/e.jpg'
+                }]
+                this.list = data;
+            },
+        })
+    </script>
+</body>
+</html>

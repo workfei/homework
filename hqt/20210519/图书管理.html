@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .add {
+            width: 500px;
+            margin: 0 auto;
+            background-color: skyblue;
+        }
+        .count {
+            width: 500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <add-books @addbooks="add"></add-books>
+        <count :books="books"></count>
+        <my-books :books="books" @delbooks="del" @deledit="edit"></my-books>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue();
+        Vue.component('myBooks', {
+            props:['books'],//接收指定数据的名称
+            template:`
+                <div>
+                    <table border="1" width="500" align="center">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="val in books" :key="val.id">
+                                <td>{{val.id}}</td>
+                                <td>{{val.name}}</td>
+                                <td>{{val.date}}</td>
+                                <td align="center"><a href="" @click.prevent="edit(val.id)">修改</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" @click.prevent="$emit('delbooks',val.id)">删除</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `,
+            methods:{
+                // 修改
+                edit(id) {
+                    var obj = this.books.find(val => val.id == id);
+                    hub.$emit('info',{id:obj.id,name:obj.name,btnMsg:'修改'});
+                }
+            },
+        })
+        Vue.component('addBooks', {
+            data:function() {
+                return {
+                    id: '',
+                    name: '',
+                    btnMsg: '提交',
+                }
+            },
+            template:`
+                <div class="add">
+                    ID: <input type="text" v-model.trim="id">&nbsp;
+                    名称： <input type="text" v-model.trim="name">
+                    <button @click="head">{{btnMsg}}</button>
+                </div>
+            `,
+            mounted() {
+                hub.$on('info',(val) => {
+                    this.id = val.id;
+                    this.name = val.name;
+                    this.btnMsg = val.btnMsg;
+                })
+            },
+            methods:{
+                head(){
+                    if (this.btnMsg == '提交') {
+                        this.$emit('addbooks',this.btnMsg,{id:this.id,name:this.name,date: '2021-05-20'});
+                        this.id = '';
+                        this.name = '';
+                    } else {
+                        this.$emit('addbooks',this.btnMsg,{id:this.id,name:this.name,date: '2021-05-20'});
+                        this.id = '';
+                        this.name = '';
+                        this.btnMsg = '提交';
+                    }
+                }
+            }
+        })
+        Vue.component('count', {
+            props:['books'],
+            template:`
+                <h5 class="count">图书总数：{{counts}}</h5>
+            `,
+            //计算属性
+            computed:{
+                counts: function() {
+                    return this.books.length;
+                }
+            },
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                title:'我是标题',
+                con:'内容',
+                books:[],
+                id: '',
+                name: '',
+                btnMsg: '提交',
+                books: [],
+                btnflag: false,
+                idflag: false,
+                disflag: false,
+            },
+            methods:{
+                // 删除
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id)
+                },
+                add(btnMsg,obj) {
+                    if(btnMsg == '修改') { 
+                        //修改
+                        this.books.some(val => {
+                            if(val.id == obj.id) {
+                                val.name = obj.name;
+                            }
+                        })
+                    } else {
+                        //添加
+                        if (obj.id != '' && obj.name != '') {
+                            if(!this.books.some(val => val.id == obj.id || val.name == obj.name)) {
+                                this.books.push(obj);
+                            }
+                        }
+                    }
+                },
+                // 修改
+                edit(id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.disflag = true;
+                    this.btnMsg = '修改';
+                }
+            },
+            //挂载后
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2021-05-17'
+                },{
+                    id: 2,
+                    name: '水浒传',
+                    date: '2021-05-17'
+                },{
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2021-05-17'
+                },{
+                    id: 4,
+                    name: '西游记',
+                    date: '2021-05-17'
+                }]
+                this.books = data;
+            },
+        })
+    </script>
+</body>
+</html>
