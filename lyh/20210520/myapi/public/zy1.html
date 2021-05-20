@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图书管理系统</title>
+    <style>
+        th,
+        td {
+            padding: 10px 50px;
+        }
+
+        #app {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 内容 -->
+        <div class="add">
+            图书名称: <input type="text" v-model.trim="name">
+            <!-- 添加方法 -->
+            <button @click.prevent="add" :disabled="btnflag">{{btnMsg}}</button>
+        </div>
+        <!-- 自动修改长度 -->
+        <p>图书总数: {{counts}}</p>
+        <input type="text" v-model.trim="text" placeholder="请输入搜索的内容">
+        <br>
+        <br>
+        <table border="1" align="center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>图书名称</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 循环 -->
+                <tr v-for="val in booksData" :key="val.id">
+                    <td>{{val.id}}</td>
+                    <td>{{val.name}}</td>
+                    <td>{{val.date | myTime}}</td>
+                    <td>
+                        <!-- 添加修改方法 -->
+                        <a href="#" @click.prevent="edit(val.id)">修改</a>
+                        &nbsp;&nbsp;&nbsp;
+                        <!-- 添加删除方法 -->
+                        <a href="#" @click.prevent="del(val.id)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        Vue.filter('myTime', function (val) {//过滤器
+            val = new Date(val);
+            var y = val.getFullYear();
+            var M = val.getMonth() + 1;
+            M = M < 10 ? '0' + M : M;
+            var d = val.getDate();
+            d = d < 10 ? '0' + d : d;
+            return y + '-' + M + '-' + d;//当前日期
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                name: '',
+                btnMsg: '提交',
+                btnflag: false,
+                booksData: [],
+                books: [],
+                text: '',
+            },
+            mounted() {//初始化添加数据
+                axios.get('http://localhost:3000/booksData').then(res => {
+                    this.booksData = res.data;
+                    this.books = res.data;
+                })
+            },
+            methods: {
+                add(id) {
+                    if (this.btnMsg == '提交') {//判断是添加或者修改
+                        if (this.name != '') {//不能为空
+                            //添加 需要方法的类型 operation
+                            //需要添加的内容文本 name
+                            //操作的类型   flag
+                            axios.get('http://localhost:3000/booksData?operation=add&name=' + this.name+'&flag=提交').then(res => {
+                                this.booksData = res.data;
+                            })
+                        }
+                        this.name = '';
+                    } else if (this.btnMsg == '修改') {
+                        //添加 需要方法的类型 operation
+                        //需要修改 id
+                        //需要修改的文本 name
+                        //操作的类型   flag
+                        axios.get('http://localhost:3000/booksData?operation=add&name='+this.name+'&id='+this.id+'&flag=修改').then(res => {
+                            this.booksData = res.data;
+                        })
+                        this.name = '';
+                    }
+                },
+                del(id) {
+                    //添加 需要方法的类型 operation
+                    //需要删除 id
+                    axios.get('http://localhost:3000/booksData?operation=del&id=' + id).then(res => {
+                        console.log(this.booksData, 111);
+                        this.booksData = res.data;
+                    })
+                },
+                edit(id) {//点击后 修改
+                    var obj = this.booksData.find(val => val.id == id);
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.btnMsg = '修改';
+                }
+            },
+            computed: {
+                counts: function () {//数据的长度
+                    return this.booksData.length
+                }
+            },
+            watch: {
+                name: function () {//文本的监听
+                    var flag = this.booksData.some(val => val.name == this.name)
+                    if (flag) {
+                        this.btnflag = true;
+                    } else {
+                        this.btnflag = false;
+                    }
+                },
+                text: function () {//搜索框的监听
+                    this.booksData = this.books.filter(val => this.text == val.name);
+                    if (this.text == '') this.booksData = this.books;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

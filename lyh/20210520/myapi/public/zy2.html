@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级联动</title>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        // 2.使用fetch请求完成三级联动显示
+        fetch('http://localhost:3000/pro').then(function(data) {//请求
+            return data.text()//返回
+        }).then(function(data) {
+            if (data.length > 0) {//判断有没有值
+                var val = JSON.parse(data)//字符串转换为数组
+                console.log('省',val);
+                val.forEach(item => {//循环
+                    $('#pro').append('<option value="'+item.id+'">'+item.name+'</option>')//渲染到页面
+                })
+            }
+            $('#pro').change(function() {//添加事件
+                $('#city').html('');//初始化内容
+                console.log('省',$(this).val());
+                fetch('http://localhost:3000/city?pid=' + $(this).val()).then(function(data) {//用获取到的id 请求数据
+                    return data.text()//返回
+                }).then(function(data) {
+                    if (data.length > 0) {//判断有没有值
+                        var val = JSON.parse(data)//字符串转换为数组
+                        console.log('市',val);
+                        val.forEach(item => {//循环
+                            $('#city').append('<option value="'+item.id+'">'+item.name+'</option>')//渲染到页面
+                        })
+                    }
+                    $('#city').change(function() {
+                        $('#area').html('');
+                        console.log('市',$(this).val());
+                        fetch('http://localhost:3000/area?pid=' + $('#city').val()).then(function(data) {//用获取到的id 请求数据
+                            return data.text();//返回
+                        }).then(function(data) {
+                            console.log(data);
+                            if (data.length > 0) {//判断有没有值
+                                var val = JSON.parse(data)//字符串转换为数组
+                                console.log('区',val);
+                                val.forEach(item => {//循环
+                                    $('#area').append('<option value="'+item.id+'">'+item.name+'</option>')//渲染到页面
+                                })
+                            }
+                        })
+                    })
+                })
+            })
+            fetch('http://localhost:3000/city?pid=' + val[0].id).then(function(data) {
+                return data.text()//返回
+            }).then(function(data) {
+                if (data.length > 0) {//判断有没有值
+                    var val = JSON.parse(data)//字符串转换为数组
+                }
+                console.log('市',val);
+                val.forEach(item => {//循环
+                    $('#city').append('<option value="'+item.id+'">'+item.name+'</option>')//渲染到页面
+                })
+                fetch('http://localhost:3000/area?pid=' + val[0].id).then(function(data) {//请求数据
+                    return data.text();//返回
+                }).then(function(data) {
+                    if (data.length > 0) {//判断有没有值
+                        var val = JSON.parse(data)//字符串转换为数组
+                    }
+                    console.log('区',val);
+                    val.forEach(item => {//循环
+                        $('#area').append('<option value="'+item.id+'">'+item.name+'</option>')//渲染到页面
+                    })
+                })
+            })
+        })
+    </script>
+</body>
+</html>
