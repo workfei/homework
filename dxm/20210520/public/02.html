@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetch-三级联动</title>
+    <script src="js/ajax.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省: <select name="" id="pro"></select>
+    市：<select name="" id="city"></select>
+    区：<select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function () {
+            //当省级发送改变时,重新调用promise的then方法
+            $("#pro").on("change", function () {
+                fetch('http://localhost:8088/city?pid=' + $("#pro").val() + '', {
+                    method: 'get'
+                }).then(function (data) {
+                    return data.text();
+                }).then(function (data) {
+                    var html = template('op', JSON.parse(data));
+                    $("#city").html(html);
+                    return fetch('http://localhost:8088/area?aid=' + $("#city").val() + '', {
+                        method: 'get'
+                    })
+                }).then(function (data) {
+                    return data.text();
+                }).then(function (data) {
+                    var html = template('op', JSON.parse(data));
+                    $("#area").html(html);
+                })
+            })
+            //当市级发送改变时,重新调用promise的then方法
+            $("#city").on("change", function () {
+                fetch('http://localhost:8088/area?aid=' + $("#city").val() + '', {
+                    method: 'get'
+                }).then(function (data) {
+                    return data.text();
+                }).then(function (data) {
+                    var html = template('op', JSON.parse(data));
+                    $("#area").html(html);
+                })
+            })
+
+            fetch('http://localhost:8088/pro', {
+                method: 'get'
+            }).then(function (data) {
+                return data.text();
+            }).then(function (data) {
+                var html = template('op', JSON.parse(data));  //渲染数据时需要使用arttemplate模板来渲染数据
+                $("#pro").html(html);
+                return fetch('http://localhost:8088/city?pid=' + JSON.parse(data)[0].id + '', {
+                    method: 'get'
+                })
+            }).then(function (data) {
+                return data.text();
+            }).then(function (data) {
+                var html = template('op', JSON.parse(data));
+                $("#city").html(html);
+                return fetch('http://localhost:8088/area?aid=' + JSON.parse(data)[0].id + '', {
+                    method: 'get'
+                })
+            }).then(function (data) {
+                return data.text();
+            }).then(function (data) {
+                var html = template('op', JSON.parse(data));
+                $("#area").html(html);
+            })
+        })
+    </script>
+</body>
+
+</html>
