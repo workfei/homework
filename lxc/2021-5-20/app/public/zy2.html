@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+</head>
+
+<body>
+    省：<select name="" id="pro"></select> 市：
+    <select name="" id="city"></select> 区：
+    <select name="" id="area"></select>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.pid}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        fetch('http://localhost:3000/pro', {
+            method: 'get',
+        }).then(function(data) {
+            return data.text();
+        }).then(function(val) {
+            var html = template('op', JSON.parse(val));
+            $('#pro').html(html);
+        })
+
+        $('#pro').on('change', function() {
+            $('#city').html('');
+            fetch('http://localhost:3000/city', {
+                method: 'get',
+            }).then(function(data) {
+                return data.text();
+            }).then(function(val) {
+                var html = template('op', JSON.parse(val));
+                $('#city').html(html);
+            })
+        })
+
+        $('#city').on('change', function() {
+            $('#area').html('');
+            fetch('http://localhost:3000/areas', {
+                method: 'get',
+            }).then(function(data) {
+                return data.text();
+            }).then(function(val) {
+                var html = template('op', JSON.parse(val));
+                $('#area').html(html);
+            })
+        })
+    </script>
+</body>
+
+</html>
