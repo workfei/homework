@@ -11,93 +11,130 @@
     市: <select name="" id="city"></select>
     区: <select name="" id="district"></select>
     <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script id="pro" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
     <script>
-        $(function(){
-            // 获取省的数据然后渲染数据
-            function getPro() {
-                var p = new Promise(function(resolve, reject){
-                    $.ajax({
-                        type:'get',
-                        url:'http://localhost:8088/pro',
-                        dataType:'json',
-                        success:function(data){
-                            var arr = [];
-                            for(var k in data) {
-                                arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
-                            }
-                            $('#province').html(arr.join(''));
-                            getCity();
-                            resolve('成功');
-                        },
-                        error:function(){
-                            reject('服务器错误');
-                        }
-                    })
-                });
-                return p;
-            }
-            // 获取市的数据然后渲染数据
-            function getCity() {
-                var p = new Promise(function(resolve, reject){
-                    $.ajax({
-                        type:'get',
-                        url:'http://localhost:8088/city/',
-                        data:{
-                            pid:$('#province').val()
-                        },
-                        dataType:'json',
-                        success:function(data){
-                            var arr = [];
-                            for(var k in data) {
-                                arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
-                            }
-                            $('#city').html(arr.join(''));
-                            getDistrict();
-                            resolve('成功');
-                        },
-                        error:function(){
-                            reject('服务器错误');
-                        }
-                    })
-                });
-                return p;
-            }
-            // 获取区的数据然后渲染数据
-            function getDistrict() {
-                var p = new Promise(function(resolve, reject){
-                    $.ajax({
-                        type:'get',
-                        url:'http://localhost:8088/area/',
-                        data:{
-                            cid:$('#city').val()
-                        },
-                        dataType:'json',
-                        success:function(data){
-                            var arr = [];
-                            for(var k in data) {
-                                arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
-                            }
-                            $('#district').html(arr.join(''));
-                            resolve('成功');
-                        },
-                        error:function(){
-                            reject('服务器错误');
-                        }
-                    })
-                });
-                return p;
-            }
-            getPro()
-            
-            // 省发生改变就重新渲染数据
-            $('#province').change(function(){
-                getCity();
+        function queryajax(url,obj) {
+            var p = new Promise(function(res,req) {
+                $.ajax({
+                    type: 'get',
+                    url: url,
+                    data: obj,
+                    success: function(data) {
+                        // console.log(data);
+                        res(data)
+                    },
+                    error: function(xhr) {
+                        req('失败')
+                    }
+                })
             })
-            // 市发生改变就重新渲染数据
-            $('#city').change(function(){
-                getDistrict();
-            })
+            return p
+        }
+        queryajax('http://localhost:8088/pro',{}).then(function(val) {
+            console.log(val);
+            var html = template('pro',val)
+            console.log(html);
+            $('#pro').append(html)
+            return queryajax('http://localhost:8088/city', {pid:val[0].id})
+        },function(err){}).then(function(cityarr) {
+            console.log(cityarr);
+
+            return queryajax('http://localhost:8088/area', {cid: cityarr[0].id})
+        }).then(function(area){
+            console.log(area);
         })
+
+        // $(function(){
+        //     // 获取省的数据然后渲染数据
+        //     function getPro() {
+        //         var p = new Promise(function(resolve, reject){
+        //             $.ajax({
+        //                 type:'get',
+        //                 url:'http://localhost:8088/pro',
+        //                 dataType:'json',
+        //                 success:function(data){
+        //                     var arr = [];
+        //                     for(var k in data) {
+        //                         arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+        //                     }
+        //                     $('#province').html(arr.join(''));
+        //                     getCity();
+        //                     resolve('成功');
+        //                 },
+        //                 error:function(){
+        //                     reject('服务器错误');
+        //                 }
+        //             })
+        //         });
+        //         return p;
+        //     }
+        //     // 获取市的数据然后渲染数据
+        //     function getCity() {
+        //         var p = new Promise(function(resolve, reject){
+        //             $.ajax({
+        //                 type:'get',
+        //                 url:'http://localhost:8088/city/',
+        //                 data:{
+        //                     pid:$('#province').val()
+        //                 },
+        //                 dataType:'json',
+        //                 success:function(data){
+        //                     var arr = [];
+        //                     for(var k in data) {
+        //                         arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+        //                     }
+        //                     $('#city').html(arr.join(''));
+        //                     getDistrict();
+        //                     resolve('成功');
+        //                 },
+        //                 error:function(){
+        //                     reject('服务器错误');
+        //                 }
+        //             })
+        //         });
+        //         return p;
+        //     }
+        //     // 获取区的数据然后渲染数据
+        //     function getDistrict() {
+        //         var p = new Promise(function(resolve, reject){
+        //             $.ajax({
+        //                 type:'get',
+        //                 url:'http://localhost:8088/area/',
+        //                 data:{
+        //                     cid:$('#city').val()
+        //                 },
+        //                 dataType:'json',
+        //                 success:function(data){
+        //                     var arr = [];
+        //                     for(var k in data) {
+        //                         arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+        //                     }
+        //                     $('#district').html(arr.join(''));
+        //                     resolve('成功');
+        //                 },
+        //                 error:function(){
+        //                     reject('服务器错误');
+        //                 }
+        //             })
+        //         });
+        //         return p;
+        //     }
+        //     getPro()
+            
+        //     // 省发生改变就重新渲染数据
+        //     $('#province').change(function(){
+        //         getCity();
+        //     })
+        //     // 市发生改变就重新渲染数据
+        //     $('#city').change(function(){
+        //         getDistrict();
+        //     })
+        // })
     </script>
 </body>
 </html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="js/axios.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <add @addb="handle"></add>
+        <count :count="count"></count>
+        <mycom :id="id" :name="name" :btnflag="btnflag" :btnmsg="btnmsg" :books="books" @gt="del"></mycom>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        var hub = new Vue()
+        Vue.component('mycom', {
+            props: ['id', 'name', 'btnmsg', 'btnflag', 'books'],
+            data: function () {
+                return {
+
+                }
+            },
+            computed: {
+
+            },
+            template: `
+            <div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr :key='item.id' v-for='item in books'>
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.date}}</td>
+                            <td>
+                                <a href="" @click.prevent="send(item)">修改</a>
+                                <span>|</span>
+                                <a href="" @click.prevent="$emit('gt',item.id)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            methods: {
+                send: function (val) {
+                    hub.$emit('send', val);
+                }
+            },
+
+        })
+        Vue.component('add', {
+            data() {
+                return {
+                    id: '',
+                    name: '',
+                    btnmsg: '提交'
+                }
+            },
+            template: `
+                <div>
+                    <div>
+                    <h1>图书管理</h1>
+                    <div class="book">
+                        <div>
+                            <label for="id">
+                                编号：
+                            </label>
+                            <input type="text" id="id" v-model='id' >
+                            <label for="name">
+                                名称：
+                            </label>
+                            <input type="text" id="name" v-model='name'>
+                            <button @click=" (id,name)">{{btnmsg}}</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            `,
+            methods: {
+                hand(id, name) {
+                    this.$emit('addb', id, name)
+                    this.id = ''
+                    this.name = ''
+                    this.btnmsg = '提交'
+                }
+            },
+            mounted: function () {
+                hub.$on('send', val => {
+                    if (val) {
+                        this.btnmsg = '修改'
+                        this.id = val.id
+                        this.name = val.name
+                    }
+                });
+            }
+        })
+        Vue.component('count', {
+            props: ['count'],
+            template: `
+                <h5>图书总数：<span>{{count}}</span></h5>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                id: '',
+                name: '',
+                flag: false,
+                btnflag: false,
+                btnmsg: '提交',
+                books: [{
+                    id: 1,
+                    name: '三国演义',
+                    date: '2021-05-17'
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: '2021-05-17'
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: '2021-05-17'
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: '2021-05-17'
+                }]
+            },
+            methods: {
+                del(id) {
+                    this.books = this.books.filter(val => val.id != id)
+                },
+                handle: function (id, name) {
+                    var book = {};
+                    book.id = id;
+                    book.name = name;
+                    book.date = '2021';
+                    this.books.push(book);
+                    id = '';
+                    name = '';
+                },
+                getData() {
+                    axios.get('http://localhost:3000/data').then(function (ret) {
+                        console.log(ret.data);
+                    })
+                }
+
+
+            },
+            watch: {
+                id: function () {
+                    var flag = this.books.some(val => val.id == this.id)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                },
+                name: function () {
+                    var flag = this.books.some(val => val.name == this.name)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                }
+            },
+            computed: {
+                count: function () {
+                    return this.books.length
+                }
+            },
+            mounted() {
+                this.getData()
+            },
+        })
+    </script>
+</body>
+
+</html>

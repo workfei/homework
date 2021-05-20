@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省: <select name="" id="pro"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="area"></select>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/template-web.js"></script>
+    <script id="op" type="text/html">
+        {{each}}
+        <option value="{{$value.id}}">{{$value.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        function queryajax(url,obj) {
+            var p = new Promise(function(res,req) {
+                $.ajax({
+                    type: 'get',
+                    url: url,
+                    data: obj,
+                    success: function(data) {
+                        res(data)
+                    },
+                    error: function(xhr) {
+                        req('失败')
+                    }
+                })
+            })
+            return p
+        }
+        queryajax('http://localhost:4000/pro',{}).then(function(val) {
+            var html = template('op',val)
+            $('#pro').append(html)
+            return queryajax('http://localhost:4000/city', {pid:val[0].id})
+        }).then(function(cityarr) {
+            var html = template('op',cityarr)
+            $('#city').append(html)
+            return queryajax('http://localhost:4000/area', {cid: cityarr[0].id})
+        }).then(function(area){
+            var html = template('op',area)
+            $('#area').append(html)            
+        })
+
+    </script>
+</body>
+</html>
