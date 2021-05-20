@@ -21,14 +21,13 @@
     <script src="js/template-web.js"></script>
     <script>
         // 省
-        function getPro(url) {
+        function getPro(url, data) {
             var p = new Promise(function (resolve, reject) {
                 $.ajax({
                     type: "get",
                     url: url,
+                    data: data,
                     success: function (data) {
-                        var html = template("op", data)
-                        $("#pro").html(html)
                         resolve(data)
                     },
                     error: function () {
@@ -38,62 +37,52 @@
             })
             return p;
         }
-        // 省改变事件
-        pro.onchange = function () {
-            getCity("http://localhost:3001/city")
-            getArea("http://localhost:3001/area")
-        }
-        // 区
-        function getCity(url) {
-            var p = new Promise(function (resolve, reject) {
-                $.ajax({
-                    type: "get",
-                    url: url,
-                    data: {
-                        pid: pro.value
-                    },
-                    success: function (data) {
-                        var html = template("op", data)
-                        $("#city").html(html)
-                        resolve(data)
-                    },
-                    error: function () {
-                        reject('服务器错误')
-                    }
-                })
+        getPro("http://localhost:3001/pro", {}).then(function (data) {
+            var html = template("op", data)
+            $("#pro").html(html)
+            return getPro("http://localhost:3001/city", {
+                pid: pro.value
             })
-            return p;
-        }
-        // 区改变事件
-        city.onchange = function () {
-            getArea("http://localhost:3001/area")
-        }
-        // 市
-        function getArea(url) {
-            var p = new Promise(function (resolve, reject) {
-                $.ajax({
-                    type: "get",
-                    url: url,
-                    data: {
-                        cid: city.value
-                    },
-                    success: function (data) {
-                        var html = template("op", data)
-                        $("#area").html(html)
-                        resolve(data)
-                    },
-                    error: function () {
-                        reject('服务器错误')
-                    }
-                })
-            })
-            return p;
-        }
-        getPro("http://localhost:3001/pro").then(function (data) {
-            return getCity("http://localhost:3001/city")
+
         }).then(function (data) {
-            return getArea("http://localhost:3001/area")
-        }).then(function (data) {})
+            var html = template("op", data)
+            $("#city").html(html)
+            return getPro("http://localhost:3001/area", {
+                cid: city.value
+            })
+
+        }).then(function (data) {
+            var html = template("op", data)
+            $("#area").html(html)
+        })
+
+
+        // 省改变事件
+        $('#pro').on('change', function () {
+            getPro("http://localhost:3001/city", {
+                pid: pro.value
+            }).then(function (data) {
+                var html = template("op", data)
+                $("#city").html(html)
+
+                return getPro("http://localhost:3001/area", {
+                    cid: city.value
+                })
+            }).then(function (data) {
+                var html = template("op", data)
+                $("#area").html(html)
+            })
+        })
+
+        // 区改变事件
+        $('#city').on('change', function () {
+            getPro("http://localhost:3001/area", {
+                cid: city.value
+            }).then(function (data) {
+                var html = template("op", data)
+                $("#area").html(html)
+            })
+        })
     </script>
 </body>
 
