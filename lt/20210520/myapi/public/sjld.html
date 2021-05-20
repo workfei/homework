@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省: <select name="" id="province"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="district"></select>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        fetch("http://localhost:3001/pro").then(function(val){
+            return val.text();
+        }).then(function(data) {
+            var val = JSON.parse(data)
+            console.log(data);
+            var arr = [];
+            for(var k in val) {
+                arr.push(`<option value="${val[k].id}">${val[k].name}</option>`);
+            }
+            $('#province').html(arr.join(''));
+            fetch("http://localhost:3001/city/?pid="+ val[0].id).then(function(val1) {
+                return val1.text();
+
+            }).then(function(data) {
+                var val = JSON.parse(data)
+                console.log(val);
+                val.forEach(item => {
+                    $("#city").append('<option value="'+ item.id +'">' + item.name + '</option>')
+                });
+                fetch("http://localhost:3001/area/?pid="+ val[0].id).then(function(val) {
+                    return val.text();
+                }).then(function(data) {
+                    var val = JSON.parse(data)
+                    console.log(val);
+                    val.forEach(item => {
+                        $("#district").append('<option value="'+ item.id +'">' + item.name + '</option>')
+                    });
+                });
+            })
+        });
+        
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            text-align: center;
+        }
+        .add {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="add">名称:  <input type="text" name="" id="" v-model.trim="name" > <button @click="add()">{{btnMsg}}</button></div>
+        <h4 class="count">图书总数:{{counts}}</h4>
+        <table border="1" width="500" align="center">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr  v-for='item in books' :key='item.id'>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.date}}</td>
+                    <td>
+                      <a href="" @click.prevent="modify(item.id)">修改</a>
+                      <span>|</span>
+                          <a href="" @click.prevent="del(item.id)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="js/axios.js"></script>
+    <script src="js/vue.js"></script>
+    <script>
+        // #  配置公共的请求头 
+        axios.defaults.baseURL = 'https://api.example.com';
+        // #  配置 超时时间
+        axios.defaults.timeout = 2500;
+        // #  配置公共的请求头
+        // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+        // # 配置公共的 post 的 Content-Type
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                books:[],
+                btnMsg:'添加',
+                name:'',
+                id:'',
+            },
+            methods:{
+                del(id) {
+                    axios.get("http://localhost:3001/del?id="+id).then(ret=> {
+                        console.log(ret.data);
+                        this.books = ret.data;
+                    })
+                },
+                // 添加
+                add() {
+                    if(this.btnMsg == '添加') {
+                        axios.get('http://localhost:3001/add',{
+                            params:{
+                                id: parseInt(this.books[this.books.length - 1].id) +1,
+                                name:this.name
+                            }
+                        }).then(function(ret) {
+                            vm.books = ret.data
+                        })
+                    } else {
+                        axios.get('http://localhost:3001/modify',{
+                            params: {
+                                id: this.id,
+                                name: this.name
+                            }
+                        }).then(function(ret) {
+                        console.log(ret.data);
+                        vm.books= ret.data;
+                    })
+                    }
+                    this.id = '',
+                    this.name = ''
+                    this.btnMsg = '提交'
+                    
+                },
+                modify(id) {
+                    var obj = this.books.filter(val => val.id == id)[0]
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.btnMsg = '修改'
+                }
+            },
+            computed:{
+                counts: function() {
+                    return this.books.length
+                },
+                
+            },
+            mounted() {
+                axios.get('http://localhost:3001/axios1').then(res=> {
+                        this.books = res.data;
+                    })
+            },
+        })
+    </script>
+</body>
+</html>
