@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 2.使用fetch请求完成三级联动显示 -->
+    <div id="app">
+        省:<select name="" id="pro">
+           
+        </select>
+        市: <select name="" id="city"></select>
+        市: <select name="" id="area"></select>
+    </div>
+    <script src="js/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+       
+            fetch('http://localhost:3000/pro').then(function(data) {
+                return data.text()
+            }).then(function(data) {
+                var arr = JSON.parse(data);
+                console.log(arr);
+                arr.forEach(val => {
+
+                })
+            })
+            // var url = ('http://localhost:3000/city/'+ vm.proid)
+            // console.log(url);
+            // fetch(url).then(function(data) {
+                
+            //     return data.text();
+            // }).then(function(data) {
+            //     // console.log(data);
+            // })
+           
+    </script>
+</body>
+</html>

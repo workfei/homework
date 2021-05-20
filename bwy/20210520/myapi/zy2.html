@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 2.使用fetch请求完成三级联动显示 -->
+    <div id="app">
+        省:<select name="" id="pro">
+            <option value="val.id" v-for='val in pros' :key="val.id">{{val.name}}</option>
+        </select>
+        市: <select name="" id="city"></select>
+        市: <select name="" id="area"></select>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                pros: '',
+                proid: '',
+                city: '',
+                cityid:'',
+                area: '',
+                area:'',    
+            },
+            methods:{
+                getpro() {
+                    fetch('http://localhost:3000/pro').then(function(data) {
+                        return data.text()
+                    }).then(function(data) {
+                        vm.pros = JSON.parse(data);
+                        vm.proid = vm.pros[0].id
+                    })
+                },
+                getcity() {
+                    console.log(vm.proid);
+                    // var url = ('http://localhost:3000/city/?id='+ vm.proid)
+                    // console.log(url);
+                    // fetch(url).then(function(data) {
+                        
+                    //     return data.text();
+                    // }).then(function(data) {
+                    //     // console.log(data);
+                    // })
+                }
+            },
+            mounted() {
+                this.getpro();
+                this.getcity();
+            },
+            computed:{
+                
+            }
+        })
+    </script>
+</body>
+</html>

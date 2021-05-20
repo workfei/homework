@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+     
+
+        const objArr = [{
+            name: 'wxw',
+            age: 22
+        }, {
+            name: 'wxw2',
+            age: 33
+        }]
+        objArr.forEach(ele => {
+            if (ele.name === 'wxw2') {
+                ele.age = 88
+            }
+        })
+        console.log(objArr); // [{name: "wxw", age: 22},{name: "wxw2", age: 88}]
+
+
+        const changeItemArr = [{
+            name: 'wxw',
+            age: 22
+        }, {
+            name: 'wxw2',
+            age: 33
+        }]
+        changeItemArr.forEach(ele => {
+            if (ele.name === 'wxw2') {
+                ele = {
+                    name: 'change',
+                    age: 77
+                }
+            }
+        })
+        console.log(changeItemArr); // [{name: "wxw", age: 22},{name: "wxw2", age: 33}]
+
+
+        const array = [1, 2, 3, 4];
+        array.forEach(ele => {
+            ele = ele * 3
+        })
+        console.log(array); // [1,2,3,4]
+
+
+        // 基本类型可以欧~
+        const numArr = [1, 2, 3];
+        numArr.forEach((ele, index, arr) => {
+            if (ele === 3) {
+                arr[index] = 999
+            }
+        })
+        console.log(numArr);  // [999, 4, 55]
+
+        const arr = [1,2,5,3];
+        arr.forEach((val,index,arr) => {
+            if(val == 2) {
+                val = 5;
+            }
+        })
+        console.log(arr);
+        // 引用类型也可以欧~
+        const allChangeArr = [{
+            name: 'wxw',
+            age: 22
+        }, {
+            name: 'wxw2',
+            age: 33
+        }]
+        allChangeArr.forEach((ele, index, arr) => {
+            if (ele.name === 'wxw2') {
+                arr[index] = {
+                    name: 'change',
+                    age: 77
+                }
+            }
+        })
+        console.log(allChangeArr); // // [{name: "wxw", age: 22},{name: "change", age: 77}]
+
+       
+
+    </script>
+</body>
+
+</html>

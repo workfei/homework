@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 2.使用fetch请求完成三级联动显示 -->
+    <div id="app">
+        省:<select name="" id="pro">
+
+        </select>
+        市: <select name="" id="city"></select>
+        市: <select name="" id="area"></select>
+    </div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        // 渲染省市区
+        fetch('http://localhost:3000/pro').then(function (data) {
+            return data.text()
+        }).then(function (data) {
+            var pro = JSON.parse(data);
+            console.log(pro);
+            pro.forEach(val => {
+                $('#pro').append('<option value=' + val.id + '>' + val.name + '</option>')
+            })
+            fetch('http://localhost:3000/city?id=' + pro[0].id).then(function (data) {
+                return data.text();
+            }).then(function (data) {
+                var citys = JSON.parse(data)
+                console.log(citys);
+                citys.forEach(val => {
+                    $('#city').append('<option value=' + val.id + '>' + val.name + '</option>')
+                })
+                fetch('http://localhost:3000/area?pid=' + citys[0].id).then(function (data) {
+                    return data.text();
+                }).then(function (area) {
+                    var area = JSON.parse(area)
+                    console.log(area);
+                    area.forEach(val => {
+                        $('#area').append('<option value=' + val.id + '>' + val.name + '</option>')
+                    })
+                })
+            })
+        })
+
+        // 省改变事件
+        $('#pro').change(function () {
+            var proid = this.value;
+            fetch('http://localhost:3000/city?id=' + proid).then(function (data) {
+                return data.text();
+            }).then(function (data) {
+                var citys = JSON.parse(data)
+                // console.log(citys);
+                var arr = [];
+                citys.forEach(val => {
+                    arr.push('<option value=' + val.id + '>' + val.name + '</option>')
+                })
+                $('#city').html(arr.join())
+                fetch('http://localhost:3000/area?pid=' + citys[0].id).then(function (data) {
+                    return data.text();
+                }).then(function (area) {
+                    var area = JSON.parse(area)
+                    // console.log(area);
+                    var arr = [];
+                    area.forEach(val => {
+                        arr.push('<option value=' + val.id + '>' + val.name + '</option>')
+                    })
+                    $('#area').html(arr.join())
+                })
+            })
+        })
+
+        //市改变事件
+        $('#city').change(function () {
+            var cityid = this.value;
+            fetch('http://localhost:3000/area?pid=' + cityid).then(function (data) {
+                return data.text();
+            }).then(function (area) {
+                var area = JSON.parse(area)
+                // console.log(area);
+                var arr = [];
+                area.forEach(val => {
+                    arr.push('<option value=' + val.id + '>' + val.name + '</option>')
+                })
+                $('#area').html(arr.join())
+            })
+        })
+
+    </script>
+</body>
+
+</html>
