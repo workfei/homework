@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .hd {
+            padding: 2px;
+            background-color: goldenrod;
+        }
+
+        .hd span {
+            padding: 2px;
+            background-color: red;
+            color: #fff;
+            vertical-align: middle;
+        }
+
+        .total {
+            margin: 3px 0;
+        }
+
+        table {
+            width: 100%;
+            text-align: center;
+        }
+
+        thead {
+            background-color: skyblue;
+            color: orangered;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <add-books :msg="msg" @add="add"></add-books>
+        <books-total :total="total"></books-total>
+        <have-books :books="books" @del="del" @edit="edit"></have-books>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        // axios全局路径
+        axios.defaults.baseURL = 'http://localhost:3001'
+
+        // 事件中心
+        var hub = new Vue()
+        // 添加模块
+        Vue.component('addBooks', {
+            props: ['msg'],
+            data: function () {
+                return {
+                    inid: '',
+                    inname: '',
+                }
+            },
+            template: `
+            <div class="hd">
+                <span>ID</span><input type="text" v-model="inid"><span>图书名称</span><input type="text" v-model="inname"><button @click="add(inid,inname)">{{msg}}</button>
+            </div>
+            `,
+            methods: {
+                add(id, name) {
+                    this.$emit('add', id, name)
+                    this.inid = ''
+                    this.inname = ''
+                }
+            },
+            mounted() {
+                hub.$on('getmsg', (i,val) => {
+                    this.inid = i;
+                    this.inname = val;
+                })
+            },
+        })
+        // 图书总数
+        Vue.component('booksTotal', {
+            props: ['total'],
+            template: `
+                <div class="total">图书总数: {{total}}</div>
+            `
+        })
+        // 数据模块
+        Vue.component('haveBooks', {
+            props: ['books'],
+            template: `
+            <div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="val in books">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.date}}</td>
+                            <td><a href="javascript:;" @click=edit(val.id,val.name)>修改</a> <a href="javascript:;" @click="del(val.id)">删除</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            methods: {
+                del(id) {
+                    this.$emit('del', id)
+                },
+                edit(id,name) {
+                    this.$emit('edit', id, name)
+                    hub.$emit('getmsg', id, name)
+                }
+            }
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: [],
+                msg: '提交'
+            },
+            methods: {
+                del(id) {
+                    axios.get('/delbook', {
+                        params: {
+                            id: id,
+                        }
+                    }).then(val => {
+                        this.books = val.data;
+                    })
+                },
+                add(id, name) {
+                    if (this.msg == '修改') {
+                        this.msg = '提交';
+                        axios.get('/editbook', {
+                            params: {
+                                id: id,
+                                name: name
+                            }
+                        }).then(val => {
+                            this.books = val.data;
+                        })
+                    } else {
+                        axios.get('/addbook', {
+                            params: {
+                                id: id,
+                                name: name
+                            }
+                        }).then(val => {
+                            if (val.data == 'error') {
+                                alert('请输入书名')
+                            } else {
+                                this.books = val.data;
+                            }
+                        })
+                    }
+                },
+                edit(id, name) {
+                    this.msg = '修改'
+                    var obj = this.books.find(val => val.id == id);
+                    id = obj.id;
+                    name = obj.name;
+                }
+            },
+            computed: {
+                total() {
+                    return this.books.length;
+                }
+            },
+            mounted() {
+                axios.get('/thebook').then(res => {
+                    this.books = res.data
+                })
+            },
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        省: <select name="" id="pro" v-model="pid">
+            <option :value="item.id" v-for="item in pro">{{item.name}}</option>
+        </select>
+        市: <select name="" id="city" v-model="cid">
+            <option :value="item.id" v-for="item in city">{{item.name}}</option>
+        </select>
+        区: <select name="" id="area">
+            <option :value="item.id" v-for="item in area">{{item.name}}</option>
+        </select>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        // 全局链接
+        axios.defaults.baseURL = 'http://localhost:3001'
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                pro: [],
+                city: [],
+                area: [],
+                pid: '',
+                cid: ''
+            },
+            methods:{
+                async getData() {
+                    // 省
+                    var pro = await axios.get('/pro')
+                    this.pro = pro.data;
+                    this.pid = pro.data[0].id;
+
+                    // 市
+                    var city = await axios.get('/city?pid='+this.pid)
+                    this.city = city.data;
+                    this.cid = city.data[0].id
+
+                    // 区
+                    var area = await axios.get('/area?cid='+this.cid)
+                    this.area = area.data;
+                }
+            },
+            computed:{
+            
+            },
+            mounted() {
+                this.getData()
+            },
+            watch:{
+                async pid() {
+                    // 市
+                    var city = await axios.get('/city?pid='+this.pid)
+                    this.city = city.data;
+                    this.cid = city.data[0].id
+
+                    // 区
+                    var area = await axios.get('/area?cid='+this.cid)
+                    this.area = area.data;
+                },
+                async cid() {
+                    // 区
+                    var area = await axios.get('/area?cid='+this.cid)
+                    this.area = area.data;
+                }
+            },
+        })
+    </script>
+</body>
+</html>
