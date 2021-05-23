@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="app">
+        id: <input type="text" v-model="id" :disabled="idflag">
+        名称: <input type="text" v-model="name">
+        <button @click="add">{{btnmsg}}</button>
+        <table>
+            <thead>
+                <th>id</th>
+                <th>名称</th>
+                <th>日期</th>
+                <th>操作</th>
+            </thead>
+            <div>图书总数:{{list.length}}</div>
+            <tbody>
+                <tr v-for="val in list" ::key="val.id">
+                    <td>{{val.id}}</td>
+                    <td>{{val.name}}</td>
+                    <td>{{val.date}}</td>
+                    <td><a href="##" @click='xg(val.id)'>修改</a> <a href="##" @click="del(val.id)">删除</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="../js/axios.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                list: '',
+                id: '',
+                name:'',
+                idflag: false,
+                btnmsg: '提交',
+            },
+            methods:{
+               del(id) {
+                    axios.get("http://localhost:3000/del?id="+id).then(function(ret) {
+                        console.log(ret.data);
+                        vm.list = ret.data;
+                    })
+                },
+                add() {
+                    if(this.btnmsg == '提交') {
+                        axios.get('http://localhost:3000/add',{
+                            params:{
+                                id: vm.id,
+                                name:vm.name
+                            }
+                        }).then(function(ret) {
+                            console.log(ret.data);
+                            vm.list = ret.data
+                            
+                        })
+                    } else {
+                        axios.get('http://localhost:3000/xg',{
+                            params: {
+                                id: this.id,
+                                name: this.name
+                            }
+                        }).then(function(ret) {
+                        console.log(ret.data);
+                        vm.list= ret.data;
+                    })
+                    }
+                    this.id = '',
+                    this.name = ''
+                    this.btnmsg = '提交'
+                    this.idflag = false
+                    
+                },
+                xg(id) {
+                    var obj = this.list.filter(val => val.id == id)[0]
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.idflag = true;
+                    this.btnmsg = '修改'
+                }
+                    
+                
+            },
+            mounted() {
+                axios.get("http://localhost:3000/list").then(function(ret) {
+                        vm.list = ret.data;
+                })
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>
