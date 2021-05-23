@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <my-head @addbooks="submit"></my-head>
+        <my-total :books="books"></my-total>
+        <my-list :books="books" @delbooks="del"></my-list>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000';
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        var hub = new Vue();
+        var myhead = {
+            data: function() {
+                return {
+                    name: '',
+                    id: 0,
+                    btnmsg: '提交'
+                }
+            },
+            template: `
+                <div>
+                    <input type="text" v-model="name"><button @click="sub">{{btnmsg}}</button>
+                </div>
+            `,
+            methods: {
+                sub() {
+                    this.$emit('addbooks', this.name, this.id, this.btnmsg);
+                }
+            },
+            mounted() {
+                hub.$on('editbooks', val => {
+                    this.id = val.id;
+                    this.name = val.name;
+                    this.btnmsg = '修改';
+                })
+            },
+        }
+        var mytotal = {
+            props: ['books'],
+            template: `
+                <div>
+                    图书总数:{{total}}
+                </div>
+            `,
+            computed: {
+                total: function() {
+                    return this.books.length;
+                }
+            }
+        }
+        var mylist = {
+            props: ['books'],
+            template: `
+                <div>
+                    <table>
+                        <tr v-for="item in books">
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.date}}</td>
+                            <td>
+                                <a href="" @click.prevent="edit(item)">修改</a>
+                                <a href="" @click.prevent="$emit('delbooks',item.id)">删除</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>  
+            `,
+            methods: {
+                edit(obj) {
+                    hub.$emit('editbooks', obj);
+                }
+            }
+        }
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                books: []
+            },
+            methods: {
+                getMyBooks() {
+                    axios.get('/getmybooks').then(res => {
+                        this.books = res.data;
+                    })
+                },
+                del(id) {
+                    axios.get('/delbooks?id=' + id).then(res => {
+                        var data = res.data;
+                        if (data == 'ok') {
+                            this.getMyBooks();
+                        } else {}
+                    })
+                },
+                submit(name, id, btnmsg) {
+                    var params = new URLSearchParams();
+                    if (btnmsg == '修改') {
+                        params.append('id', id);
+                        params.append('name', name);
+                        axios.post('/editbooks', params).then(res => {
+                            var data = res.data;
+                            if (data == 'ok') {
+                                this.getMyBooks();
+                            }
+                        })
+                    } else {
+                        params.append('name', name);
+                        axios.post('/addbooks', params).then(res => {
+                            var data = res.data;
+                            if (data == 'ok') {
+                                this.getMyBooks();
+                            }
+                        })
+                    }
+                }
+            },
+            computed: {
+
+            },
+            components: {
+                myHead: myhead,
+                myList: mylist,
+                myTotal: mytotal
+            },
+            mounted() {
+                this.getMyBooks();
+            },
+        })
+    </script>
+</body>
+
+</html>
