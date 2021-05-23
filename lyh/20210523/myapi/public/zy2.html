@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        省: <select id="pro" v-model="proid">
+                <option :value="item.id" v-for="item in prolist" :key="item.id">{{item.name}}</option>
+            </select>
+        市: <select id="city" v-model="cityid">
+            <option :value="item.id" v-for="item in citylist" :key="item.id">{{item.name}}</option>
+            </select>
+        区: <select id="area">
+                <option :value="item.id" v-for="item in arealist" :key="item.id">{{item.name}}</option>
+            </select>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000'
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                prolist: [],
+                citylist: [],
+                arealist: [],
+                cityid: '',
+                proid: '',
+            },
+            methods:{
+                async getdata() {
+                    var pro = await axios.get('/pro')
+                    this.prolist = pro.data;
+                    this.proid = pro.data[0].id;
+                },
+            },
+            watch: {
+                async proid() {
+                    var city = await axios.get('/city?pid='+this.proid)
+                    this.citylist = city.data;
+                    this.cityid = city.data[0].id;
+                },
+                async cityid() {
+                    var area = await axios.get('/area?pid='+this.cityid)
+                    this.arealist = area.data;
+                }
+            },
+            mounted() {
+                this.getdata()
+            },
+            computed:{
+            
+            }
+        })
+    </script>
+</body>
+</html>

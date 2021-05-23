@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        td {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <myhead @addbooks="submit"></myhead>
+        <mytotal :books="books"></mytotal>
+        <mylist :books="books" @delbooks="del"></mylist>
+    </div>
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        // 全局配置
+        axios.defaults.baseURL = 'http://localhost:3000';
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        //事件中心
+        var hub = new Vue();
+        var myhead = {
+            data: function() {
+                return {
+                    name: '',
+                    id: '',
+                    btnMsg: '提交'
+                }
+            },
+            template: `
+            <div>
+                <input type="text" v-model="name" />
+                <button @click="sub">{{btnMsg}}</button>    
+            </div>
+            `,
+            methods: {
+                sub() {
+                    this.$emit('addbooks',this.name,this.id,this.btnMsg)
+                    this.name = '';
+                    this.btnMsg = '提交'
+                }
+            },
+            mounted() {
+                hub.$on('editbooks', val => {
+                    this.id = val.id;
+                    this.name = val.name;
+                    this.btnMsg = '修改'
+                })
+            },
+        }
+        var mytotal = {
+            props: ['books'],
+            computed: {
+                tital: function() {
+                    return this.books.length;
+                }
+            },
+            template:`
+            <div>
+                图书总数: {{tital}}
+            </div>
+            `,
+        }
+        var mylist = {
+            props: ['books'],
+            template: `
+            <div>
+                <table border="1">
+                    <tr v-for="item in books">
+                        <td>{{item.id}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.date | myTime}}</td>
+                        <td>
+                            <a href="JavaScript:;" @click.prevent="edit(item)">修改</a>
+                            <a href="JavaScript:;" @click.prevent="$emit('delbooks',item.id)">删除</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            `,
+            methods: {
+                edit(obj) {
+                    hub.$emit('editbooks', obj)
+                }
+            }
+        }
+        Vue.filter('myTime', function (val) {//过滤器
+            val = new Date(val);
+            var y = val.getFullYear();
+            var M = val.getMonth() + 1;
+            M = M < 10 ? '0' + M : M;
+            var d = val.getDate();
+            d = d < 10 ? '0' + d : d;
+            return y + '-' + M + '-' + d;//当前日期
+        })
+        var vm = new Vue({
+            el:'#app',
+            data:{
+                books: [],
+            },
+            methods:{
+                getMyBooks() {
+                    axios.get('/getmybooks').then(res => {
+                        this.books = res.data;
+                    })
+                },
+                del(id) {
+                    axios.get('/delmybooks?id='+id).then(res => {
+                        var data = res.data;
+                        if (data == 'ok') {
+                            this.getMyBooks();
+                        }
+                    })
+                },
+                submit(name,id,btnMsg) {
+                    var params = new URLSearchParams();
+                    if (btnMsg == '修改') {
+                        params.append('id', id);
+                        params.append('name', name);
+                        axios.post('/editbooks', params).then(res => {
+                            var data = res.data;
+                            if (data == 'ok') {
+                                this.getMyBooks();
+                            }
+                        })
+                    } else {
+                        params.append('name', name);
+                        axios.post('/addbooks', params).then(res => {
+                            var data = res.data;
+                            if (data == 'ok') {
+                                this.getMyBooks();
+                            }
+                        })
+                    }
+                }
+            },
+            computed:{
+                
+            },
+            components: {
+                myhead: myhead,
+                mytotal: mytotal,
+                mylist: mylist
+            },
+            //初始化
+            mounted() {
+                this.getMyBooks();
+            },
+        })
+    </script>
+</body>
+</html>
