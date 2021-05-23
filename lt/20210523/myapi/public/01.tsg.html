@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <myhead @addbooks="submit"></myhead>
+        <mytotal :books="books"></mytotal>
+        <mylist :books='books' @del="del"></mylist>
+    </div>
+    <script src="js/axios.js"></script>
+    <script src="js/vue.js"></script>
+    <script>
+        // 全局配置
+        axios.defaults.baseURL="http://localhost:3000";
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        var hub = new Vue;
+        var myhead = {
+            data:function() {
+                return {
+                    name:'',
+                    id:0,
+                    btnMsg:'提交'
+                }
+            },
+            template:`
+                <div>
+                    <input type="text" v-model="name" /><button @click="sub">{{btnMsg}}</button>
+                </div>
+            `,
+            methods: {
+                sub() {
+                    this.$emit('addbooks',this.name)
+                }
+            },
+            mounted() {
+                hub.$on('editbook',val => {
+                    this.id = val.id
+                    this.name = val.name
+                    this.btnMsg = '修改'
+                })
+            },
+        }
+        var mytotal = {
+            props:['books'],
+            template:`
+                <div>
+                    图书总数:{{total}}
+                </div>
+            `,
+            computed: {
+                total:function() {
+                    return this.books.length
+                }
+            }
+        }
+        var mylist = {
+            props:['books'],
+            template:`
+            <table>
+                <tr v-for="item in books">
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>20210521</td>
+                    <td><a @click=edit(item)>修改</a>  <a @click.prevent="$emit('del',item.id)">删除</a></td>
+                </tr>
+            </table>
+            `,
+            methods: {
+                edit(obj) {
+                    hub.$emit('editbook',obj)
+                }
+            }
+        }
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                books:[],
+                data:''
+            },
+            methods:{
+                getMybooks() {
+                    axios.get('/getlist').then(res => {
+                        this.books = res.data
+                    })
+                },
+                del(id) {
+                    axios.get("/del?id="+id).then(res =>{
+                        var data = res.data
+                        if(data =='成功') {
+                            this.getMybooks()
+                        }
+                    })
+                },
+                submit(name,id,btnMsg) {
+                    var params = new URLSearchParams();
+                    if (btnMsg == '修改') {
+                        params.append('id',id);
+                        params.append('name',name);
+                        axios.post('/editbooks',params).then(res => {
+                            var data = res.data;
+                            if(data=='成功') {
+                                this.getMybooks();
+                            } 
+                        })
+                    } else {
+                        params.append('name',name)
+                        axios.post('/addbooks', params).then(res => {
+                            var data = res.data;
+                            if(data=='成功') {
+                                this.getMybooks();
+                            } 
+                        })
+                    }
+                    
+                } 
+            },
+            computed:{
+                
+            },
+            components: {
+                myhead:myhead,
+                mytotal:mytotal,
+                mylist:mylist,
+            },
+            mounted() {
+                this.getMybooks();
+            },
+        })
+    </script>
+</body>
+</html>
