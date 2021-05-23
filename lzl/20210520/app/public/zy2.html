@@ -34,19 +34,33 @@
             })
             return p
         }
-        queryajax('http://localhost:4000/pro',{}).then(function(val) {
-            var html = template('op',val)
-            $('#pro').append(html)
-            return queryajax('http://localhost:4000/city', {pid:val[0].id})
-        }).then(function(cityarr) {
-            var html = template('op',cityarr)
-            $('#city').append(html)
-            return queryajax('http://localhost:4000/area', {cid: cityarr[0].id})
-        }).then(function(area){
-            var html = template('op',area)
-            $('#area').append(html)            
-        })
+        // queryajax('http://localhost:4000/pro',{}).then(function(val) {
+        //     var html = template('op',val)
+        //     $('#pro').append(html)
+        //     return queryajax('http://localhost:4000/city', {pid:val[0].id})
+        // }).then(function(cityarr) {
+        //     var html = template('op',cityarr)
+        //     $('#city').append(html)
+        //     return queryajax('http://localhost:4000/area', {cid: cityarr[0].id})
+        // }).then(function(area){
+        //     var html = template('op',area)
+        //     $('#area').append(html)            
+        // })
 
+
+        fetch('http://localhost:4000/pro').then(function(res) {
+            return res.text()
+        }).then(function(data) {
+            console.log(JSON.parse(data));
+            data = JSON.parse(data)
+            fetch('http://localhost:4000/city?pid='+data[0].id).then(function(res) {
+                return res.text()
+            }).then(function(data) {
+                data = JSON.parse(data)
+                console.log(data);
+                fetch('http://localhost:4000/city?pid='+data[0].id)
+            })
+        })
     </script>
 </body>
 </html>

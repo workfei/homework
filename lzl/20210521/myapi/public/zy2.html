@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <select name="" id="pro" v-model="proid" >
+            <option :value="item.id" v-for="item in prolist" >{{item.name}}</option>
+        </select>
+        <select name="" id="city" v-model="cityid" value="">
+            <option :value="item.id" v-for="item in citylist" >{{item.name}}</option>
+        </select>
+        <select name="" id="area" v-model="areaid" value="">
+            <option :value="item.id" v-for="item in arealist" >{{item.name}}</option>
+        </select>
+        
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000';
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                prolist: [],
+                citylist: [],
+                arealist: [],
+                proid: '',
+                cityid: '',
+                areaid: '',
+            },
+            methods: {
+                async getdata() {
+                    var pro = await axios.get('/pro')
+                    console.log(pro.data);
+                    this.prolist = pro.data
+                    this.proid = pro.data[0].id
+                    var city = await axios.get('/city?pid=' + pro.data[0].id)
+                    console.log(city.data);
+                    this.citylist = city.data
+                    this.cityid = city.data[0].id
+                    var area = await axios.get('/areas?pid=' + city.data[0].id)
+                    console.log(area.data);
+                    this.arealist = area.data
+                    this.areaid = area.data[0].id
+                }
+            },
+            mounted() {
+                this.getdata()
+            },
+            watch: {
+                async proid() {
+                    var city = await axios.get('/city?pid='+this.proid)
+                    this.citylist = city.data
+                    this.cityid = city.data[0].id
+                    var area = await axios.get('/areas?pid='+this.cityid)
+                    this.arealist = area.data 
+                },
+                async cityid() {
+                    var area = await axios.get('/areas?pid='+this.cityid)
+                    this.arealist = area.data
+                    // this.areaid = area.data[0].id
+                } 
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>

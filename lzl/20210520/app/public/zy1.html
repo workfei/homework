@@ -11,13 +11,15 @@
 
 <body>
     <div id="app">
-        <add @addb="handle"></add>
+        <add @addbooks="submit"></add>
         <count :count="count"></count>
-        <mycom :id="id" :name="name" :btnflag="btnflag" :btnmsg="btnmsg" :books="books" @gt="del"></mycom>
+        <mycom :id="id" :name="name" :btnflag="btnflag" :btnmsg="btnmsg" :books="books" @delbooks="del"></mycom>
     </div>
 
     <script src="js/vue.js"></script>
     <script>
+        axios.defaults.baseURL = 'http://localhost:4000'
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
         var hub = new Vue()
         Vue.component('mycom', {
             props: ['id', 'name', 'btnmsg', 'btnflag', 'books'],
@@ -48,7 +50,7 @@
                             <td>
                                 <a href="" @click.prevent="send(item)">修改</a>
                                 <span>|</span>
-                                <a href="" @click.prevent="$emit('gt',item.id)">删除</a>
+                                <a href="" @click.prevent="$emit('delbooks',item.id)">删除</a>
                             </td>
                         </tr>
                     </tbody>
@@ -76,26 +78,20 @@
                     <h1>图书管理</h1>
                     <div class="book">
                         <div>
-                            <label for="id">
-                                编号：
-                            </label>
-                            <input type="text" id="id" v-model='id' >
                             <label for="name">
                                 名称：
                             </label>
-                            <input type="text" id="name" v-model='name'>
-                            <button @click=" (id,name)">{{btnmsg}}</button>
+                            <input type="text" id="name" v-model='name' >
+                            <button @click="sub">{{btnmsg}}</button>
                         </div>
                     </div>
                 </div>
                 </div>
             `,
             methods: {
-                hand(id, name) {
-                    this.$emit('addb', id, name)
-                    this.id = ''
-                    this.name = ''
-                    this.btnmsg = '提交'
+
+                sub() {
+                    this.$emit('addbooks', this.name,this.id,this.btnmsg)
                 }
             },
             mounted: function () {
@@ -122,40 +118,45 @@
                 flag: false,
                 btnflag: false,
                 btnmsg: '提交',
-                books: [{
-                    id: 1,
-                    name: '三国演义',
-                    date: '2021-05-17'
-                }, {
-                    id: 2,
-                    name: '水浒传',
-                    date: '2021-05-17'
-                }, {
-                    id: 3,
-                    name: '红楼梦',
-                    date: '2021-05-17'
-                }, {
-                    id: 4,
-                    name: '西游记',
-                    date: '2021-05-17'
-                }]
+                books: []
             },
             methods: {
                 del(id) {
-                    this.books = this.books.filter(val => val.id != id)
+                    axios.get('/del?id=' + id).then(res => {
+                        var data = res.data
+                        if (data == 'ok') {
+                            this.getData()
+                        } else {
+                            alert('参数错误')
+                        }
+                    })
                 },
-                handle: function (id, name) {
-                    var book = {};
-                    book.id = id;
-                    book.name = name;
-                    book.date = '2021';
-                    this.books.push(book);
-                    id = '';
-                    name = '';
+                submit(name, id, btnmsg) {
+                    var params = new URLSearchParams()
+                    if (btnmsg == '修改') {
+                        params.append('id',id)
+                        params.append('name',name)
+                        axios.post('/send',params).then(res => {
+                            var data = res.data
+                            if (data == 'ok') {
+                                this.getData()
+                            }
+                        })
+                    } else {
+                        console.log(name);
+                        params.append('name', name)
+                        axios.post('/addbooks', params).then(res => {
+                            var data = res.data
+                            if (data == 'ok') {
+                                this.getData()
+                            }
+                        })
+                    }
+
                 },
                 getData() {
-                    axios.get('http://localhost:3000/data').then(function (ret) {
-                        console.log(ret.data);
+                    axios.get('/data111').then(ret => {
+                        this.books = ret.data
                     })
                 }
 

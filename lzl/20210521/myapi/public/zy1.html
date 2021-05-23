@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="js/axios.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <add @addbooks="submit"></add>
+        <count :count="count"></count>
+        <mycom :id="id" :name="name" :btnflag="btnflag" :btnmsg="btnmsg" :books="books" @delbooks="del"></mycom>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000'
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        var hub = new Vue()
+        Vue.component('mycom', {
+            props: ['id', 'name', 'btnmsg', 'btnflag', 'books'],
+            data: function () {
+                return {
+
+                }
+            },
+            computed: {
+
+            },
+            template: `
+            <div>
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr :key='item.id' v-for='item in books'>
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.date}}</td>
+                            <td>
+                                <a href="" @click.prevent="send(item)">修改</a>
+                                <span>|</span>
+                                <a href="" @click.prevent="$emit('delbooks',item.id)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            methods: {
+                send: function (val) {
+                    hub.$emit('send', val);
+                }
+            },
+
+        })
+        Vue.component('add', {
+            data() {
+                return {
+                    id: '',
+                    name: '',
+                    btnmsg: '提交'
+                }
+            },
+            template: `
+                <div>
+                    <div>
+                    <h1>图书管理</h1>
+                    <div class="book">
+                        <div>
+                            <label for="name">
+                                名称：
+                            </label>
+                            <input type="text" id="name" v-model='name' >
+                            <button @click="sub">{{btnmsg}}</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            `,
+            methods: {
+
+                sub() {
+                    this.$emit('addbooks', this.name,this.id,this.btnmsg)
+                }
+            },
+            mounted: function () {
+                hub.$on('send', val => {
+                    if (val) {
+                        this.btnmsg = '修改'
+                        this.id = val.id
+                        this.name = val.name
+                    }
+                });
+            }
+        })
+        Vue.component('count', {
+            props: ['count'],
+            template: `
+                <h5>图书总数：<span>{{count}}</span></h5>
+            `
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                id: '',
+                name: '',
+                flag: false,
+                btnflag: false,
+                btnmsg: '提交',
+                books: []
+            },
+            methods: {
+                del(id) {
+                    axios.get('/del?id=' + id).then(res => {
+                        var data = res.data
+                        if (data == 'ok') {
+                            this.getData()
+                        } else {
+                            alert('参数错误')
+                        }
+                    })
+                },
+                submit(name, id, btnmsg) {
+                    var params = new URLSearchParams()
+                    if (btnmsg == '修改') {
+                        params.append('id',id)
+                        params.append('name',name)
+                        axios.post('/send',params).then(res => {
+                            var data = res.data
+                            if (data == 'ok') {
+                                this.getData()
+                            }
+                        })
+                    } else {
+                        console.log(name);
+                        params.append('name', name)
+                        axios.post('/addbooks', params).then(res => {
+                            var data = res.data
+                            if (data == 'ok') {
+                                this.getData()
+                            }
+                        })
+                    }
+
+                },
+                getData() {
+                    axios.get('/data111').then(ret => {
+                        this.books = ret.data
+                    })
+                }
+
+
+            },
+            watch: {
+                id: function () {
+                    var flag = this.books.some(val => val.id == this.id)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                },
+                name: function () {
+                    var flag = this.books.some(val => val.name == this.name)
+                    if (flag) {
+                        this.btnflag = true
+                    } else {
+                        this.btnflag = false
+                    }
+                }
+            },
+            computed: {
+                count: function () {
+                    return this.books.length
+                }
+            },
+            mounted() {
+                this.getData()
+            },
+        })
+    </script>
+</body>
+
+</html>

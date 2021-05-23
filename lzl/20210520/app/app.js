@@ -134,7 +134,7 @@ app.get('/area',(req,res) => {
     }
 })
 
-const data = [{
+let data = [{
     id: 1,
     name: '三国演义',
     date: '2021-05-17'
@@ -151,8 +151,41 @@ const data = [{
     name: '西游记',
     date: '2021-05-17'
 }]
-app.get('/data', (req,res) => {
+app.get('/data111', (req,res) => {
     res.send(data)
 })
+
+app.get('/del', (req,res) => {
+    var id = req.query.id
+    data =data.filter(val => val.id != id)
+    res.send('ok')
+})
+
+app.post('/addbooks', (req,res) => {
+    var name = req.body.name
+    var id = data.length > 0 ? data[data.length -1].id : 1
+    data.push({
+        id:++id,
+        name:name,
+        date: new Date().getTime()
+    })
+    console.log(name);
+    res.send('ok')
+})
+
+app.post('/send', (req,res) => {
+    var name = req.body.name
+    var id = req.body.id
+    data.some(val => {
+        if (val.id == id) {
+            val.name = name
+            return true
+        }
+        
+    })
+    console.log(name);
+    res.send('ok')
+})
+
 app.listen(4000);
 console.log('监听成功');
