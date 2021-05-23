@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <my-head @addbooks="submit"></my-head>
+        <my-total :books="books"></my-total>
+        <my-list :books="books" @delbooks="del"></my-list>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3001' //接口域名
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        var hub = new Vue();
+        var myhead = {
+            data:function() {
+                return {
+                    name:'',
+                    btnmsg:'提交',
+                    id:''
+                }
+            },
+            template:`
+                <div>
+                    <input type="text" v-model="name"/><button @click="sub">{{btnmsg}}</button>
+                </div>
+            `,
+            methods: {
+                sub(){
+                    if (this.btnmsg == '修改') {
+                        this.$emit('addbooks',this.name,this.id,this.btnmsg);
+                        this.btnmsg = '提交';
+                    } else {
+                        this.$emit('addbooks',this.name)
+                    }
+                    this.name = '';
+                }        
+            },
+            mounted() {
+                hub.$on('editbook',val => {
+                    this.id = val.id;
+                    this.name = val.name;
+                    this.btnmsg = val.btnmsg;
+                })
+            },
+        }
+        var mytotal = {
+            props:['books'],
+            template:`
+                <div>
+                    图书总数：{{total}}
+                </div>
+            `,
+            computed:{
+                total:function(){
+                    return this.books.length;
+                }
+            }
+        }
+        var mylist = {
+            props:['books'],
+            template:`
+                <div>
+                    <table width="400">
+                        <tr v-for="item in books" :key="item.id">
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.date}}</td>
+                            <td><a href="#" @click="edit(item.id,item.name)">修改</a><a href="#" @click.prevent="$emit('delbooks',item.id)">删除</a></td>
+                        </tr>
+                    </table>
+                </div>
+            `,
+            methods: {
+                edit(id,name){
+                    hub.$emit('editbook', {id:id,name:name,btnmsg:'修改'});
+                }
+            }
+        }
+        var vm=new Vue({
+            el:'#app',
+            data:{
+                books:[],
+            },
+            methods:{
+                async getBooks(){
+                    var books = await axios.get('/books');
+                    console.log(books);
+                    console.log(books.data);
+                    this.books = books.data;
+                },
+                async del(id){
+                    var delbooks = await axios.get('/delbooks?id='+id);
+                    if (delbooks.data == 'ok') {
+                        // 删除成功
+                        this.getBooks();
+                    } else {
+                        // 删除错误
+                    }
+                },
+                async submit(name,id,btnmsg){
+                    if (btnmsg == '修改') {
+                        var params = new URLSearchParams();
+                        params.append('name', name);
+                        params.append('id', id);
+                        var deitbooks = await axios.post('/editbooks',params)
+                        if (deitbooks.data == 'ok') {
+                            // 成功
+                            this.getBooks();
+                        } else {
+                            // 失败
+                        }
+                    } else {
+                        var params = new URLSearchParams();
+                        params.append('name', name);
+                        var addbooks = await axios.post('/addbooks',params)
+                        if (addbooks.data == 'ok') {
+                            // 成功
+                            this.getBooks();
+                        } else {
+                            // 失败
+                        }
+                    }
+                }
+            },
+            components:{
+                myHead:myhead,
+                myTotal:mytotal,
+                myList:mylist,
+            },
+            mounted() {
+                this.getBooks();
+            },
+        })
+    </script>
+</body>
+</html>

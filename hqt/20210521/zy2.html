@@ -1,0 +1,92 @@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    省: <select name="" id="province"></select>
+    市: <select name="" id="city"></select>
+    区: <select name="" id="district"></select>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function(){
+            function queryajax(url,obj) {
+                var p = new Promise(function(resolve, reject){
+                    $.ajax({
+                        type:'get',
+                        url:url,
+                        data:obj,
+                        dataType:'json',
+                        success:function(data){
+                            resolve(data);
+                        },
+                        error:function(){
+                            reject('服务器错误');
+                        }
+                    })
+                });
+                return p;
+            }
+            fetch('http://localhost:3001/pro').then(function(res){
+                return res.text();
+            }).then(function(data){
+                data = JSON.parse(data);
+                var arr = [];
+                for(var k in data) {
+                    arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                }
+                $('#province').html(arr.join(''));
+                fetch('http://localhost:3001/city?pid='+data[0].id).then(function(res){
+                    return res.text();
+                }).then(function(data){
+                    data = JSON.parse(data);
+                    var arr = [];
+                    for(var k in data) {
+                        arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                    }
+                    $('#city').html(arr.join(''));
+                    fetch('http://localhost:3001/area?pid='+data[0].id).then(function(res){
+                        return res.text();
+                    }).then(function(data){
+                        data = JSON.parse(data);
+                        var arr = [];
+                        for(var k in data) {
+                            arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                        }
+                        $('#district').html(arr.join(''));
+                    })
+                })
+            })
+            
+            // 省发生改变就重新渲染数据
+            $('#province').change(function(){
+                queryajax('http://localhost:3001/city/',{pid:$('#province').val()}).then(function(data){
+                    var arr = [];
+                    for(var k in data) {
+                        arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                    }
+                    $('#city').html(arr.join(''));
+                    return queryajax('http://localhost:3001/area/',{pid:data[0].id});
+                },function(err){console.log(err);}).then(function(data){
+                    var arr = [];
+                    for(var k in data) {
+                        arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                    }
+                    $('#district').html(arr.join(''));
+                },function(err){console.log(err);})
+            })
+            // 市发生改变就重新渲染数据
+            $('#city').change(function(){
+                queryajax('http://localhost:3001/city/',{pid:$('#city').val()}).then(function(data){
+                    var arr = [];
+                    for(var k in data) {
+                        arr.push(`<option value="${data[k].id}">${data[k].name}</option>`);
+                    }
+                    $('#city').html(arr.join(''));
+                },function(err){console.log(err);})
+            })
+        })
+    </script>
+</body>
+</html>
