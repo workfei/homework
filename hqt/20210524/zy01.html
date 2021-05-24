@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            color: #fff;
+            font-size: 26px;
+            background-color: #545c64;
+            text-align: center;
+        }
+        .con {
+            height: 520px;
+        }
+        .con-lf {
+            float: left;
+            width: 20%;
+            height: 520px;
+            background-color: #545c64;
+        }
+        .con-lf li {
+            height: 45px;
+            line-height: 45px;
+            font-size: 18px;
+            text-align: center;
+            color: #fff;
+            background-color: #a0a0a0;
+            border-bottom: 1px solid #fff;
+        }
+        
+        .con-rt {
+            float: left;
+            width: 80%;
+            height: 520px;
+            background-color: #fff;
+            text-align: center;
+        }
+        .con-rt h2 {
+            height: 66px;
+            line-height: 66px;
+        }
+        footer {
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            background-color: #888888;
+            color: #fff;
+            font-size: 20px;
+            text-align: center;
+        }
+        .con-lf a {
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>后台管理系统</header>
+        <div class="con">
+            <div class="con-lf">
+                <ul>
+                    <li><router-link to="/login">用户登录</router-link></li>
+                    <li><router-link to="/manage">用户管理</router-link></li>
+                    <li><router-link to="/authority">权限管理</router-link></li>
+                    <li><router-link to="/commodity">商品管理</router-link></li>
+                    <li><router-link to="/order">订单管理</router-link></li>
+                    <li><router-link to="/set">系统设置</router-link></li>
+                </ul>
+            </div>
+            <div class="con-rt">
+                <router-view></router-view>
+            </div>
+        </div>
+        <footer>版权信息</footer>
+        
+    </div>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        var login = {
+            data() {
+                return {
+                    uname:'',
+                    upwd:''
+                }
+            },
+            template:`
+            <div>
+                <h2>用户登录区域</h2>
+                <input type="text" name="uname" v-model="uname">
+                <input type="text" name="upwd" v-model="upwd">
+                <button @click="register">登录</button>
+            </div>
+            `,
+            methods:{
+                async register(){
+                    var result = await axios.get('http://localhost:3001/login?name='+this.uname+'&pwd='+this.upwd);
+                    if (result.data == 'ok') {
+                        this.$router.push('/manage');
+                    } else {
+                        alert('登录失败')
+                    }
+                }
+            },
+        }
+        var manage = {
+            data() {
+                return {
+                    books:[],
+                }
+            },
+            template:`
+            <div>
+                <h2>用户管理区域</h2>
+                <table>
+                    <tr><th>编号</th><th>姓名</th><th>年龄</th><th>操作</th></tr>
+                    <tr v-for="val in books" :key="val.id"><td>{{val.id}}</td><td>{{val.name}}</td><td>{{val.age}}</td><td><router-link :to="'/manage/details/'+val.id">详情</router-link></td></tr>
+                    <router-view></router-view>
+                </table>
+            </div>
+            `,
+            async mounted() {
+                var result = await axios.get('http://localhost:3001/books');
+                this.books = result.data;
+            },
+        }
+        var authority = {
+            template:`
+                <h2>权限管理区域</h2>
+            `
+        }
+        var commodity = {
+            template:`
+                <h2>商品管理区域</h2>
+            `
+        }
+        var order = {
+            template:`
+                <h2>订单管理区域</h2>
+            `
+        }
+        var set = {
+            template:`
+                <h2>系统设置区域</h2>
+            `
+        }
+        var details = {
+            data() {
+                return {
+                    books:[],
+                }
+            },
+            template:`
+                <h2>{{books[$route.params.id-1]}}</h2>
+            `,
+            async mounted() {
+                var result = await axios.get('http://localhost:3001/books');
+                this.books = result.data;
+            },
+        }
+        const router = new VueRouter({
+            routes: [
+                {path:'/',redirect:'login'},
+                {path:'/login',component:login},
+                {path:'/manage',component:manage},
+                {path:'/manage',component:manage,children:[{path:'/manage/details/:id',component:details,}]},
+                {path:'/authority',component:authority},
+                {path:'/commodity',component:commodity},
+                {path:'/order',component:order},
+                {path:'/set',component:set},
+            ]
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router:router
+        })
+    </script>
+</body>
+</html>
