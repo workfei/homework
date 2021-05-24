@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        h3{
+            text-align: center;
+        }
+        ul li {
+            list-style: none;
+            /* float: left; */
+        }
+        .left {
+            float: left;
+        }
+        .right {
+            float:left;
+        }
+        .mar {
+            width: 1200px;
+            margin: 0 auto;
+        }
+        td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h3>后台管理系统</h3>
+        <router-link to="/login"></router-link>
+        <router-link to="/xinxi"></router-link>
+        <router-view></router-view>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        var login = {
+            data() {
+                return {
+                    pwd:'',
+                    name:''
+                }
+            },
+            template:`
+            <div>
+                ∑(っ°Д°;)っ卧槽，不见了:<input type="text" v-model="name">
+                ლ(´ڡლ)好吃的.:<input type="text" v-model="pwd">
+                <button @click="login">登录</button>
+                <router-view></router-view>
+            </div>
+            `,
+            methods: {
+                async login() {
+                    var result = await axios.get('http://localhost:3000/login?name='+this.name +'&pwd=' + this.pwd)
+                    if (result.data != 'err') {
+                        this.$router.push('/xinxi')
+                    }
+                    console.log(result.data );
+                }
+            },
+            mounted() {
+                this.login();
+            },
+        }
+        var xinxi = {
+            template:`
+            <div class="mar">
+                <ul class="left">
+                    <li><router-link to="/xinxi/yhgl">用户管理</router-link></li>
+                    <li><router-link to="/xinxi/qxgl">权限管理</router-link></li>
+                    <li><router-link to="/xinxi/spgl">商品管理</router-link></li>
+                    <li><router-link to="/xinxi/ddgl">订单管理</router-link></li>
+                    <li><router-link to="/xinxi/xtgl">系统管理</router-link></li>
+                    
+                </ul>
+                <div class="content right">
+                        <div class="main-content">
+                            <router-view></router-view> 
+                        </div>
+                </div>
+            </div>
+            `
+        }
+        var yhgl = {
+            data() {
+                return {
+                    data1:[]
+                }
+            },
+            template:`
+                <div class="w80">
+                    <table border="1" width="500" align="center">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>年龄</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in this.data1">
+                            <td>{{item.id}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.age}}</td>
+                            <td>
+                            <a href="##">详情</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            `,
+            methods: {
+                async login() {
+                    var result = await axios.get('http://localhost:3000/login1')
+                    this.data1=result.data;
+                    console.log(this.data1);
+                },
+            },
+            mounted() {
+                this.login()
+            },
+        }
+        var qxgl = {
+            template:`
+                <div class="w80">
+                    权限管理
+                </div>
+            `
+        }
+        var spgl = {
+            template:`
+            <div class="w80">
+               商品管理
+               </div>
+            `
+        }
+        var ddgl = {
+            template:`
+            <div class="w80">
+                订单管理
+                </div>
+            `
+        }
+        var xtgl = {
+            template:`
+            <div class="w80">
+                系统管理
+                </div>
+            `
+        }
+        // 创建路由管理器
+        var UserInfo = {
+
+            template:`
+            <div class="w80">
+                
+                </div>
+            `
+        }
+        const myrouter = new VueRouter({
+            // 创建路由规则
+            routes: [
+                // redirect重新定向一个地址
+                {path:'/',redirect:'/login'},//当页面初始化时,重定向一个指定的路径
+                {path:'/xinxi',component:xinxi,children:[
+                    {path:'/',redirect:'/xinxi/yhgl'},
+                    {path:'/xinxi/yhgl',component:yhgl,props:[]},
+                    {path:'/xinxi/qxgl',component:qxgl},
+                    {path:'/xinxi/spgl',component:spgl},
+                    {path:'/xinxi/ddgl',component:ddgl},
+                    {path:'/xinxi/xtgl',component:xtgl}
+                ]},
+                {path:'/login',component:login},
+            ]
+        });
+        var vm=new Vue({    
+            el:'#app',
+            data:{
+                
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router:myrouter
+        })
+    </script>
+</body>
+</html>
