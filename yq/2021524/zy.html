@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #app {
+            width: 1000px;
+            margin: 0 auto;
+        }
+
+        .title {
+            padding: 5px 0;
+            background-color: rgb(98, 106, 124);
+            color: #fff;
+            text-align: center;
+        }
+
+        .cont {
+            display: flex;
+            height: 500px;
+        }
+
+        .cont ul {
+            background-color: rgb(98, 106, 124);
+            list-style: none;
+        }
+
+        .cont li {
+            width: 200px;
+            background-color: gray;
+            border-bottom: 1px solid #fff;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .cont .cont-lf {
+            flex: 1;
+            padding-top: 15px;
+            padding-left: 5px;
+        }
+
+        .cont .cont-lf .register .the-reg {
+            margin-bottom: 10px;
+            text-align: center;
+            color: red;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .cont .cont-lf .register table {
+            width: 100%;
+            text-align: center;
+        }
+        .cont .cont-lf .register input {
+            width: 200px;
+            height: 25px;
+        }
+        .cont .cont-lf .register button {
+            width: 50px;
+            height: 25px;
+            margin-top: 10px;
+        }
+
+        .cont .manage h5 {
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .cont .manage table {
+            width: 100%;
+            border-color: #ddd;
+            font-size: 14px;
+            text-align: center ;
+        }
+
+        .cont .manage table thead {
+            background-color: #ccc;
+        }
+
+        .cont .manage table th,
+        .cont .manage table td {
+            padding: 5px 0;
+        }
+
+        .massage {
+            padding: 5px 0;
+            background-color: gray;
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            padding: 10px 0;
+            text-decoration: none;
+            color: #fff;
+        }
+        .cont table a {
+            color: #000;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="title">后台管理系统</div>
+        <div class="cont">
+            <ul>
+                <li>
+                    <router-link to="/register">用户登录</router-link>
+                </li>
+                <li>
+                    <router-link to="/manage">用户管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/jurisdiction">权限管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/goods">商品管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/order">订单管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/system">系统设置</router-link>
+                </li>
+            </ul>
+            <div class="cont-lf">
+                <!-- 路由占位符 -->
+                <router-view></router-view>
+            </div>
+        </div>
+        <div class="massage">版权信息</div>
+    </div>
+
+    <script src="js/axios.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script>
+        // axios全局请求路径
+        axios.defaults.baseURL = 'http://localhost:3001'
+        // 用户登录
+        var register = {
+            data: function() {
+                return {
+                    name: '',
+                    pwd: ''
+                }
+            },
+            template: `
+            <div class="register">
+                <div class="the-reg">登录</div>
+                <form action="">
+                    <table align="center">
+                        <tr>
+                            <td>账号:<input type="text" v-model="name"></td>
+                        </tr>
+                        <tr>
+                            <td>密码:<input type="text" v-model="pwd"></td>
+                        </tr>
+                        <tr>
+                            <td><button @click="login">登录</button></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            `,
+            methods: {
+                async login() {
+                    var result = await axios.get('/login?name='+this.name+ '&pwd='+this.pwd)
+                    if (result.data == 'ok') {
+                        this.$router.push('/manage')
+                    } else {
+                        alert('出错')
+                    }
+                }
+            },
+        }
+        // 用户管理
+        var manage = {
+            data: function() {
+                return {
+                    data: [],
+                }
+            },
+            template: `
+            <div class="manage">
+                <h5>用户管理区域</h5>
+                <table border="1" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th>姓名</th>
+                            <th>年龄</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="val in data" :key="val.id">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.age}}</td>
+                            <td><a href="javascript:;">详细</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            mounted() {
+                axios.get('/students').then(res => {
+                    this.data = res.data;
+                })
+            },
+        }
+        // 权限管理
+        var jurisdiction = {
+            template: `
+            <div>
+                <h1>权限管理</h1>
+            </div>
+            `
+        }
+        // 商品管理
+        var goods = {
+            template: `
+            <div>
+                <h1>商品管理</h1>
+            </div>
+            `
+        }
+        // 订单管理
+        var order = {
+            template: `
+            <div>
+                <h1>订单管理</h1>
+            </div>
+            `
+        }
+        // 系统设置
+        var system = {
+            template: `
+            <div>
+                <h1>系统设置</h1>
+            </div>
+            `
+        }
+        // 创建路由管理器
+        const myrouter = new VueRouter({
+            // 创建路由规则
+            routes: [
+                {path: '/',redirect: '/register'},
+                {path: '/register', component: register},
+                {path: '/manage', component: manage},
+                {path: '/jurisdiction', component: jurisdiction},
+                {path: '/goods', component: goods},
+                {path: '/order', component: order},
+                {path: '/system', component: system}
+            ]
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                
+            },
+            methods: {
+
+            },
+            computed: {
+
+            },
+            // 将路由挂载到vue实例中
+            router: myrouter
+        })
+    </script>
+</body>
+
+</html>
