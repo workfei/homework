@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <router-link to="/Login"></router-link>
+        <router-view :userList="userList"></router-view>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000';
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        var Login = {
+            data() {
+                return {
+                    name: '',
+                    pwd: '',
+                }
+            },
+            template: `
+                <div class="logins">
+                    用户名：<input type="text" v-model="name">
+                    密码：<input type="password" v-model="pwd">
+                    <button @click="login">登录</button>
+                </div>
+            `,
+            methods: {
+                async login() {
+                    var result = await axios.get('http://localhost:3000/login?name=' + this.name + '&pwd=' + this.pwd);
+                    console.log(result.data);
+                    if (result.data == 'ok') {
+                        this.$router.push('/User');
+                    }
+                }
+            },
+        }
+        var User = {
+            props: ['userList'],
+            template: `
+                <div>
+                    <header class="header">后台管理系统</header>
+                    <div class="wrap">
+                        <div class="main1">
+                            <ul>
+                                <li>用户管理</li>
+                                <li>权限管理</li>
+                                <li>商品管理</li>
+                                <li>订单管理</li>
+                                <li>系统设置</li>
+                            </ul>
+                        </div>
+                        <div class="main2">
+                            <h3>用户管理区域</h3>
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>姓名</th>
+                                        <th>年龄</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in userList">
+                                        <td>{{item.id}}</td>
+                                        <td>{{item.name}}</td>
+                                        <td>{{item.age}}</td>
+                                        <td><a href="">详情</a></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <footer class="footer">版权信息</footer> 
+                </div>
+            `
+        }
+
+        const myrouter = new VueRouter({
+            routes: [{
+                path: '/',
+                redirect: '/Login'
+            }, {
+                path: '/Login',
+                component: Login
+            }, {
+                path: '/User',
+                component: User
+            }]
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                userList: []
+            },
+            methods: {
+                getMyBooks() {
+                    axios.get('http://localhost:3000/userList').then(res => {
+                        this.books = res.data;
+                    })
+                }
+            },
+            computed: {
+
+            },
+            mounted() {
+                this.getMyBooks();
+            },
+            router: myrouter
+        })
+    </script>
+</body>
+
+</html>
