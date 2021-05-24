@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .tab ul {
+            float: left;
+            width: 35%;
+            height: 100%;
+            background-color: #666;
+            list-style: none;
+        }
+
+        .tab ul li {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background-color: #999;
+            border-bottom: 1px solid #fff;
+            cursor: pointer;
+        }
+
+        .tab ul li router-link {
+            color: #fff;
+        }
+
+        .tab ul li:hover router-link {
+            color: #666;
+        }
+
+        .tab table th {
+            background-color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header style="height: 50px; line-height: 50px; text-align: center; background-color: #666;">后台管理系统</header>
+        <div class="tab" style="height: 500px;">
+            <ul>
+                <li>
+                    <router-link to="/login">用户登录</router-link>
+                </li>
+                <li>
+                    <router-link to="/users">用户管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/accesses">权限管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/goods">商品管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/orders">订单管理</router-link>
+                </li>
+                <li>
+                    <router-link to="/systems">系统设置</router-link>
+                </li>
+            </ul>
+            <div style="float: left; width: 65%; height: 100%;">
+                <router-view :form="form"></router-view>
+            </div>
+        </div>
+        <footer style="height: 30xp; line-height: 30px; text-align: center; background-color: #999;">版权信息</footer>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        axios.defaults.baseURL = 'http://localhost:3000';
+
+        var Login = {
+            data:function(){
+                return{
+                    name:'',
+                    pwd:''
+                }
+            },
+            template: `
+            <div style="text-align: center;">
+            姓名: <input type="text" v-model="name"> 密码: <input type="password" v-model="pwd"><button @click="login">提交</button>
+            </div>
+            `,
+            methods:{
+                async login(){
+                    var result = await axios.get('http://localhost:3000/login?name='+this.name+'&pwd='+this.pwd)
+                    if(result.data == 'ok'){
+                        this.$router.push('/users')
+                    }else{
+                        alert('登录失败')
+                    }
+                }
+            }
+        }
+
+        var Users = {
+            props: ['form'],
+            template: `
+            <div>
+            <h2 style="height: 75xp; line-height: 75px; text-align: center;">用户管理区域</h2>
+            <table width="100%" align="center">
+                    <thead>
+                        <tr>
+                            <th>编号</th>
+                            <th>姓名</th>
+                            <th>年龄</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody align="center">
+                        <tr  v-for="val in form">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.age}}</td>
+                            <td><a href="javascript:;" @click="">详情</a></td>
+                        </tr>
+                    </tbody>
+            </table>
+            </div>
+            `
+        }
+
+        var Accesses = {
+            template: `
+            <h2 style="height: 500px; line-height: 500px; text-align: center;">权限管理</h2>
+            `
+        }
+
+        var Goods = {
+            template: `
+            <h2 style="height: 500px; line-height: 500px; text-align: center;">商品管理</h2>
+            `
+        }
+
+        var Orders = {
+            template: `
+            <h2 style="height: 500px; line-height: 500px; text-align: center;">订单管理</h2>
+            `
+        }
+
+        var Systems = {
+            template: `
+            <h2 style="height: 500px; line-height: 500px; text-align: center;">系统设置</h2>
+            `
+        }
+
+        const myrouter = new VueRouter({
+            routes: [
+                { path: '/', redirect: '/login' },
+                { path: '/login', component: Login },
+                { path: '/users', component: Users },
+                { path: '/accesses', component: Accesses },
+                { path: '/goods', component: Goods },
+                { path: '/orders', component: Orders },
+                { path: '/systems', component: Systems }
+            ]
+        })
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                form: []
+            },
+            methods: {
+                getData() {
+                    axios.get('/bms').then(res => {
+                        this.form = res.data;
+                    })
+                }
+            },
+            computed: {
+
+            },
+            mounted() {
+                this.getData()
+            },
+            router: myrouter
+        })
+    </script>
+</body>
+
+</html>
