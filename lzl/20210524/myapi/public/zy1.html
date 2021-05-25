@@ -4,205 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>后台管理系统</title>
+    <title>Document</title>
     <style>
         * {
             margin: 0;
             padding: 0;
         }
-        /* 清除浮动 */
-        .clearfix::after {
-            content: "";
-            display: block;
-            height: 0;
-            clear: both;
-            visibility: hidden;
-        }
-        .clearfix {
-            /* IE6/7专用 */
-            *zoom: 1;
-        }
-        #app {
-            width: 100%;
-            height: 600px;
-        }
         header {
-            text-align: center;
-            background-color: #545c64;
-            height: 50px;
             width: 100%;
-            color: #fff;
-            line-height: 50px;
+            height: 50px;
+            text-align: center;
+            color: white;
+            font-size: 30px;
+            background-color: #999;
+            font-weight: 700;
+        }
+        .con {
+            width: 100%;
+            min-height: 500px;
+        }
+        .con::after {
+            display: block;
+            clear: both;
+            content: '';
+        }
+        .con .lf {
+            width: 20%;
+            min-height: 500px;
+            float: left;
+            background-color: #999;
+        }
+        .lf li {
+            background-color: tomato;
+            text-align: center;
+            height: 35px;
+            line-height: 30px;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .con .rt {
+            width: 80%;
+            min-height: 500px;
+            float: left;
         }
         footer {
             width: 100%;
-            height: 50px;
-            background-color: #888888;
-            text-align: center;
-            line-height: 50px;
-            color: #fff;
+            min-height: 50px;
             font-size: 20px;
-        }
-        .box-l {
-            height: 520px;
-            width: 20%;
-            float: left;
-            background-color: #545c64;
-        }
-        .box-nr {
-            float: right;
-            background-color: #fff;
-            color: #000;
-            font-size: 11px;
-            height: 520px;
-        }
-        .box-nr h2 {
-            font-size: 19px;
-            height: 48px;
-            line-height: 48px;
+            background-color: #999;
+            line-height: 50px;
             text-align: center;
-        }
-        .box-l ul {
-            width: 100%;
-            height: auto;
-        }
-        .box-l li {
-            list-style: none;
-            background-color: #a0a0a0;
-            width: 100%;
-            height: 45px;
-            line-height: 45px;
-            border-bottom: 1px solid #fff;
-            color: #fff;
-            text-align: center;
-            font-size: 15px;
-        }
-        .box-nr {
-            width: 80%;
-            height: 520px;
-        }
-        table {
-            width: 100%;
-        }
-        table tr {
-            height: 38px;
-            width: 100%;
-        }
-        th,
-        td {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        .box {
-            width: 100%;
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <router-link to="/login"></router-link>
-        <router-view :books="books"></router-view>
+    <header>六班管理系统</header>
+    <div class="con">
+        <div class="lf">
+            <ul>
+                <li>用户管理</li>
+                <li>用户管理</li>
+                <li>用户管理</li>
+                <li>用户管理</li>
+                <li>用户管理</li>
+            </ul>
+        </div>
+        <div class="rt"></div>
     </div>
-    
-    <script src="js/vue.js"></script>
-    <script src="js/axios.js"></script>
-    <script src="js/vue-router_3.0.2.js"></script>
-    <script>
-        
-        var login = {
-            data() {
-                return {
-                    name: '',
-                    pwd: '',
-                }
-            },
-            template: `
-            <div class="pox">
-                用户名: <input type="text" v-model="name" /><br>
-                密码: <input type="text" v-model="pwd" />
-                <br>
-                <button @click="login">登录</button>
-            </div>
-            `,
-            methods: {
-                async login() {
-                    var result = await axios.get('http://localhost:3003/login?name='+this.name+'&pwd='+this.pwd)
-                    console.log(result);
-                    if (result.data == 'ok') {
-                        this.$router.push('/news');
-                    }
-                }
-            }  
-        }
-        var news = {
-            props: ['books'],
-            template: `
-            <div>
-                <header><h1>后台管理系统</h1></header>
-                <div class="box clearfix">
-                    <div class="box-l">
-                        <ul>
-                            <li>用户管理</li>
-                            <li>权限管理</li>
-                            <li>商品管理</li>
-                            <li>订单管理</li>
-                            <li>系统设置</li>
-                        </ul>
-                    </div>
-                    <div class="box-nr">
-                        <h2>后台管理区域</h2>
-                        <table>
-                            <tr>
-                                <th>编号</th>
-                                <th>名字</th>
-                                <th>年龄</th>
-                                <th>操作</th>
-                            </tr>
-                            <tr v-for="(val,index) in books">
-                                <td>{{val.id}}</td>
-                                <td>{{val.name}}</td>
-                                <td>{{val.age}}</td>
-                                <td><a href="JavaScript:;">详细</a></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <footer>版权信息</footer>
-            </div>
-            `,
-            methods:{
-                
-            },
-        }
-        const myRouter = new VueRouter({
-            routes: [
-                {path: '/', redirect: '/login'},
-                {path: '/login', component: login},
-                {path: '/news', component: news},
-            ]
-        })
-        var vm = new Vue({
-            el:'#app',
-            data:{
-                books: [],
-            },
-            methods:{
-                getMyBooks() {
-                    axios.get('http://localhost:3003/databox').then(res => {
-                        this.books = res.data;
-                        console.log(this.books);
-                    })
-                },
-            },
-            computed:{
-            
-            },
-            mounted() {
-                this.getMyBooks();
-            },
-            router: myRouter,
-        })
-    </script>
+    <footer>版权</footer>
 </body>
 </html>

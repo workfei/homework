@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            color: white;
+            font-size: 30px;
+            background-color: #999;
+            font-weight: 700;
+        }
+        .con {
+            width: 100%;
+            min-height: 500px;
+        }
+        .con::after {
+            display: block;
+            clear: both;
+            content: '';
+        }
+        .con .lf {
+            width: 20%;
+            min-height: 500px;
+            float: left;
+            background-color: #999;
+        }
+        .lf li {
+            background-color: tomato;
+            text-align: center;
+            height: 35px;
+            line-height: 30px;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .con .rt {
+            width: 80%;
+            min-height: 500px;
+            float: left;
+        }
+        footer {
+            width: 100%;
+            min-height: 50px;
+            font-size: 20px;
+            background-color: #999;
+            line-height: 50px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <my-header></my-header>
+        <div class="con">
+            <div class="lf">
+                <ul>
+                    <li><router-link to="/login">用户登录</router-link></li>
+                    <li><router-link to="/userlist">用户管理</router-link></li>
+                    <li><router-link to="/role">权限管理</router-link></li>
+                    <li><router-link to="/product">商品管理</router-link></li>
+                    <li><router-link to="/order">订单管理</router-link></li>
+                    <li><router-link to="/details">系统设置</router-link></li>
+                </ul>
+            </div>
+            <div class="rt">
+                <router-view></router-view>
+            </div>
+        </div>
+        
+        <my-footer></my-footer>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script>
+
+        var Login = {
+            data() {
+                return {
+                    uname: '',
+                    upwd: ''
+                }
+            },
+            template: `
+                <div>
+                    <p>用户名: <input type="text" v-model="uname" /></p>
+                    <p>密码: <input type="text" v-model="upwd" /></p>
+                    <p><button @click="login">登录</button></p>
+                </div>
+            `,
+            methods: {
+                async login() {
+                    var data = await axios.get('http://localhost:3000/login?name='+this.uname+'&pwd='+this.upwd)
+                    if (data.data == 'ok') {
+                        this.$router.push('/userlist')
+                    } else {
+                        this.$router.push('/login')
+                    }
+                }
+            }
+        }
+
+        var userList = {
+            data() {
+                return {
+                    list:[]
+                }
+            },
+            template: `
+                <div>
+                    <table width="90%" align="center" border="1">
+                        <tr style="background:#eee">
+                            <td>编号</td>    
+                            <td>姓名</td>    
+                            <td>年龄</td>    
+                            <td>操作</td>    
+                        </tr>
+                        <tr v-for="val in list">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.age}}</td>
+                            <td><a href="##" @click.prevent="goxq(val.id)">详情</a></td>
+                        </tr>
+                    </table>
+                </div>
+            `,
+            methods: {
+                async getData() { 
+                    data = await axios.get('http://localhost:3000/getUsers')
+                    this.list = data.data
+                },
+                goxq(id) {
+                    this.$router.push('/details'+id)
+                }
+            },
+            mounted() {
+                this.getData()
+            },
+        }
+
+        var Role = {
+            template: `
+                <div>权限管理</div>
+            `
+        }
+
+        var Product = {
+            template: `
+                <div>商品管理</div>
+            `
+        }
+
+        var Order = {
+            template: `
+                <div>订单管理</div>
+            `
+        }
+
+        var Details = {
+            props:['id'],
+            data() {
+                return {
+                    obj: ''
+                }
+            },
+            template: `
+                <div>
+                    <p>ID:{{obj.id}}</p>    
+                    <p>用户名:{{obj.name}}</p>    
+                    <p>年龄:{{obj.age}}</p>    
+                    <p>爱好:{{obj.like}}</p>    
+                    <button @click="getBack">返回</button>
+                </div>
+            `,
+            methods: {
+                async getuserinfo(id) {
+                    var data = await axios.get('http://localhost:3000/getuserinfo?id='+id)
+                    this.obj = data.data
+                },
+                getBack() {
+                    this.$router.go( -1 );
+                },
+            },
+            mounted() {
+                this.getuserinfo(this.id)
+            },
+        }
+
+        const myRouter = new VueRouter({
+            routes: [
+                {path:'/',redirect:'/login'},
+                {path:'/login',component:Login},
+                {path:'/userlist',component:userList},
+                {path:'/role',component:Role},
+                {path:'/product',component:Product},
+                {path:'/order',component:Order},
+                {path:'/details:id',component:Details,props:true}
+            ]
+        })
+
+        Vue.component('myHeader', {
+            template: `
+                <header>六班管理系统</header>
+            `
+        })
+        Vue.component('myFooter', {
+            template: `<footer>版权</footer>`
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router:myRouter
+        })
+    </script>
+</body>
+</html>
