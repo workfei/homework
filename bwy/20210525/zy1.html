@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *  {
+            padding: 0;
+            margin: 0;
+        }
+        #app {
+            width: 1500px;
+            height: 800px;
+            border: 1px solid #999;
+            margin: 0 auto;
+        }
+        .left {
+            float: left;
+            list-style: none;
+            border-right: 1px solid #ccc;
+            width: 300px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        #app .left li:nth-of-type(1) {
+            background-color: darkgray
+            ;
+        }
+        .left li {
+            text-align: center;
+            line-height: 40px;
+            
+        }
+        a {
+            color: black;
+            text-decoration: none;
+        }
+        .right {
+            float: left;
+            width: 1200px;
+            height: 100%;
+            overflow: hidden;
+            padding-top: 200px;
+        }
+        /* .box img {
+            position: relative;
+            left: 50%;
+            transform: translate(-50%);
+        } */
+        .box {
+            /* padding-top: 200px; */
+            width: 380px;
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
+            height: 100px;
+        }
+        .box input {
+            width: 300px;
+            height: 50px;
+            border: 1px solid pink;
+            outline: none;
+            box-sizing: border-box;
+            text-indent: 1em;
+        }
+        .box button {
+            background-color: skyblue;
+            height: 50px;
+            width: 80px;
+            color: white;
+            outline: none;
+            border: none;
+        }
+        .box .title {
+            margin-top: 10px;
+        }
+        .box .title li{
+            float: left;
+            list-style: none;
+            margin-right: 10px;
+            color: gray;
+        }
+        .box .tq {
+            width: 800px;
+            margin-left: -50%;
+            display: flex;
+            margin-top: 50px;
+        }
+        .box .tq li {
+            flex: 1;
+            float: left;
+            list-style: none;
+            text-align: center;
+        }
+        .box .tq li h2 {
+            color: orange;
+        }
+        .box h1 {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .box1 {
+            margin-top: 200px;
+            width: 800px;
+            height: 470px;
+            margin: 0 auto;
+            border: 1px solid skyblue;
+        }
+        .box1 .header {
+            height: 50px;
+            background-color: skyblue;            
+        }
+        .box1 .header button {
+            float: right;
+            margin-top: 10px;
+            height: 30px;
+        }
+        .box1 .header input {
+            border: none;
+            outline: none;
+            background-color: steelblue;
+            height: 30px;
+            border-radius: 15px;
+            float: right;
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+       
+        .box1 .con {
+            display: flex;
+            height: 400px;
+        }
+        .box1 .left1{
+            flex:1;
+            background-color: skyblue;
+        }
+        .box1 .left1 li {
+            line-height: 30px;
+            text-indent: 2px;
+        }
+        .box1 .left1 li span {
+            float: right;
+        }
+        .left1 .musicList {
+            height: 400px;
+            overflow-y: auto;
+            list-style: none;    
+            padding: 0;
+        }
+        ::-webkit-scrollbar{width:0;}
+        .box1 .middle{
+            flex: 2;
+        }
+        .box1 .right1{
+            flex: 1;
+            background-color: thistle;
+        }
+        .box1 .audio{
+            width: 100%;
+            height: 20px;
+        }
+        .box1 audio {
+            width: 100%;
+            height: 20px;
+        }
+        .box1 .video{
+            height: 400px;
+            /* display: none; */
+        }
+        .box1 .video video{
+            height: 400px;
+            width: 100%;
+        }
+        .evaluates {
+            overflow-y: auto;
+            list-style: none;
+            height: 100%;
+        }
+        .evaluates li {
+            margin-bottom: 10px;
+        }
+        .right1 {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <ul class="left">
+            <li>作业</li>
+            <li><router-link to="/tzd">天知道</router-link></li>
+            <li><router-link to="/wyy">网易云音乐</router-link></li>
+        </ul>
+        <div class="right"><router-view></router-view></div>
+    </div>
+  
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/template-web.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <script>
+        var tzd = {
+            data: function(){
+                return {
+                    city: '邵阳',
+                    data:''
+                }
+            },
+            template:`
+            <div class="box">
+                <img src="tzd.png" alt="">
+                <input type="text" v-model="city"><button @click="search">搜索</button>
+                <ul class="title">
+                    <li>北京</li>
+                    <li>上海</li>
+                    <li>广州</li>
+                    <li>深圳</li>
+                </ul>
+                <h1>{{data.city}}</h1>
+                <ul class="tq">
+                    <li v-for="val in data.forecast">
+                        <h2>{{val.data}}</h2>
+                        <p>{{val.fengxiang}}</p>
+                        <p>{{val.high}}</p>
+                        <p>{{val.low}}</p>
+                        <p>{{val.type}}</p>
+                    </li>
+                </ul>
+            </div>
+            `,
+           methods: {
+            async search() {
+                var data = await axios.get('http://wthrcdn.etouch.cn/weather_mini?city=' + this.city);
+                // console.log(this);
+                data = data.data.data;
+                // console.log(data);
+                if(data == undefined) {
+                    layer.msg('城市错误');
+                } else{
+                    this.data = data
+                }
+            }
+           },
+           mounted() {
+               this.search();
+           },
+        }
+        var wyy = {
+            data: function() {
+                return {
+                    song: '',
+                    data: '',
+                    flag: false,
+                    id: '',
+                    evaluates:''
+                }
+            },
+            template: `
+            <div class="box1">
+                <div class="header">
+                    <button @click="songs">搜索</button>
+                    <input type="text" name="" id="search" v-model="song">
+                    
+                </div>
+                <div class="con">
+                    <div class="left1">
+                        <ul id="musicList" class="musicList">
+                            <li v-for="val in data" @click="playsong(val.id)">{{val.name}}<span v-show="val.mvid!=0" @click.stop="playmv(val.mvid)">mv</span></li>
+                        </ul>
+                    </div>
+                    <div class="middle">
+                        <div class="video" v-show="flag==true">
+                            <video id="video" src="" autoplay controls></video>
+                        </div>
+                    </div>
+                    <div class="right1">
+                        <h1>热门评价</h1>
+                        <ul class="evaluates">
+                            <li v-for="val in evaluates">{{val.content}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="audio">
+                    <audio id="audio" src=""  controls autoplay></audio>
+                </div>
+            </div>
+            `,
+            methods: {
+                async songs() {
+                    var data = await axios.get('https://autumnfish.cn/search/?keywords='+this.song);
+                    data =data.data.result.songs;
+                    this.data = data;
+                    // console.log(data);
+                },
+                async playsong(id) {
+                    this.id = id;
+                    var data = await axios.get('https://autumnfish.cn/song/url?id='+id);
+                    data = data.data.data;
+                    var url = data[0].url
+                    $('audio').attr('src',url);
+                    this.flag = false;
+                    var evaluate = await axios.get('https://autumnfish.cn/comment/hot?type=0&id=' + id);
+                    if(evaluate.data.total != 0) {
+                        this.evaluates = evaluate.data.hotComments;
+                        console.log(evaluate.data.hotComments);
+                    } else {
+                        this.evaluates = ''
+                    }
+                },
+                async playmv(id) {
+                    console.log(id);
+                    var data = await axios.get('https://autumnfish.cn/mv/url/?id='+id);
+                    data = data.data.data;
+                    var url = data.url;
+                    this.flag = true
+                    // $('.video').show();
+                    $('video').attr('src',url);
+                },
+                // async evaluate() {
+                //     var data = await axios.get('https://autumnfish.cn/comment/hot?type=0&id=' + this.id);
+                //     console.log(data.data);
+                    
+                // }
+
+            }
+        }
+        const router = new VueRouter({
+            routes: [
+                {path:'/',redirect: '/wyy'},
+                {path:'/tzd',component:tzd},
+                {path:'/wyy',component:wyy},
+            ]
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router:router
+        })
+    </script>
+</body>
+</html>
