@@ -1,0 +1,282 @@
+.tzd {
+  text-align: center;
+  background-color: #fff;
+}
+.tzd img {
+  margin: 30px 0;
+}
+.tzd .pox {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  border: 1px solid #4e6ef2;
+}
+.tzd .top {
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  margin-top: 80px;
+  font-size: 25px;
+  color: skyblue;
+}
+.tzd #uname {
+  text-indent: 10px;
+  color: #333;
+  border: 0;
+  width: 100%;
+  height: 40px;
+}
+.tzd #btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+  width: 100px;
+  height: 100%;
+  background-color: #4e6ef2;
+  color: #fff;
+}
+.tzd ul,
+.tzd li {
+  list-style: none;
+}
+.tzd .box2 {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.tzd .box2 li {
+  text-align: center;
+  border-right: 1px solid #ccc;
+  color: orange;
+  padding: 10px;
+  flex: 1;
+}
+.tzd .box2 li:last-child {
+  border: 0;
+}
+.tzd .box2 li span {
+  color: #666;
+}
+.tzd .box2 li p {
+  margin: 10px 0;
+}
+.tzd .btns {
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  height: 20px;
+  color: #666;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.tzd .btns li {
+  float: left;
+  margin-left: 5px;
+}
+.tzd .city {
+  margin-top: 10px;
+  font-size: 30px;
+  color: orange;
+}
+.player {
+  position: relative;
+  width: 800px;
+  height: 500px;
+  margin: 20px auto;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: oldlace;
+}
+.bfq .above {
+  width: 100%;
+  height: 50px;
+  background-color: skyblue;
+  position: relative;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+.bfq .above p {
+  color: #fff;
+  line-height: 50px;
+  font-size: 25px;
+}
+.bfq .search {
+  width: 300px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 30px;
+  border-radius: 20px;
+  background-color: powderblue;
+  box-sizing: border-box;
+  padding: 0 10px;
+  overflow: hidden;
+}
+.bfq .search input {
+  outline: none;
+  height: 99%;
+  border: none;
+  background-color: powderblue;
+}
+.bfq .search input:nth-of-type(1) {
+  width: 100%;
+}
+.bfq .search input:nth-of-type(2) {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+}
+.bfq .box {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+.bfq .box-l {
+  float: left;
+  width: 200px;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+.bfq .box-c {
+  float: left;
+  width: 400px;
+  height: 100%;
+  border: 1px solid #666;
+  border-top: none;
+  border-bottom: none;
+  box-sizing: border-box;
+  /* transform: translateX(-20px); */
+  background-color: #e6d2b9;
+}
+.bfq .box-c img {
+  width: 100%;
+  height: 80%;
+  overflow: hidden;
+}
+.bfq .box-c video {
+  width: 100%;
+  height: 80%;
+  display: none;
+}
+.bfq .box-c-box {
+  height: 68px;
+}
+.bfq .box-c p {
+  display: block;
+  height: 34px;
+  width: 100%;
+  background-color: #e6d2b9;
+  color: #fff;
+  text-align: center;
+  line-height: 34px;
+}
+.bfq ul,
+.bfq li {
+  list-style: none;
+}
+.bfq .box-l li {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  text-indent: 35px;
+  font-size: 15px;
+  overflow: hidden;
+}
+.bfq .box-l li::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: url("img/1.png") no-repeat 0 0;
+  background-size: 100% 100%;
+  border-radius: 10px;
+}
+.bfq .box-l li:nth-of-type(2n) {
+  background-color: #fff;
+}
+.bfq .box-r {
+  float: right;
+  width: 200px;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+  padding-left: 15px;
+  /* transform: translateX(15px); */
+}
+.bfq .below {
+  width: 100%;
+  height: 50px;
+}
+.bfq .below audio {
+  width: 100%;
+  height: 100%;
+}
+.bfq .box-r-box {
+  line-height: 25px;
+  color: #333;
+  padding-right: 5px;
+  line-height: 20px;
+}
+.bfq .box-r-box li {
+  margin-bottom: 5px;
+}
+.bfq .box-r-box img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.bfq .box-r h2 {
+  margin: 10px 0;
+}
+.bfq ::-webkit-scrollbar {
+  width: 0px;
+}
+.page-l {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 200px;
+  text-align: center;
+}
+.page-l li {
+  height: 30px;
+  margin: 4px;
+  line-height: 30px;
+  background-color: #ccc;
+}
+.page-box {
+  width: 800px;
+  height: 500px;
+  position: absolute;
+  left: 300px;
+  top: 100px;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+ul,
+li {
+  list-style: none;
+}
+body {
+  background-color: tan;
+}
+* {
+  margin: 0;
+  padding: 0;
+}

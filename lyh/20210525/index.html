@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div id="app">
+        <ul class="page-l">
+            <li><router-link to="/tzd">天知道</router-link></li>
+            <li><router-link to="/bfq">播放器</router-link></li>
+        </ul>
+        <div class="page-box">
+            <router-view></router-view>
+        </div>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script>
+        var tzd = {
+            data() {
+                return {
+                    uname: '邵阳',
+                    books: [],
+                    top: '',
+                    city: '',
+                    box2: ''
+                }
+            },
+            template: `
+            <div class="tzd">
+                dadadadad
+            </div>
+            `,
+            template: `
+            <div class="tzd">
+                <img src="img/0.png" alt="">
+                <div class="pox">
+                    <input type="text" v-model="uname"  id="uname">
+                    <input type="button" @click="getData" id="btn"  value="搜索">
+                </div>
+                <div class="top">{{top}}</div>
+                <div class="city">{{city}}</div>
+                <ul class="box2">
+                    <li v-for="val in books.forecast">
+                        <h2>{{val.type}}</h2>
+                        <p>{{val.high}}-{{val.low}}</p>
+                        <p>{{val.fengxiang}}</p>
+                        <span>{{val.date}}</span>
+                    </li>
+                </ul>
+            </div>
+            `,
+            methods: {
+                async getData() {
+                    var data = await axios.get('http://wthrcdn.etouch.cn/weather_mini?city=' + this.uname);
+                    // console.log(data.data.data);
+                    var data = data.data
+                    this.books = data.data;
+                    this.top = data.data.ganmao;
+                    this.city = data.data.datacity;
+                },
+            },
+            mounted() {
+                this.getData();
+            }
+        }
+
+        var bfq = {
+            template: `
+            <div class="player bfq">
+                <div class="above">
+                    <p>悦听</p>
+                    <div class="search">
+                        <input type="text" name="text" id="text" v-model="text">
+                        <input type="button" value="搜索" id="btn">
+                    </div>
+                </div>
+                <div class="box">
+                    <ul class="box-l">
+                        <li v-for="val in books">
+                            <a @click="getPlay(val.id)">{{val.name}}</a>
+                            <a v-if="val.mvid" @click="getMvid(val.mvid,val.id)" style="float: right;">MV</a>
+                        </li>
+                    </ul>
+                    <div class="box-c">
+                        <img :src="imgsec" alt="">
+                        <video :src="url" controls autoplay></video>
+                        <div class="box-c-box">
+                            <p>{{p1}}</p>
+                            <p>{{p2}}</p>
+                        </div>
+                    </div>
+                    <div class="box-r">
+                        <h2>热门留言</h2>
+                        <ul class="box-r-box">
+                            <li v-for="val in books2">
+                                <img :src="val.user.avatarUrl">
+                                {{val.user.nickname}}<br>
+                                {{val.content}}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="below">
+                    <audio :src="src" controls autoplay></audio>
+                </div>
+            </div>
+            `,
+            data() {
+                return {
+                    books: [],
+                    books2: [],
+                    url: '',
+                    src: '',
+                    text: '',
+                    id: '',
+                    imgsec: 'img/00.png',
+                    p1:'',
+                    p2:'',
+                }
+            },
+            watch: {
+                //搜索 渲染
+                async text() {
+                    var data = await axios.get('https://autumnfish.cn/search?keywords='+this.text);
+                    // console.log(data.data.result.songs);
+                    this.books = data.data.result.songs;
+                },
+            },
+            methods: {
+                async getPlay(id) {
+                    this.id = id;
+
+                    //点击选择音乐播放的src
+                    var data = await axios.get('https://autumnfish.cn/song/url?id=' + this.id);
+                    // console.log(data.data.data[0].url);
+                    this.src = data.data.data[0].url
+                    this.url = '';
+                    $('.box-c video').css('display', 'none');
+                    $('.box-c img').css('display', 'block');
+
+                    //歌曲详细
+                    var data2 = await axios.get('https://autumnfish.cn/song/detail?ids=' + this.id);
+                    // console.log(data2.data.songs[0]);
+                    var data2 = data2.data.songs[0];
+                    this.p1 = data2.al.name;
+                    this.p2 = data2.ar[0].name;
+                    this.imgsec = data2.al.picUrl;
+
+                    //热门留言 评论
+                    var data3 = await axios.get('https://autumnfish.cn/comment/hot?type=0&id='+this.id);
+                    // console.log(data3.data.hotComments);
+                    this.books2 = data3;
+                    this.books2 = this.books2.data.hotComments;
+                    // console.log(this.books2);
+
+                },
+                async getMvid(mvid,id) {
+                    this.getPlay(id);
+                    var data = await axios.get('https://autumnfish.cn/mv/url?id='+mvid);
+                    $('.box-c video').css('display', 'block');
+                    $('.box-c img').css('display', 'none');
+                    console.log(data.data.data.url);
+                    this.url = data.data.data.url;
+                    this.src = '';
+                }
+            }
+        }
+        const myRouter = new VueRouter({
+            routes: [
+                {path: '/', redirect: '/tzd'},
+                {path: '/tzd', component: tzd},
+                {path: '/bfq', component: bfq},
+            ]
+        })
+        var vm = new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router: myRouter,
+        })
+    </script>
+</body>
+</html>
