@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .condent {
+            margin: 0 auto;
+        }
+        .condent::after {
+            display: block;
+            clear: both;
+            content: '';
+        }
+        .condent > ul {
+            width: 20%;
+        }
+
+        .left {
+            float: left;
+        }
+        .right1 {
+            width: 80%;
+            position: relative;
+        }
+        li {
+            list-style: none;
+            margin-bottom: 5px;
+            text-align: center;
+            line-height: 25px;
+        }
+    </style>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div id="app" class="wy-player">
+        <div class="condent">
+            <ul class="left">
+                <li><router-link to="/wyy">网易云</router-link></li>
+                <li><router-link to="/tzd">天知道</router-link></li>
+            </ul>
+            <div class="left right1">
+                <router-view></router-view>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <script src="js/template-web.js"></script>
+    <script src="js/axios.js"></script>
+    <script>
+        var wyy = {
+            data() {
+                return{
+                    name:'',
+                    data:[],
+                    data1:[]
+                }
+            },
+            template:`
+            <div class="wangyi">
+                <header>
+                    <div class="title">
+                        <h3>XM PLAYER</h3>
+                    </div>
+                    <div class="search">
+                        <input type="text" value="" autocomplete="on" v-model="name">
+                        <img src="img/search.png" alt="" class="sear-icon" @click="search">
+                    </div>
+                </header>
+                <article>
+                    <div class="left">
+                        <ul >
+                            <li v-for="val in data">
+                                <p @click="playsong(val.id)">{{val.album.name}}</p>
+                                
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="center">
+                        <div class="cd">
+                            <div class="poster"><img src="img/logo.png" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <h4>热门留言</h4>
+                        <ul class="hot">
+                            <li v-for="item in data1">
+                                <p>{{item.content}}</p>    
+                            </li>    
+                        </ul>
+                    </div>
+                </article>
+
+                <footer>
+                    <audio src="" controls autoplay></audio>
+                </footer>
+            </div>
+            `,
+            methods: {
+                async search() {
+                    var rulte = await axios.get('https://autumnfish.cn/search/?keywords='+this.name);
+                    this.data = rulte;
+                    this.data = this.data.data.result.songs;
+                },
+                async playsong(id) {
+                    var data = await axios.get('https://autumnfish.cn/song/url?id='+id);
+                    data = data.data.data;
+                    var url = data[0].url
+                    $('audio').attr('src',url);
+
+                    var data1 = await axios.get('https://autumnfish.cn/comment/hot?type=0&id=' +id)
+                    console.log(data1.data.hotComments);
+                    this.data1 = data1;
+                    this.data1 = this.data1.data.hotComments;
+                },
+            }
+        }
+        var tzd = {
+            data() {
+                return {
+                    city:"",
+                    data:[]
+                }
+            },
+            template:`
+            <div>
+                <img src="img/0.png" alt="" class="img0">
+                <div class="tianqi">
+                    <input type="text" value="邵阳" id="uname" v-model="city">
+                    <input type="button" id="btn" value="搜索" @click="seach()">
+                    <ul class="btns">
+                        <li>北京</li>
+                        <li>上海</li>
+                        <li>广州</li>
+                        <li>深圳</li>
+                    </ul>
+                </div>
+                <ul class="box">
+                    <li v-for="val in data">
+                        <p>{{val.data}}</p> 
+                        <p>{{val.high}}</p>  
+                        <p>{{val.low}}</p> 
+                        <p>{{val.date}}</p>   
+                    </li>    
+                </ul>
+            </div>
+            `,
+            methods:{
+                async seach() {
+                    if (this.city !='') {
+                        var rulte = await axios.get('http://wthrcdn.etouch.cn/weather_mini?city=' + this.city);
+                        this.data = rulte.data.data.forecast;
+                        console.log(rulte);
+                    }
+                },
+            }
+        }
+        $(function () {
+            var mid = [];  //存储当前搜索到歌曲id
+            var deg = 0;  //存储旋转角度
+            var timer;  //定义唱片旋转的定时器
+            var local;  //获取当前音乐地址
+            //查询歌曲信息
+            // function getMusic() {
+            //     mid = [];
+            //     $.ajax({
+            //         type: 'get',
+            //         url: 'https://autumnfish.cn/search/',
+            //         data: {
+            //             keywords: $(".search input").val()
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             if (!data.msg) {
+            //                 var songs = data.result.songs;
+            //                 var str = "";
+            //                 $(songs).each((num, arr) => {
+            //                     mid.push(songs[num].id);
+            //                     str += '<li><img src="img/icon.png" alt=""><span>' + songs[num].name + '</span></li>';
+            //                 })
+            //                 $(".left ul").html(str);
+            //                 $(".left ul").children().on("click", function () {
+            //                     getMusrc($(this).index());
+            //                     getInform($(this).index());
+            //                     getHot($(this).index());
+            //                 })
+            //             } else {
+            //                 layer.msg("查无此歌曲/歌星", { icon: 3 });
+            //             }
+            //         }
+            //     })
+            // }
+            // $(".search input").on('keydown', function (e) {
+            //     if (e.keyCode == 13) {
+            //         getMusic();
+            //     }
+            // })
+            // $(".sear-icon").on('click', function () {
+            //     getMusic();
+            // })
+
+            // //获取歌曲详情
+            // function getInform(id) {
+            //     $.ajax({
+            //         type: 'get',
+            //         url: 'https://autumnfish.cn/song/detail',
+            //         data: {
+            //             ids: mid[id]
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             $(".poster img")[0].src = data.songs[0].al.picUrl;
+            //         }
+            //     })
+            // }
+
+            // //获取热门评论
+            // function getHot(id) {
+            //     $.ajax({
+            //         type: 'get',
+            //         url: 'https://autumnfish.cn/comment/hot?type=0',
+            //         data: {
+            //             id: mid[id]
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             var str = "";
+            //             $(data.hotComments).each((num, arr) => {
+            //                 str += '<li><img src=' + data.hotComments[num].user.avatarUrl + ' alt="">';
+            //                 str += '<span>' + data.hotComments[num].user.nickname + '</span>';
+            //                 str += '<p>' + data.hotComments[num].content + '</p></li>';
+            //             })
+            //             $(".right ul").html(str);
+            //         }
+            //     })
+            // }
+
+            // //获取歌曲链接
+            // function getMusrc(id) {  //接收点击时的准确索引值
+            //     $.ajax({
+            //         type: 'get',
+            //         url: 'https://autumnfish.cn/song/url',
+            //         data: {
+            //             id: mid[id]
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             getAudio(data.data[0].url);
+            //         }
+            //     })
+            // }
+
+            // //播放音乐
+            // function getAudio(url) {
+            //     if (url !== local) {
+            //         layer.load(1);
+            //         setTimeout(function () {
+            //             layer.closeAll('loading');
+            //         }, 500);
+            //         local = url;
+            //         $("footer audio")[0].src = url;
+            //         deg = 0;
+            //     } else {
+            //         layer.msg("请勿重复播放", { icon: 6 });
+            //     }
+            // }
+
+            // $('.wangyi').on("click", function () {
+            //     setTimeout(function () {
+            //         var player = $("footer audio")[0];
+            //         if (player.paused) {
+            //             clearInterval(timer);
+            //             console.log("暂停");
+            //         } else {
+            //             clearInterval(timer);
+            //             timer = setInterval(() => {
+            //                 $(".poster").css({
+            //                     "transform": "rotateZ(" + deg + "deg)"
+            //                 })
+            //                 deg++;
+            //             }, 30);
+            //             console.log("播放");
+            //         }
+            //     }, 1000)
+            // })
+        })
+        const myrouter = new VueRouter({
+            routes:[
+                {path:'/',redirect:'/wyy'},
+                {path:'/wyy',component:wyy},
+                {path:'/tzd',component:tzd},
+            ]
+        })
+        var vm=new Vue({
+            el:'#app',
+            data:{
+            
+            },
+            methods:{
+            
+            },
+            computed:{
+            
+            },
+            router:myrouter
+        })
+    </script>
+</body>
+</html>
