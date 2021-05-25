@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        a {
+            text-decoration: none;
+        }
+        
+        header {
+            font-weight: bold;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            text-align: center;
+            color: #fff;
+            background-color: #999;
+        }
+        
+        .content {
+            width: 100%;
+            min-height: 500px;
+        }
+        
+        .content::after {
+            display: block;
+            content: '';
+            clear: both;
+        }
+        
+        .left {
+            float: left;
+            width: 20%;
+            min-height: 550px;
+            background-color: #999;
+        }
+        
+        .left li {
+            line-height: 35px;
+            height: 35px;
+            text-align: center;
+            background-color: teal;
+            color: #fff;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        
+        .right {
+            float: left;
+            width: 80%;
+            min-height: 550px;
+        }
+        
+        footer {
+            font-weight: bold;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            text-align: center;
+            color: #fff;
+            background-color: #999;
+        }
+        
+        .wrap {
+            width: 300px;
+            margin: 0 auto;
+        }
+        
+        input {
+            margin-top: 10px;
+            border-radius: 0;
+        }
+        
+        #uname {
+            height: 22px;
+            border: 1px solid skyblue;
+        }
+        
+        #btn {
+            width: 40px;
+            height: 25px;
+            background-color: skyblue;
+            color: #fff;
+            border: none;
+        }
+        
+        #list li {
+            float: left;
+            list-style: none;
+            border-right: 1px solid #999;
+            margin-right: 20px;
+        }
+        
+        #list li h3 {
+            color: orange;
+        }
+        
+        #list li p {
+            color: orange;
+        }
+        
+        #list li span {
+            color: #999;
+        }
+        
+        .box {
+            width: 800px;
+            height: 546px;
+            margin: 0 auto;
+        }
+        
+        .head {
+            height: 60px;
+            line-height: 60px;
+            background-color: #1eacda;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .head a {
+            font-size: 25px;
+            color: #fff;
+            text-decoration: none;
+            padding-left: 23px;
+        }
+        
+        .head input {
+            float: right;
+            width: 281px;
+            height: 36px;
+            font-size: 15px;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            background-color: #83d1eb;
+            padding-left: 15px;
+            margin: 11px 0px 0 0;
+        }
+        
+        .head button {
+            float: right;
+            width: 35px;
+            height: 36px;
+            outline: none;
+            border: none;
+            border-radius: 0;
+            color: #fff;
+            background-color: orange;
+            margin: 11px 23px 0 0;
+        }
+        
+        .main {
+            height: 433px;
+            background-color: #e7cbad;
+        }
+        
+        .active {
+            width: 182px;
+            height: 42px;
+            background-color: #c1c2c3;
+            border-radius: 5px;
+        }
+        
+        .main span {
+            float: right;
+            font-size: 14px;
+            margin: 12px 139px 0 0;
+        }
+        
+        .footer {
+            height: 56px;
+            background-color: #ccc;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .footer audio {
+            width: 800px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-header></my-header>
+        <div class="content">
+            <div class="left">
+                <ul>
+                    <li>
+                        <router-link to="/knowsList">天知道</router-link>
+                    </li>
+                    <li>
+                        <router-link to="/music">网易云音乐</router-link>
+                    </li>
+                </ul>
+            </div>
+            <div class="right">
+                <router-view></router-view>
+            </div>
+        </div>
+        <my-footer></my-footer>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script>
+        var KnowsList = {
+            data() {
+                return {
+                    uname: '',
+                    knowsList: []
+                }
+            },
+            template: `
+                <div class="wrap">
+                    <img src="img/tzd.png" alt=""><br>
+                    <input type="text" value="邵阳" v-model="uname">
+                    <input type="button" id="btn" value="搜索" @click="knows">
+                    <ul>
+                        <li v-for="item in knowsList">
+                            <h3>{{item.type}}</h3>
+                            <p>{{item.high}}~{{item.low}}</p>
+                            <span>{{item.date}}</span>
+                        </li>
+                    </ul>
+                </div>
+            `,
+            methods: {
+                async knows() {
+                    if (this.uname != '') {
+                        var data = await axios.get('http://wthrcdn.etouch.cn/weather_mini?city=' + this.uname);
+                        this.knowsList = data.data.forecast;
+                        console.log(data);
+                    }
+                }
+            },
+            mounted() {
+                this.knows();
+            },
+        }
+        var Music = {
+            data() {
+                return {
+                    uname: '',
+                    musicList: [],
+                    musicList2: []
+                }
+            },
+            template: `
+                <div class="box">
+                    <div class="head">
+                        <a href="javascript:;">悦听</a>
+                        <button @click="music">搜索</button>
+                        <input type="text" id="text" v-model="uname">
+                    </div>
+                    <div class="main">
+                        <ul class="list" v-for="item in musicList">
+                            <li>
+                            </li>
+                        </ul>
+                        <div class="record"></div>
+                        <span>热门留言</span>
+                        <ol class="list2"></ol>
+                    </div>
+                    <div class="footer">
+                        <audio src="" controls="controls" autoplay="autoplay"></audio>
+                    </div>
+                </div>
+            `,
+            methods: {
+                async music() {
+                    var data = await axios('https://autumnfish.cn/search?uname=' + this.uname);
+                    var musicList = data.data;
+                },
+                async musicpc(id) {
+                    var data = await axios('https://autumnfish.cn/song/url?id=' + id, );
+                    var musicList = data.data;
+
+                    var data1 = await axios('https://autumnfish.cn/comment/hot?type=0&id=' + this.id);
+                    var musicList2 = data.data;
+                }
+            },
+            mounted() {
+                this.music();
+            },
+        }
+
+        const myrouter = new VueRouter({
+            routes: [{
+                path: '/',
+                redirect: '/knowsList'
+            }, {
+                path: '/knowsList',
+                component: KnowsList
+            }, {
+                path: '/music',
+                component: Music
+            }]
+        })
+
+        Vue.component('myHeader', {
+            template: `
+                <header>
+                    六班管理系统
+                </header>
+            `
+        })
+
+        Vue.component('myFooter', {
+            template: `
+                <footer>版权所有：六班所有同学</footer>
+            `
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            },
+            router: myrouter
+        })
+    </script>
+</body>
+
+</html>
