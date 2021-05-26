@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>homework导航切换模块</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script src="layer/jquery-3.6.0.js"></script>
+    <script src="layer/layer.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 路由链接 -->
+        <router-link to="/homework"></router-link>
+        <!-- 路由占位符 -->
+        <router-view></router-view>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="js/vue-router_3.0.2.js"></script>
+    <script>
+        //定义模板组件
+        var homework = {
+            template: `
+        <div>
+            <div class="dropdown">
+                <button class="dropbtn">homework</button>
+                <div class="dropdown-content">
+                    <a href="javascript:;">
+                        <router-link to="/homework/weather">天气查询</router-link>
+                    </a>
+                    <a href="javascript:;">
+                        <router-link to="/homework/music">网易云音乐</router-link></a>
+                </div>
+            </div>
+            <router-view></router-view>
+        </div>
+            `
+        }
+        //=============天气查询============
+        var weather = {
+            data() {
+                return {
+                    city: "邵阳",
+                    citydata: [],
+                    ganmao: ""
+                }
+            },
+            template: `
+            <div class="box">
+                <div class="logo">
+                    <img src="img/wea_logo.png" alt="">
+                </div>
+                <div class="search">
+                    <input type="search" name="" id="" v-model.trim="city" placeholder="请输入需要查询的城市" class="sch" maxlength="10" 
+                    @keydown.enter="getWeather" ref="cinp">
+                    <input type="button" value="搜索" class="btn" @click="getWeather">
+                </div>
+                <div class="hotcity">
+                    <span @click="getCity('北京')">北京</span>
+                    <span @click="getCity('上海')">上海</span>
+                    <span @click="getCity('广州')">广州</span>
+                    <span @click="getCity('深圳')">深圳</span>
+                </div>
+                <ul class="weather">
+                    <li v-for="val in citydata">
+                        <h2>{{val.type}}</h2>
+                        <p>{{val.high}}~{{val.low}}</p>
+                        <span>{{val.date}}</span>
+                    </li>
+                </ul>
+                <div class="ganmao">
+                    <p>{{ganmao}}</p>
+                </div>
+            </div>
+            `,
+            methods: {
+                async getWeather() {
+                    var reg = /^[^u4E00-u9FA5]{0,}$/g;
+                    if (this.city == "") {
+                        layer.msg("请输入内容", { icon: 3 });
+                        this.$refs.cinp.focus();
+                    } else if (reg.test(this.city) == false) {
+                        layer.msg("城市名的格式不对哦", { icon: 0 });
+                        this.$refs.cinp.select();
+                    } else {
+                        var result = await axios.get("http://wthrcdn.etouch.cn/weather_mini?city=" + this.city);
+                        if (result.data.status == 1000) {
+                            layer.load(1);
+                            setTimeout(() => {
+                                layer.closeAll('loading');
+                                this.citydata = result.data.data.forecast;
+                                this.ganmao = result.data.data.ganmao;
+                            }, 500);
+                        } else {
+                            layer.msg("查无此城市", { icon: 5 });
+                        }
+                    }
+                },
+                getCity(cityname) {
+                    this.city = cityname;
+                    this.getWeather();
+                }
+            },
+            mounted() {
+                this.getWeather();
+            }
+        }
+        //=============网易云播放器=============
+        var music = {
+            data() {
+                return {
+                    musicname: "",  //绑定搜索的歌名
+                    musichouse: [],  //存储查询到的歌曲
+                    posterimg: "img/logo.png",  //歌曲海报
+                    hotcomments: [],  //歌曲评论
+                    songurl: "",  //歌曲链接
+                    repeatid: "",  //当前音乐的id号
+                    deg: 0, //存储旋转角度
+                    timer: null,  //定义唱片旋转的定时器
+                    mvurl: null,  //歌曲mv地址
+
+                    vidstatus: null
+                }
+            },
+            template: `
+            <div class="wy-player" @click="rotate">
+                <header>
+                    <div class="title">
+                        <h3>XM PLAYER</h3>
+                    </div>
+                    <div class="search">
+                        <input type="text" value="" autocomplete="on" v-model.trim="musicname" @keydown.enter="getMusic">
+                        <img src="img/search.png" alt="" class="sear-icon" @click="getMusic">
+                    </div>
+                </header>
+                <article>
+                    <div class="left">
+                        <ul>
+                            <li v-for="val in musichouse" @click="musli(val.id)" :key="val.id">
+                                <img src="img/icon.png" alt="">
+                                <span>{{val.name}}</span>
+                                <img src="img/MV.png" alt="" v-if="val.mvid != 0 ? true : false"
+                                @click.stop="getMv(val.mvid)">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="center">
+                        <div class="cd">
+                            <div class="mvbox" v-if="mvurl != null">
+                                <video :src="mvurl" controls autoplay></video>
+                            </div>
+                            <div class="poster"><img :src="posterimg" alt=""></div>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <h4>热门留言</h4>
+                        <ul>
+                            <li v-for="val in hotcomments">
+                                <img :src=val.user.avatarUrl alt="">
+                                <span>{{val.user.nickname}}</span>
+                                <p>{{val.content}}</p>
+                            </li>
+                        </ul>
+                    </div>
+                </article>
+                <footer>
+                    <audio :src="songurl" controls autoplay></audio>
+                </footer>
+            </div>
+            `,
+            methods: {
+                //查询歌曲信息
+                async getMusic() {
+                    var result = await axios.get("https://autumnfish.cn/search?keywords=" + this.musicname);
+                    if (!result.data.msg) {
+                        this.musichouse = result.data.result.songs;
+                    } else {
+                        layer.msg("查无此歌曲/歌星", { icon: 3 });
+                    }
+                },
+                //点击获取歌曲信息
+                async musli(id) {
+                    this.mvurl = null;
+                    /* 获取歌曲海报 */
+                    var musicinfo = await axios.get("https://autumnfish.cn/song/detail?ids=" + id);
+                    this.posterimg = musicinfo.data.songs[0].al.picUrl;
+                    /* 获取歌曲评论 */
+                    var comments = await axios.get("https://autumnfish.cn/comment/hot?type=0&id=" + id);
+                    this.hotcomments = comments.data.hotComments;
+                    /* 获取歌曲链接 */
+                    var url = await axios.get("https://autumnfish.cn/song/url?id=" + id);
+                    if (this.repeatid != id) {
+                        this.deg = 0;
+                        this.vidstatus = "播放";
+                        layer.load(1);
+                        setTimeout(function () {
+                            layer.closeAll('loading');
+                        }, 500);
+                        this.songurl = url.data.data[0].url;
+                        this.repeatid = id;
+                    } else {
+                        layer.msg("请勿重复播放", { icon: 6 });
+                    }
+                },
+                /* mv播放 */
+                async getMv(id) {
+                    /* mv地址获取 */
+                    var mv = await axios.get("https://autumnfish.cn/mv/url?id=" + id);
+                    this.mvurl = mv.data.data.url;
+                },
+                //DOM元素的动画效果
+                rotate() {
+                    var player = document.querySelector("footer audio");
+                    setTimeout(() => {
+                        if (player.paused) {
+                            this.vidstatus = "暂停";
+                        } else {
+                            this.vidstatus = "播放";
+                        }
+                    }, 1000)
+                }
+            },
+            watch: {
+                vidstatus: function () {
+                    if (this.vidstatus == "暂停") {
+                        clearInterval(this.timer);
+                    } else {
+                        clearInterval(this.timer);
+                        this.timer = setInterval(() => {
+                            document.querySelector(".poster").style.transform = "rotateZ(" + this.deg + "deg)";
+                            this.deg++;
+                        }, 30);
+                    }
+                }
+            }
+        }
+        //创建路由管理器
+        const router = new VueRouter({
+            routes: [
+                { path: "/", redirect: "homework" },
+                {
+                    path: "/homework",
+                    component: homework,
+                    children: [
+                        {
+                            path: "/homework/weather",
+                            component: weather
+                        },
+                        {
+                            path: "/homework/music",
+                            component: music
+                        }
+                    ]
+                }
+            ]
+        })
+        var vm = new Vue({
+            el: '#app',
+            //将路由挂载到Vue实例中
+            router: router,
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
