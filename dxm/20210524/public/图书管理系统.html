@@ -133,7 +133,7 @@
 <body>
     <div id="app">
         <!-- 路由链接 -->
-        <router-link to="/login"></router-link>
+        <!-- <router-link to="/login"></router-link> -->
         <router-link to="/bksystem"></router-link>
         <!-- 路由占位符 -->
         <router-view></router-view>
@@ -147,33 +147,33 @@
         axios.defaults.baseURL = "http://localhost:3000";
         axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
         //定义模板组件
-        var login = {
-            data() {
-                return {
-                    name: '',
-                    pwd: ''
-                }
-            },
-            template: `
-            <div class="login">
-                <h2>XX系统登录平台</h2>
-                <span>用户名：</span><input type="text" v-model="name"><br />
-                <span>密码：</span><input type="password" v-model="pwd"><br />
-                <button @click="getlogin">登录</button>
-            </div>
-            `,
-            methods: {
-                async getlogin() {
-                    var result = await axios.get("/login?name=" + this.name + "&pwd=" + this.pwd)
-                    if (result.data == "ok") {
-                        layer.msg("登录成功", { icon: 1 });
-                        this.$router.push("/bksystem/usermanger");
-                    } else {
-                        layer.msg("登录失败", { icon: 2 });
-                    }
-                }
-            }
-        }
+        // var login = {
+        //     data() {
+        //         return {
+        //             name: '',
+        //             pwd: ''
+        //         }
+        //     },
+        //     template: `
+        //     <div class="login">
+        //         <h2>XX系统登录平台</h2>
+        //         <span>用户名：</span><input type="text" v-model="name"><br />
+        //         <span>密码：</span><input type="password" v-model="pwd"><br />
+        //         <button @click="getlogin">登录</button>
+        //     </div>
+        //     `,
+        //     methods: {
+        //         async getlogin() {
+        //             var result = await axios.get("/login?name=" + this.name + "&pwd=" + this.pwd)
+        //             if (result.data == "ok") {
+        //                 layer.msg("登录成功", { icon: 1 });
+        //                 this.$router.push("/bksystem/usermanger");
+        //             } else {
+        //                 layer.msg("登录失败", { icon: 2 });
+        //             }
+        //         }
+        //     }
+        // }
         var bksystem = {
             template: `
             <div class="bksystem">
@@ -269,7 +269,7 @@
             props: [],
             routes: [
                 { path: "/", redirect: "login" },
-                { path: "/login", component: login },
+                // { path: "/login", component: login },
                 {
                     path: "/bksystem",
                     component: bksystem,
