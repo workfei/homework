@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue-图书管理组件</title>
+    <style>
+        .book {
+            width: 505px;
+            background-color: orange;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        thead {
+            background-color: orange;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-component></my-component>
+    </div>
+
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.component("my-component", {
+            data() {
+                return {
+                    id: '',
+                    name: '',
+                    btnMsg: '提交',
+                    books: [],
+                    btnflag: false,
+                    btnflag2: false,
+                    idflag: false
+                }
+            },
+            //挂载后
+            mounted() {
+                var data = [{
+                    id: 1,
+                    name: '三国演义',
+                    date: new Date()
+                }, {
+                    id: 2,
+                    name: '水浒传',
+                    date: new Date()
+                }, {
+                    id: 3,
+                    name: '红楼梦',
+                    date: new Date()
+                }, {
+                    id: 4,
+                    name: '西游记',
+                    date: new Date()
+                }];
+                this.books = data;
+            },
+            //时间过滤器
+            filters: {
+                format: function (value, arg) {
+                    function dateFormat(date, format) {
+                        if (typeof date === "string") {
+                            var mts = date.match(/(\/Date\((\d+)\)\/)/);
+                            if (mts && mts.length >= 3) {
+                                date = parseInt(mts[2]);
+                            }
+                        }
+                        date = new Date(date);
+                        if (!date || date.toUTCString() == "Invalid Date") {
+                            return "";
+                        }
+                        var map = {
+                            "M": date.getMonth() + 1, //月份 
+                            "d": date.getDate(), //日 
+                            "h": date.getHours(), //小时 
+                            "m": date.getMinutes(), //分 
+                            "s": date.getSeconds(), //秒 
+                            "q": Math.floor((date.getMonth() + 3) / 3), //季度 
+                            "S": date.getMilliseconds() //毫秒 
+                        };
+                        format = format.replace(/([yMdhmsqS])+/g, function (all, t) {
+                            var v = map[t];
+                            if (v !== undefined) {
+                                if (all.length > 1) {
+                                    v = '0' + v;
+                                    v = v.substr(v.length - 2);
+                                }
+                                return v;
+                            } else if (t === 'y') {
+                                return (date.getFullYear() + '').substr(4 - all.length);
+                            }
+                            return all;
+                        });
+                        return format;
+                    }
+                    return dateFormat(value, arg);
+                }
+            },
+            methods: {
+                getAddbook() {
+                    if (!this.idflag) {
+                        if (this.id == "") {
+                            this.$refs.uid.focus();
+                        } else if (this.name == "") {
+                            this.$refs.iname.focus();
+                        } else {
+                            this.books.push({
+                                id: this.id,
+                                name: this.name,
+                                date: new Date()
+                            });
+                            this.id = "";
+                            this.name = "";
+                        }
+                    } else {
+                        this.books.some(val => {
+                            if (val.id == this.id) {
+                                val.name = this.name;
+                            }
+                        })
+                        this.idflag = false;
+                        this.btnMsg = "提交";
+                        this.id = "";
+                        this.name = "";
+                    }
+                },
+                updatebook(id) {
+                    var obj = this.books.find(val => val.id == id);
+                    this.id = obj.id;
+                    this.name = obj.name;
+                    this.idflag = true;
+                    this.btnMsg = "修改";
+                },
+                deletebook(id) {
+                    this.books = this.books.filter(val => val.id != id);
+                }
+            },
+            computed: {
+                counts: function () {
+                    return this.books.length;
+                }
+            },
+            watch: {
+                id: function () {
+                    var flag = this.books.some(val => val.id == this.id);
+                    if (!this.idflag) {
+                        if (flag) {
+                            this.btnflag = true;
+                            this.btnflag2 = true;
+                        } else {
+                            this.btnflag = false;
+                            this.btnflag2 = false;
+                        }
+                    }
+                },
+                name: function () {
+                    var flag = this.books.some(val => val.name == this.name);
+                    if (!this.btnflag2) {
+                        if (flag) {
+                            this.btnflag = true;
+                        } else {
+                            this.btnflag = false;
+                        }
+                    }
+                }
+            },
+            template: `
+            <div>
+                <h1>图书管理</h1>
+                <div class="book">
+                    <div>
+                        <label for="">ID:</label>
+                        <input type="text" name="" id="" v-model.trim="id" :disabled="idflag" ref="uid">
+                        <label for="">图书名称:</label>
+                        <input type="text" name="" id="" v-model.trim="name" ref="iname">
+                        <button @click="getAddbook" :disabled="btnflag">{{btnMsg}}</button>
+                    </div>
+                </div>
+                <p>图书总数：<span>{{counts}}</span></p>
+                <table width="505" border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>图书名称</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(val,index) in books" :key="val.id">
+                            <td>{{val.id}}</td>
+                            <td>{{val.name}}</td>
+                            <td>{{val.date | format('yyyy-MM-dd hh:mm:ss')}}</td>
+                            <td>
+                            <a href="" @click.prevent="updatebook(val.id)">修改</a>
+                            <a href="" @click.prevent="deletebook(val.id)">删除</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `
+        })
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+
+            },
+            methods: {
+
+            },
+            computed: {
+
+            }
+        })
+    </script>
+</body>
+
+</html>
