@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传图片进度</title>
+    <style>
+        .progress {
+            height: 20px;
+            background-color: skyblue;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" name="file" id="file">
+    <div class="progress">0%</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>
+        var myfile = document.querySelector('#file'); //上传控件
+        var progress = document.querySelector('.progress'); //进度条
+        myfile.onchange = function() {
+            var formData = new FormData();
+            console.log(this.files);
+            formData.append('attrName', this.files[0]); //this.files是页面中所有的上传控件的数组
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:3000/upload',
+                data: formData,
+                contentType: false,
+                processData: false,
+                xhr: function() {
+                    var xhr = new XMLHttpRequest();
+                    xhr.upload.onprogress = function(ev) {
+                        // ev.loaded //已上传的大小
+                        // ev.total //上传的总大小
+                        var result = (ev.loaded / ev.total) * 100 + '%'; //50%
+                        progress.style.width = result;
+                        progress.innerHTML = result;
+                    }
+                    return xhr;
+                },
+                success: function(data) {
+                    console.log(data);
+                }
+            })
+        }
+    </script>
+</body>
+</html>
