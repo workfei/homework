@@ -417,9 +417,12 @@ app.get('/students', (req, res) => {
 app.get('/login', (req,res) => {
   var name = req.query.name;
   var pwd = req.query.pwd;
+  var flag = false;
   students.forEach(val => {
     if (name == val.name) {
-      if (pwd == val.pwd) res.send('ok') 
+      if (pwd == val.pwd) {
+        res.send('ok')
+      } 
     } else {
       res.send('err')
     }

@@ -191,6 +191,7 @@
                         this.$router.push('/manage')
                     } else {
                         alert('出错')
+                        this.$router.push('/register')
                     }
                 }
             },
@@ -225,10 +226,14 @@
                 </table>
             </div>
             `,
+            methods: {
+                async getData() {
+                    var data = await axios.get('/students')
+                    this.data = data.data;
+                }
+            },
             mounted() {
-                axios.get('/students').then(res => {
-                    this.data = res.data;
-                })
+                this.getData()
             },
         }
         // 权限管理
